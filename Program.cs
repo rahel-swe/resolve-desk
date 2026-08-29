@@ -1,8 +1,12 @@
+using ContosoPizza.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IPizzaService, PizzaService>();
+builder.Services.AddSingleton<IOrderService, OrderService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

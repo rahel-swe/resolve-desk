@@ -10,13 +10,20 @@ namespace ContosoPizza.Controllers;
 public class PizzaController : ControllerBase
 {
 
+    private readonly IPizzaService _pizzaService;
+
+    public PizzaController(IPizzaService pizzaService)
+    {
+        _pizzaService = pizzaService;
+    }
+
     [HttpGet]
-    public ActionResult<List<Pizza>> GetAll() => PizzaService.GetAll();
+    public ActionResult<List<Pizza>> GetAll() => _pizzaService.GetAll();
 
     [HttpGet("{id}")]
     public ActionResult<Pizza> Get(int id)
     {
-        var pizza = PizzaService.Get(id);
+        var pizza = _pizzaService.Get(id);
 
         if (pizza is null) return NotFound();
 
@@ -25,8 +32,19 @@ public class PizzaController : ControllerBase
 
     [HttpPost]
     public IActionResult Create(Pizza pizza)
+
+
     {
-        PizzaService.Add(pizza);
+
+        if (string.IsNullOrWhiteSpace(pizza.Name))
+            return BadRequest("Pizza name is required.");
+
+
+        if (pizza.Price <= 0)
+            return BadRequest("Price must greater then 0");
+
+
+        _pizzaService.Add(pizza);
 
         return CreatedAtAction(nameof(Get), new { id = pizza.Id }, pizza);
     }
@@ -36,11 +54,17 @@ public class PizzaController : ControllerBase
     {
         if (id != pizza.Id) return BadRequest();
 
-        var existing = PizzaService.Get(id);
+        var existing = _pizzaService.Get(id);
 
         if (existing is null) return NotFound();
 
-        PizzaService.Update(pizza);
+        if (string.IsNullOrWhiteSpace(pizza.Name))
+            return BadRequest("Pizza name is required.");
+
+        if (pizza.Price <= 0)
+            return BadRequest("Price must greater then 0");
+
+        _pizzaService.Update(pizza);
         return NoContent();
     }
 
@@ -48,11 +72,11 @@ public class PizzaController : ControllerBase
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
-        var pizza = PizzaService.Get(id);
+        var pizza = _pizzaService.Get(id);
 
         if (pizza is null) return NotFound();
 
-        PizzaService.Delete(id);
+        _pizzaService.Delete(id);
 
         return NoContent();
     }

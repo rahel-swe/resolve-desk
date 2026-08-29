@@ -4,3 +4,13 @@ GET {{ContosoPizza_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+
+POST {{ContosoPizza_HostAddress}}/pizza
+Content-Type: application/json
+
+{
+  "name": "Pepperoni",
+  "isGlutenFree": false,
+  "price": 12.99
+}
