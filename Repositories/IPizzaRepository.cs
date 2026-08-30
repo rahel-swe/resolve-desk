@@ -1,9 +1,8 @@
 using ContosoPizza.Models;
 
-namespace ContosoPizza.Services;
+namespace ContosoPizza.Repositories;
 
-
-public interface IPizzaService
+public interface IPizzaRepository
 {
     Task<List<Pizza>> GetAll();
 
@@ -11,7 +10,7 @@ public interface IPizzaService
 
     Task Add(Pizza pizza);
 
-    Task Delete(int id);
-
     Task Update(Pizza pizza);
+
+    Task Delete(Pizza pizza);
 }

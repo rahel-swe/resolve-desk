@@ -1,9 +1,8 @@
-
 using ContosoPizza.Models;
 
-namespace ContosoPizza.Services;
+namespace ContosoPizza.Repositories;
 
-public interface IOrderService
+public interface IOrderRepository
 {
     Task<List<Order>> GetAll();
 

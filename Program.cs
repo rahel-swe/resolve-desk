@@ -1,4 +1,5 @@
 using ContosoPizza.Data;
+using ContosoPizza.Repositories;
 using ContosoPizza.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<IPizzaService, PizzaService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddScoped<IPizzaRepository, PizzaRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

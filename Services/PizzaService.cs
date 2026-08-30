@@ -1,47 +1,42 @@
 using ContosoPizza.Models;
+using ContosoPizza.Repositories;
 
 namespace ContosoPizza.Services;
 
-public class PizzaService : IPizzaService
+public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 {
-    List<Pizza> Pizzas { get; }
-    int nextId = 3;
 
-    public PizzaService()
+
+    private readonly IPizzaRepository _pizzaRepository = pizzaRepository;
+
+    public async Task<List<Pizza>> GetAll() => await _pizzaRepository.GetAll();
+
+    public async Task<Pizza?> Get(int id) => await _pizzaRepository.Get(id);
+
+    public async Task Add(Pizza pizza)
     {
-        Pizzas = [
-        new Pizza {Id = 1, Name = "Margherita", IsGlutenFree = false, Price = 8.99m },
-        new Pizza {Id = 2, Name = "Hawaiian", IsGlutenFree = false, Price = 10.99m }
-        ];
+
+        await _pizzaRepository.Add(pizza);
     }
 
-    public List<Pizza> GetAll() => Pizzas;
 
-    public Pizza? Get(int id) => Pizzas.FirstOrDefault(p => p.Id == id);
 
-    public void Add(Pizza pizza)
+    public async Task Update(Pizza pizza)
     {
+        var existing = await _pizzaRepository.Get(pizza.Id);
 
-        pizza.Id = nextId++;
-        Pizzas.Add(pizza);
+        if (existing is null) return;
+
+        await _pizzaRepository.Update(pizza);
     }
 
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        var pizza = Get(id);
+        var pizza = await _pizzaRepository.Get(id);
 
         if (pizza is null) return;
 
-        Pizzas.Remove(pizza);
-    }
-
-    public void Update(Pizza pizza)
-    {
-        var index = Pizzas.FindIndex(p => p.Id == pizza.Id);
-
-        if (index == -1) return;
-
-        Pizzas[index] = pizza;
+        await _pizzaRepository.Delete(pizza);
     }
 
 }

@@ -7,23 +7,18 @@ namespace ContosoPizza.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PizzaController : ControllerBase
+public class PizzaController(IPizzaService pizzaService) : ControllerBase
 {
 
-    private readonly IPizzaService _pizzaService;
-
-    public PizzaController(IPizzaService pizzaService)
-    {
-        _pizzaService = pizzaService;
-    }
+    private readonly IPizzaService _pizzaService = pizzaService;
 
     [HttpGet]
-    public ActionResult<List<Pizza>> GetAll() => _pizzaService.GetAll();
+    public async Task<ActionResult<List<Pizza>>> GetAll() => await _pizzaService.GetAll();
 
     [HttpGet("{id}")]
-    public ActionResult<Pizza> Get(int id)
+    public async Task<ActionResult<Pizza>> Get(int id)
     {
-        var pizza = _pizzaService.Get(id);
+        var pizza = await _pizzaService.Get(id);
 
         if (pizza is null) return NotFound();
 
@@ -31,7 +26,7 @@ public class PizzaController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create(Pizza pizza)
+    public async Task<IActionResult> Create(Pizza pizza)
 
 
     {
@@ -44,17 +39,17 @@ public class PizzaController : ControllerBase
             return BadRequest("Price must greater then 0");
 
 
-        _pizzaService.Add(pizza);
+        await _pizzaService.Add(pizza);
 
         return CreatedAtAction(nameof(Get), new { id = pizza.Id }, pizza);
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Pizza pizza)
+    public async Task<IActionResult> Update(int id, Pizza pizza)
     {
         if (id != pizza.Id) return BadRequest();
 
-        var existing = _pizzaService.Get(id);
+        var existing = await _pizzaService.Get(id);
 
         if (existing is null) return NotFound();
 
@@ -64,19 +59,19 @@ public class PizzaController : ControllerBase
         if (pizza.Price <= 0)
             return BadRequest("Price must greater then 0");
 
-        _pizzaService.Update(pizza);
+        await _pizzaService.Update(pizza);
         return NoContent();
     }
 
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var pizza = _pizzaService.Get(id);
+        var pizza = await _pizzaService.Get(id);
 
         if (pizza is null) return NotFound();
 
-        _pizzaService.Delete(id);
+        await _pizzaService.Delete(id);
 
         return NoContent();
     }
