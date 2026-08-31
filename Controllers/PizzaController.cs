@@ -1,3 +1,4 @@
+using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
     private readonly IPizzaService _pizzaService = pizzaService;
 
     [HttpGet]
-    public async Task<ActionResult<List<Pizza>>> GetAll() => await _pizzaService.GetAll();
+    public async Task<ActionResult<PageResultDto<Pizza>>> GetAll(string? search, int page = 1, int pageSize = 10) => await _pizzaService.GetAll(search, page, pageSize);
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Pizza>> Get(int id)

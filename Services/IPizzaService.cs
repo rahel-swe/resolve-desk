@@ -1,3 +1,4 @@
+using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 
 namespace ContosoPizza.Services;
@@ -5,7 +6,7 @@ namespace ContosoPizza.Services;
 
 public interface IPizzaService
 {
-    Task<List<Pizza>> GetAll();
+    Task<PageResultDto<Pizza>> GetAll(string? search, int page, int pageSize);
 
     Task<Pizza?> Get(int id);
 

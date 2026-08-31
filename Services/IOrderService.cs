@@ -1,6 +1,7 @@
 
 using ContosoPizza.Common;
 using ContosoPizza.Dtos;
+using ContosoPizza.Enums;
 using ContosoPizza.Models;
 
 namespace ContosoPizza.Services;
@@ -14,4 +15,6 @@ public interface IOrderService
     Task Add(Order order);
 
     Task<ServiceResult<Order>> Create(CreateOrderDto request);
+
+    Task<ServiceResult<Order>> UpdateStatus(int id, OrderStatus status);
 }

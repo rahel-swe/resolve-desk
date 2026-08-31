@@ -4,7 +4,7 @@ namespace ContosoPizza.Repositories;
 
 public interface IPizzaRepository
 {
-    Task<List<Pizza>> GetAll();
+    Task<(List<Pizza> Items, int TotalCount)> GetAll(string? search, int page, int pageSize);
 
     Task<Pizza?> Get(int id);
 

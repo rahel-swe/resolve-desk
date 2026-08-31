@@ -1,3 +1,5 @@
+using ContosoPizza.Enums;
+
 namespace ContosoPizza.Models;
 
 public class Order
@@ -9,6 +11,8 @@ public class Order
     public List<OrderItem> Items { get; set; } = [];
 
     public decimal TotalPrice { get; set; }
+
+    public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
     public DateTime CreatedAt { get; set; }
 }

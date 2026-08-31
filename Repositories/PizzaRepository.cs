@@ -13,9 +13,24 @@ public class PizzaRepository : IPizzaRepository
         _db = db;
     }
 
-    public async Task<List<Pizza>> GetAll()
+    public async Task<(List<Pizza> Items, int TotalCount)> GetAll(string? search, int page, int pageSize)
     {
-        return await _db.Pizzas.ToListAsync();
+
+        var query = _db.Pizzas.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(pizza => pizza.Name != null && pizza.Name.Contains(search));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query.OrderBy(Pizza => Pizza.Id).
+        Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+
+
+        return (items, totalCount);
     }
 
     public async Task<Pizza?> Get(int id)

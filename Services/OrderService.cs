@@ -1,5 +1,6 @@
 using ContosoPizza.Common;
 using ContosoPizza.Dtos;
+using ContosoPizza.Enums;
 using ContosoPizza.Models;
 using ContosoPizza.Repositories;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -64,6 +65,34 @@ public class OrderService : IOrderService
 
         return ServiceResult<Order>.Success(order);
 
+    }
+
+
+    public async Task<ServiceResult<Order>> UpdateStatus(int id, OrderStatus status)
+    {
+
+        var order = await _orderRepository.Get(id);
+
+        if (order is null)
+            return ServiceResult<Order>.Failure($"Order with id {id} does not exist.");
+
+        if (order.Status == OrderStatus.Cancelled)
+            return ServiceResult<Order>.Failure("Cancelled orders cannot be updated.");
+
+        if (order.Status == OrderStatus.Delivered)
+            return ServiceResult<Order>.Failure("Delivered orders cannot be updated.");
+
+        if (status == OrderStatus.Pending)
+            return ServiceResult<Order>.Failure("Order cannot move back to pending.");
+
+        if (status == OrderStatus.Cancelled && order.Status != OrderStatus.Pending)
+            return ServiceResult<Order>.Failure("Only pending orders can be cancelled.");
+
+        order.Status = status;
+
+        await _orderRepository.Update(order);
+
+        return ServiceResult<Order>.Success(order);
     }
 
 

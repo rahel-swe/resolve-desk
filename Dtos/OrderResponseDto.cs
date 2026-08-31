@@ -1,3 +1,5 @@
+using ContosoPizza.Enums;
+
 namespace ContosoPizza.Dtos;
 
 public class OrderResponseDto
@@ -11,4 +13,6 @@ public class OrderResponseDto
     public DateTime CreatedAt { get; set; }
 
     public List<OrderItemResponseDto> Items { get; set; } = [];
+
+    public OrderStatus Status { get; set; }
 }

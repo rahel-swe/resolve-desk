@@ -20,6 +20,7 @@ public class OrderController : ControllerBase
             CustomerName = order.CustomerName,
             TotalPrice = order.TotalPrice,
             CreatedAt = order.CreatedAt,
+            Status = order.Status,
             Items = order.Items.Select(item => new OrderItemResponseDto
             {
                 Id = item.Id,
@@ -71,5 +72,17 @@ public class OrderController : ControllerBase
             return BadRequest(result.ErrorMessage);
 
         return CreatedAtAction(nameof(Get), new { id = result.Data.Id }, ToResponseDto(result.Data));
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, UpdateOrderStatusDtos request)
+    {
+
+        var result = await _orderService.UpdateStatus(id, request.Status);
+
+        if (!result.IsSuccess || result.Data is null)
+            return BadRequest(result.ErrorMessage);
+
+        return Ok(ToResponseDto(result.Data));
     }
 }
