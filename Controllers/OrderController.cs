@@ -1,5 +1,7 @@
 
 
+using System.Runtime.InteropServices;
+using ContosoPizza.Common;
 using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Services;
@@ -8,9 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace ContosoPizza.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/orders")]
 public class OrderController : ControllerBase
 {
+
 
     private static OrderResponseDto ToResponseDto(Order order)
     {
@@ -34,6 +37,17 @@ public class OrderController : ControllerBase
     }
 
     private readonly IOrderService _orderService;
+
+    private IActionResult ToActionResult<T>(ServiceResult<T> result)
+    {
+        return result.Status switch
+        {
+            ServiceResultStatus.BadRequest => BadRequest(result.ErrorMessage),
+            ServiceResultStatus.NotFound => NotFound(result.ErrorMessage),
+            ServiceResultStatus.Conflict => Conflict(result.ErrorMessage),
+            _ => StatusCode(500, "Unexpected service  result.")
+        };
+    }
 
 
     public OrderController(IOrderService orderService)
@@ -69,7 +83,7 @@ public class OrderController : ControllerBase
         var result = await _orderService.Create(request);
 
         if (!result.IsSuccess || result.Data is null)
-            return BadRequest(result.ErrorMessage);
+            return ToActionResult(result);
 
         return CreatedAtAction(nameof(Get), new { id = result.Data.Id }, ToResponseDto(result.Data));
     }
@@ -81,7 +95,7 @@ public class OrderController : ControllerBase
         var result = await _orderService.UpdateStatus(id, request.Status);
 
         if (!result.IsSuccess || result.Data is null)
-            return BadRequest(result.ErrorMessage);
+            return ToActionResult(result);
 
         return Ok(ToResponseDto(result.Data));
     }

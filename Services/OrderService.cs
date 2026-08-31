@@ -3,7 +3,6 @@ using ContosoPizza.Dtos;
 using ContosoPizza.Enums;
 using ContosoPizza.Models;
 using ContosoPizza.Repositories;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ContosoPizza.Services;
 
@@ -12,11 +11,13 @@ public class OrderService : IOrderService
 
     private readonly IOrderRepository _orderRepository;
     private readonly IPizzaService _pizzaService;
+    private readonly ILogger<OrderService> _logger;
 
-    public OrderService(IOrderRepository orderRepository, IPizzaService pizzaService)
+    public OrderService(IOrderRepository orderRepository, IPizzaService pizzaService, ILogger<OrderService> logger)
     {
         _orderRepository = orderRepository;
         _pizzaService = pizzaService;
+        _logger = logger;
     }
 
 
@@ -37,13 +38,23 @@ public class OrderService : IOrderService
     public async Task<ServiceResult<Order>> Create(CreateOrderDto request)
     {
 
+        _logger.LogInformation("Creating order for customer {CustomerName} with {Items.Count} items", request.CustomerName, request.Items.Count);
+
+
         var orderItems = new List<OrderItem>();
 
         foreach (var item in request.Items)
         {
             var pizza = await _pizzaService.Get(item.PizzaId);
 
-            if (pizza is null) return ServiceResult<Order>.Failure($"Pizza with id {item.PizzaId} does not exist."); ;
+            if (pizza is null)
+            {
+
+                _logger.LogWarning("Order creation failed because pizza id {PizzaId} does not exist.", item.PizzaId);
+
+                return ServiceResult<Order>.BadRequest($"Pizza with id {item.PizzaId} does not exist.");
+            }
+            ;
 
             orderItems.Add(new OrderItem
             {
@@ -51,6 +62,7 @@ public class OrderService : IOrderService
                 Quantity = item.Quantity,
                 UnitPrice = pizza.Price
             });
+
         }
 
         var order = new Order
@@ -63,6 +75,10 @@ public class OrderService : IOrderService
 
         await _orderRepository.Add(order);
 
+        _logger.LogInformation("Order {OrderId} created successfully with total price {TotalPrice}.",
+              order.Id,
+              order.TotalPrice);
+
         return ServiceResult<Order>.Success(order);
 
     }
@@ -74,19 +90,19 @@ public class OrderService : IOrderService
         var order = await _orderRepository.Get(id);
 
         if (order is null)
-            return ServiceResult<Order>.Failure($"Order with id {id} does not exist.");
+            return ServiceResult<Order>.NotFound($"Order with id {id} does not exist.");
 
         if (order.Status == OrderStatus.Cancelled)
-            return ServiceResult<Order>.Failure("Cancelled orders cannot be updated.");
+            return ServiceResult<Order>.Conflict("Cancelled orders cannot be updated.");
 
         if (order.Status == OrderStatus.Delivered)
-            return ServiceResult<Order>.Failure("Delivered orders cannot be updated.");
+            return ServiceResult<Order>.Conflict("Delivered orders cannot be updated.");
 
         if (status == OrderStatus.Pending)
-            return ServiceResult<Order>.Failure("Order cannot move back to pending.");
+            return ServiceResult<Order>.Conflict("Order cannot move back to pending.");
 
         if (status == OrderStatus.Cancelled && order.Status != OrderStatus.Pending)
-            return ServiceResult<Order>.Failure("Only pending orders can be cancelled.");
+            return ServiceResult<Order>.Conflict("Only pending orders can be cancelled.");
 
         order.Status = status;
 

@@ -7,7 +7,7 @@ namespace ContosoPizza.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/pizzas")]
 public class PizzaController(IPizzaService pizzaService) : ControllerBase
 {
 
