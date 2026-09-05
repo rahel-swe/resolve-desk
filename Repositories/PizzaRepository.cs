@@ -38,7 +38,12 @@ public class PizzaRepository : IPizzaRepository
         return await _db.Pizzas.FindAsync(id);
     }
 
-    public async Task Add(Pizza pizza)
+    public async Task<Pizza?> FindByName(string name)
+    {
+        return await _db.Pizzas.FirstOrDefaultAsync(pizza => pizza.Name == name);
+    }
+
+    public async Task Create(Pizza pizza)
     {
         _db.Pizzas.Add(pizza);
         await _db.SaveChangesAsync();

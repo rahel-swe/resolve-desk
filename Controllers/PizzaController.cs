@@ -47,46 +47,25 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
     {
         var pizza = await _pizzaService.Get(id);
 
-        if (pizza is null)
-            return Problem(
-            statusCode: StatusCodes.Status404NotFound,
-            title: "Pizza not found",
-            detail: $"Pizza with id {id} was not found.");
-
         return ToResponse(pizza);
     }
 
     [HttpPost]
     public async Task<ActionResult<PizzaResponseDto>> Create(CreatePizzaDto request)
     {
-        var pizza = new Pizza
-        {
-            Name = request.Name.Trim() ?? string.Empty,
-            IsGlutenFree = request.IsGlutenFree,
-            Price = request.Price
-        };
 
+        var pizza = await _pizzaService.Create(request);
 
-        await _pizzaService.Add(pizza);
-
-        return CreatedAtAction(nameof(Get), new { id = pizza.Id }, ToResponse(pizza));
+        return CreatedAtAction(
+            nameof(Get),
+            new { id = pizza.Id },
+            ToResponse(pizza));
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, UpdatePizzaDto request)
     {
-        var existing = await _pizzaService.Get(id);
-        if (existing is null)
-            return Problem(
-            statusCode: StatusCodes.Status404NotFound,
-            title: "Pizza not found",
-            detail: $"Pizza with id {id} was not found.");
-
-        existing.Name = request.Name.Trim();
-        existing.IsGlutenFree = request.IsGlutenFree;
-        existing.Price = request.Price;
-
-        await _pizzaService.Update(existing);
+        await _pizzaService.Update(id, request);
 
         return NoContent();
     }
@@ -95,14 +74,6 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var pizza = await _pizzaService.Get(id);
-
-        if (pizza is null)
-            return Problem(
-        statusCode: StatusCodes.Status404NotFound,
-        title: "Pizza not found",
-        detail: $"Pizza with id {id} was not found.");
-
         await _pizzaService.Delete(id);
 
         return NoContent();

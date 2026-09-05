@@ -8,11 +8,14 @@ public interface IPizzaService
 {
     Task<PageResultDto<Pizza>> GetAll(string? search, int page, int pageSize);
 
-    Task<Pizza?> Get(int id);
+    Task<Pizza> Get(int id);
 
-    Task Add(Pizza pizza);
+
+
+    Task<Pizza> Create(CreatePizzaDto request);
+
+    Task Update(int id, UpdatePizzaDto request);
 
     Task Delete(int id);
 
-    Task Update(Pizza pizza);
 }

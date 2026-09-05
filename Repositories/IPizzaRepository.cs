@@ -8,7 +8,9 @@ public interface IPizzaRepository
 
     Task<Pizza?> Get(int id);
 
-    Task Add(Pizza pizza);
+    Task<Pizza?> FindByName(string name);
+
+    Task Create(Pizza pizza);
 
     Task Update(Pizza pizza);
 
