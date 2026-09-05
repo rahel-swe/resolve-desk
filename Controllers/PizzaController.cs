@@ -1,3 +1,5 @@
+
+
 using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Services;
@@ -13,54 +15,79 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
 
     private readonly IPizzaService _pizzaService = pizzaService;
 
+    private static PizzaResponseDto ToResponse(Pizza pizza)
+    {
+        return new PizzaResponseDto
+        {
+            Id = pizza.Id,
+            Name = pizza.Name ?? string.Empty,
+            IsGlutenFree = pizza.IsGlutenFree,
+            Price = pizza.Price
+        };
+    }
+
     [HttpGet]
-    public async Task<ActionResult<PageResultDto<Pizza>>> GetAll(string? search, int page = 1, int pageSize = 10) => await _pizzaService.GetAll(search, page, pageSize);
+    public async Task<ActionResult<PageResultDto<PizzaResponseDto>>> GetAll(string? search, int page = 1, int pageSize = 10)
+    {
+
+        var result = await _pizzaService.GetAll(search, page, pageSize);
+
+        return new PageResultDto<PizzaResponseDto>
+        {
+            Items = result.Items.Select(ToResponse).ToList(),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalCount = result.TotalCount,
+            TotalPages = result.TotalPages
+        };
+    }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Pizza>> Get(int id)
+    public async Task<ActionResult<PizzaResponseDto>> Get(int id)
     {
         var pizza = await _pizzaService.Get(id);
 
-        if (pizza is null) return NotFound();
+        if (pizza is null)
+            return Problem(
+            statusCode: StatusCodes.Status404NotFound,
+            title: "Pizza not found",
+            detail: $"Pizza with id {id} was not found.");
 
-        return pizza;
+        return ToResponse(pizza);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Pizza pizza)
-
-
+    public async Task<ActionResult<PizzaResponseDto>> Create(CreatePizzaDto request)
     {
-
-        if (string.IsNullOrWhiteSpace(pizza.Name))
-            return BadRequest("Pizza name is required.");
-
-
-        if (pizza.Price <= 0)
-            return BadRequest("Price must greater then 0");
+        var pizza = new Pizza
+        {
+            Name = request.Name.Trim() ?? string.Empty,
+            IsGlutenFree = request.IsGlutenFree,
+            Price = request.Price
+        };
 
 
         await _pizzaService.Add(pizza);
 
-        return CreatedAtAction(nameof(Get), new { id = pizza.Id }, pizza);
+        return CreatedAtAction(nameof(Get), new { id = pizza.Id }, ToResponse(pizza));
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Pizza pizza)
+    public async Task<IActionResult> Update(int id, UpdatePizzaDto request)
     {
-        if (id != pizza.Id) return BadRequest();
-
         var existing = await _pizzaService.Get(id);
+        if (existing is null)
+            return Problem(
+            statusCode: StatusCodes.Status404NotFound,
+            title: "Pizza not found",
+            detail: $"Pizza with id {id} was not found.");
 
-        if (existing is null) return NotFound();
+        existing.Name = request.Name.Trim();
+        existing.IsGlutenFree = request.IsGlutenFree;
+        existing.Price = request.Price;
 
-        if (string.IsNullOrWhiteSpace(pizza.Name))
-            return BadRequest("Pizza name is required.");
+        await _pizzaService.Update(existing);
 
-        if (pizza.Price <= 0)
-            return BadRequest("Price must greater then 0");
-
-        await _pizzaService.Update(pizza);
         return NoContent();
     }
 
@@ -70,7 +97,11 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
     {
         var pizza = await _pizzaService.Get(id);
 
-        if (pizza is null) return NotFound();
+        if (pizza is null)
+            return Problem(
+        statusCode: StatusCodes.Status404NotFound,
+        title: "Pizza not found",
+        detail: $"Pizza with id {id} was not found.");
 
         await _pizzaService.Delete(id);
 
