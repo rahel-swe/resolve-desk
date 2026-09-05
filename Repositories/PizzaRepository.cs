@@ -38,9 +38,15 @@ public class PizzaRepository : IPizzaRepository
         return await _db.Pizzas.FindAsync(id);
     }
 
-    public async Task<Pizza?> FindByName(string name)
+    public async Task<Pizza?> GetByName(string name, int? excludeId = null)
     {
-        return await _db.Pizzas.FirstOrDefaultAsync(pizza => pizza.Name == name);
+        var query = _db.Pizzas.AsQueryable();
+
+        if (excludeId.HasValue)
+            query = query.Where(pizza => pizza.Id != excludeId.Value);
+
+
+        return await query.FirstOrDefaultAsync(pizza => pizza.Name != null && pizza.Name.ToLower() == name.ToLower());
     }
 
     public async Task Create(Pizza pizza)

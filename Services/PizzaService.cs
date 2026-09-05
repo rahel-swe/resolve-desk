@@ -45,10 +45,7 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 
     public async Task<Pizza> Create(CreatePizzaDto request)
     {
-        var existingPizza = await _pizzaRepository.FindByName(request.Name.Trim());
 
-        if (existingPizza is not null)
-            throw new ConflictException($"A pizza named '{request.Name}' already exists.");
 
         var pizza = new Pizza
         {
@@ -57,18 +54,18 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
             Price = request.Price
         };
 
+        var existingPizza = await _pizzaRepository.GetByName(request.Name.Trim(), null);
+
+        if (existingPizza is not null)
+            throw new ConflictException($"A pizza named '{request.Name}' already exists.");
+
         await _pizzaRepository.Create(pizza);
 
         return pizza;
     }
 
-
-
     public async Task Update(int id, UpdatePizzaDto request)
     {
-
-
-
         var pizza = await _pizzaRepository.Get(id);
 
         if (pizza is null)
@@ -76,9 +73,9 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 
         var normalizedName = request.Name.Trim();
 
-        var existingPizza = await _pizzaRepository.FindByName(normalizedName);
+        var existingPizza = await _pizzaRepository.GetByName(normalizedName, pizza.Id);
 
-        if (existingPizza is not null && existingPizza.Id != id)
+        if (existingPizza is not null)
             throw new ConflictException($"A pizza named '{normalizedName}' already exists.");
 
         pizza.Name = normalizedName;
