@@ -54,7 +54,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("PizzaAccess", policy =>
     {
-        policy.RequireClaim("role", "Admin");
+        policy.RequireClaim(ClaimTypes.Role, "Admin");
     });
 });
 

@@ -12,4 +12,16 @@ public class UserRepository(AppDbContext db) : IUserRepository
     {
         return await _db.Users.FirstOrDefaultAsync(user => user.Email == email);
     }
+
+    public async Task CreateUser(User user)
+    {
+        _db.Users.Add(user);
+
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<int> GetAllUsersCount()
+    {
+        return await _db.Users.CountAsync();
+    }
 }

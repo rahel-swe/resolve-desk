@@ -14,10 +14,29 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IConfiguration _configuration = configuration;
 
+    private async Task SeedAdmin()
+    {
+        var user = new User
+        {
+            Email = "example@gmail.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("rahel225"),
+            Role = "Admin"
+        };
+
+        await _userRepository.CreateUser(user);
+    }
+
     public async Task<TokenResponseDto?> LoginAsync(LoginDto request)
     {
 
         var user = await _userRepository.GetByEmailAsync(request.Email);
+        var allUsersCount = await _userRepository.GetAllUsersCount();
+
+        if (user is null && allUsersCount == 0)
+        {
+            await SeedAdmin();
+            user = await _userRepository.GetByEmailAsync(request.Email);
+        }
 
         if (user is null)
             return null;
@@ -25,10 +44,7 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             return null;
 
-
         var token = GenerateToken(user);
-
-
 
         return new TokenResponseDto
         {
