@@ -8,7 +8,7 @@ public interface IPizzaRepository
 
     Task<Pizza?> Get(int id);
 
-    Task<Pizza?> GetByName(string name, int? excludeId);
+    Task<Pizza?> GetByName(string name, int? excludeId = null);
 
     Task Create(Pizza pizza);
 

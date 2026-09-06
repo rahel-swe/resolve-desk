@@ -3,11 +3,12 @@
 using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContosoPizza.Controllers;
 
-
+[Authorize(Policy = "PizzaAccess")]
 [ApiController]
 [Route("api/pizzas")]
 public class PizzaController(IPizzaService pizzaService) : ControllerBase

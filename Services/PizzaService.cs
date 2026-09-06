@@ -9,6 +9,16 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 {
     private readonly IPizzaRepository _pizzaRepository = pizzaRepository;
 
+    private async Task ValidateUniqueNameAsync(string name, int? excludeId = null)
+    {
+        var normalizedName = name.Trim();
+
+        var existingPizza = await _pizzaRepository.GetByName(name, excludeId);
+
+        if (existingPizza is not null)
+            throw new ConflictException($"A pizza named '{normalizedName}' already exists.");
+    }
+
     public async Task<PageResultDto<Pizza>> GetAll(string? search, int page, int pageSize)
     {
 
@@ -16,11 +26,9 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 
         if (pageSize < 1) pageSize = 1;
 
-
         if (pageSize > 50) pageSize = 50;
 
         var (Items, TotalCount) = await _pizzaRepository.GetAll(search, page, pageSize);
-
 
         return new PageResultDto<Pizza>
         {
@@ -54,10 +62,7 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
             Price = request.Price
         };
 
-        var existingPizza = await _pizzaRepository.GetByName(request.Name.Trim(), null);
-
-        if (existingPizza is not null)
-            throw new ConflictException($"A pizza named '{request.Name}' already exists.");
+        await ValidateUniqueNameAsync(pizza.Name);
 
         await _pizzaRepository.Create(pizza);
 
@@ -73,10 +78,7 @@ public class PizzaService(IPizzaRepository pizzaRepository) : IPizzaService
 
         var normalizedName = request.Name.Trim();
 
-        var existingPizza = await _pizzaRepository.GetByName(normalizedName, pizza.Id);
-
-        if (existingPizza is not null)
-            throw new ConflictException($"A pizza named '{normalizedName}' already exists.");
+        await ValidateUniqueNameAsync(normalizedName, id);
 
         pizza.Name = normalizedName;
         pizza.IsGlutenFree = request.IsGlutenFree;

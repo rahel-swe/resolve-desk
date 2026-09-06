@@ -10,8 +10,6 @@ public interface IPizzaService
 
     Task<Pizza> Get(int id);
 
-
-
     Task<Pizza> Create(CreatePizzaDto request);
 
     Task Update(int id, UpdatePizzaDto request);
