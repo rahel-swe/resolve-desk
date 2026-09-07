@@ -27,36 +27,6 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
         await _userRepository.CreateUser(user);
     }
 
-    public async Task<TokenResponseDto> RegisterAsync(RegisterDto request)
-    {
-
-        var user = await _userRepository.GetByEmailAsync(request.Email);
-
-        if (user is not null)
-            throw new ConflictException($"User with this email: {request.Email} already exist.");
-
-
-        user = new User
-        {
-            FullName = request.FullName,
-            Email = request.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
-        };
-
-        await _userRepository.CreateUser(user);
-
-
-        var token = GenerateToken(user);
-
-        return new TokenResponseDto
-        {
-            Token = token,
-            Email = user.Email,
-            Role = user.Role ?? "User"
-        };
-
-    }
-
 
     public async Task<TokenResponseDto?> LoginAsync(LoginDto request)
     {
@@ -87,7 +57,7 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
         };
     }
 
-    private string GenerateToken(User user)
+    public string GenerateToken(User user)
     {
         var claims = new[]
         {

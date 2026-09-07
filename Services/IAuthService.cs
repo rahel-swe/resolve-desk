@@ -5,7 +5,8 @@ namespace ContosoPizza.Services;
 
 public interface IAuthService
 {
-    Task<TokenResponseDto?> RegisterAsync(RegisterDto request);
 
     Task<TokenResponseDto?> LoginAsync(LoginDto request);
+
+    string GenerateToken(User user);
 }

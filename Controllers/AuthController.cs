@@ -6,9 +6,10 @@ namespace ContosoPizza.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService, IUserService userService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
+    private readonly IUserService _userService = userService;
 
     [HttpPost("login")]
     public async Task<ActionResult<TokenResponseDto>> Login(LoginDto request)
@@ -23,7 +24,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<TokenResponseDto>> Register(RegisterDto request)
     {
-        var result = await _authService.RegisterAsync(request);
+        var result = await _userService.RegisterUserAsync(request);
 
         return Ok(result);
     }
