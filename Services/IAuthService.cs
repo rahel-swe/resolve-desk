@@ -8,5 +8,7 @@ public interface IAuthService
 
     Task<TokenResponseDto?> LoginAsync(LoginDto request);
 
-    string GenerateToken(User user);
+    string GenerateAccessToken(User user);
+
+    Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request);
 }

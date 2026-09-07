@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using ContosoPizza.Common;
 using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Repositories;
@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ContosoPizza.Services;
 
-public class AuthService(IUserRepository userRepository, IConfiguration configuration) : IAuthService
+public class AuthService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IConfiguration configuration) : IAuthService
 {
 
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IConfiguration _configuration = configuration;
+    private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
 
     private async Task SeedAdmin()
     {
@@ -41,23 +42,88 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
             user = await _userRepository.GetByEmailAsync(request.Email);
         }
 
-        if (user is null)
-            return null;
+        if (user is null) return null;
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             return null;
 
-        var token = GenerateToken(user);
+        var accessToken = GenerateAccessToken(user);
+
+        var refreshToken = GenerateRefreshToken();
+
+        var refreshTokenEntity = new RefreshToken
+        {
+            TokenHash = HashRefreshToken(refreshToken),
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            UserId = user.Id
+        };
+
+        await _refreshTokenRepository.AddAsync(refreshTokenEntity);
 
         return new TokenResponseDto
         {
-            Token = token,
+            Token = accessToken,
+            RefreshToken = refreshToken,
             Email = user.Email,
             Role = user.Role
         };
     }
 
-    public string GenerateToken(User user)
+    public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)
+    {
+        var tokenHash = HashRefreshToken(request.RefreshToken);
+
+        var storedToken = await _refreshTokenRepository.GetByHashAsync(tokenHash);
+
+        if (storedToken is null) return null;
+
+        if (storedToken.RevokedAt is not null) return null;
+
+        if (storedToken.ExpiresAt <= DateTime.UtcNow) return null;
+
+        var user = storedToken.User;
+
+        // This method revoke (invalid) the old (stored token)
+        await _refreshTokenRepository.RevokeAsync(storedToken);
+
+        var newAccessToken = GenerateAccessToken(user);
+
+        var newRefreshToken = GenerateRefreshToken();
+
+        var newRefreshTokenEntity = new RefreshToken
+        {
+            TokenHash = HashRefreshToken(newRefreshToken),
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            UserId = user.Id
+        };
+
+        await _refreshTokenRepository.AddAsync(newRefreshTokenEntity);
+
+        return new TokenResponseDto
+        {
+            Token = newAccessToken,
+            RefreshToken = newRefreshToken,
+            Email = user.Email,
+            Role = user.Role,
+        };
+
+    }
+
+    private static string GenerateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    private static string HashRefreshToken(string refreshToken)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken));
+
+        return Convert.ToBase64String(hash);
+    }
+
+    public string GenerateAccessToken(User user)
     {
         var claims = new[]
         {
@@ -74,7 +140,7 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
+            expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

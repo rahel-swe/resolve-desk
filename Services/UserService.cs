@@ -30,7 +30,7 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         await _userRepository.CreateUser(user);
 
 
-        var token = _authService.GenerateToken(user);
+        var token = _authService.GenerateAccessToken(user);
 
         return new TokenResponseDto
         {

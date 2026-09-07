@@ -28,4 +28,14 @@ public class AuthController(IAuthService authService, IUserService userService) 
 
         return Ok(result);
     }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<TokenResponseDto>> Refresh(RefreshTokenRequestDto request)
+    {
+        var result = await _authService.RefreshTokenAsync(request);
+
+        if (result is null) return Unauthorized();
+
+        return Ok(result);
+    }
 }
