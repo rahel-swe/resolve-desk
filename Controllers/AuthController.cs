@@ -19,4 +19,12 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPost("register")]
+    public async Task<ActionResult<TokenResponseDto>> Register(RegisterDto request)
+    {
+        var result = await _authService.RegisterAsync(request);
+
+        return Ok(result);
+    }
 }

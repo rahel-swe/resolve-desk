@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ContosoPizza.Common;
 using ContosoPizza.Dtos;
 using ContosoPizza.Models;
 using ContosoPizza.Repositories;
@@ -26,10 +27,42 @@ public class AuthService(IUserRepository userRepository, IConfiguration configur
         await _userRepository.CreateUser(user);
     }
 
+    public async Task<TokenResponseDto> RegisterAsync(RegisterDto request)
+    {
+
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+
+        if (user is not null)
+            throw new ConflictException($"User with this email: {request.Email} already exist.");
+
+
+        user = new User
+        {
+            FullName = request.FullName,
+            Email = request.Email,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+        };
+
+        await _userRepository.CreateUser(user);
+
+
+        var token = GenerateToken(user);
+
+        return new TokenResponseDto
+        {
+            Token = token,
+            Email = user.Email,
+            Role = user.Role ?? "User"
+        };
+
+    }
+
+
     public async Task<TokenResponseDto?> LoginAsync(LoginDto request)
     {
 
         var user = await _userRepository.GetByEmailAsync(request.Email);
+
         var allUsersCount = await _userRepository.GetAllUsersCount();
 
         if (user is null && allUsersCount == 0)

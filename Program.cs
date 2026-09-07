@@ -52,9 +52,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("PizzaAccess", policy =>
+    options.AddPolicy("AdminOnly", policy =>
     {
-        policy.RequireClaim(ClaimTypes.Role, "Admin");
+        policy.RequireRole("Admin");
+    });
+
+    options.AddPolicy("AdminOrUser", policy =>
+    {
+        policy.RequireAuthenticatedUser();
     });
 });
 

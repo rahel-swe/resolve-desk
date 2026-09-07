@@ -29,7 +29,7 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
         var detail = exception switch
         {
             NotFoundException or ConflictException => exception.Message,
-            _ => "The server could not process the rquest."
+            _ => "The server could not process the request."
         };
 
         if (statusCode == StatusCodes.Status500InternalServerError)

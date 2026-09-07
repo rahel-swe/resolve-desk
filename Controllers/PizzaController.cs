@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ContosoPizza.Controllers;
 
-[Authorize(Policy = "PizzaAccess")]
+[Authorize(Policy = "AdminOrUser")]
 [ApiController]
 [Route("api/pizzas")]
 public class PizzaController(IPizzaService pizzaService) : ControllerBase
@@ -27,6 +27,7 @@ public class PizzaController(IPizzaService pizzaService) : ControllerBase
         };
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet]
     public async Task<ActionResult<PageResultDto<PizzaResponseDto>>> GetAll(string? search, int page = 1, int pageSize = 10)
     {
