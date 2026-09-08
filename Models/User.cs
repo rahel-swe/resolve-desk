@@ -15,6 +15,4 @@ public class User
     public string Role { get; set; } = "User";
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
-
-
 }

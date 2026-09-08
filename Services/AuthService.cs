@@ -6,6 +6,7 @@ using SupportPilotAI.Dtos;
 using SupportPilotAI.Models;
 using SupportPilotAI.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SupportPilotAI.Services;
 

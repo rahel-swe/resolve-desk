@@ -13,18 +13,6 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
 
     public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto request, int userId)
     {
-
-        if (string.IsNullOrWhiteSpace(request.Title))
-            throw new ArgumentException("Ticket title is required.");
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-            throw new ArgumentException("Ticket description is required.");
-
-        if (string.IsNullOrWhiteSpace(request.Category))
-            throw new ArgumentException("Ticket category is required.");
-
-        var user = await _userRepository.GetByEmailAsync((await _userRepository.GetAllUsersCount() >= 0 ? "" : "")); // Place holder
-
         var ticket = new Ticket
         {
             Title = request.Title.Trim(),

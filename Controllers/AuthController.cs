@@ -1,6 +1,7 @@
 using SupportPilotAI.Dtos;
 using SupportPilotAI.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace SupportPilotAI.Controllers;
 
@@ -37,6 +38,16 @@ public class AuthController(IAuthService authService, IUserService userService) 
         if (result is null) return Unauthorized();
 
         return Ok(result);
+    }
+
+    [HttpGet("me")]
+    public ActionResult Me()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var role = User.IsInRole("Admin");
+
+        return Ok(new { userId, email, role });
     }
 
     [HttpPost("logout")]
