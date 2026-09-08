@@ -1,7 +1,7 @@
-using ContosoPizza.Dtos;
-using ContosoPizza.Models;
+using InsightDesk.Dtos;
+using InsightDesk.Models;
 
-namespace ContosoPizza.Services;
+namespace InsightDesk.Services;
 
 public interface IAuthService
 {

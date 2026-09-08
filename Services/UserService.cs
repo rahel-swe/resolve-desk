@@ -1,10 +1,10 @@
 
-using ContosoPizza.Common;
-using ContosoPizza.Dtos;
-using ContosoPizza.Models;
-using ContosoPizza.Repositories;
+using InsightDesk.Common;
+using InsightDesk.Dtos;
+using InsightDesk.Models;
+using InsightDesk.Repositories;
 
-namespace ContosoPizza.Services;
+namespace InsightDesk.Services;
 
 public class UserService(IUserRepository userRepository, IAuthService authService) : IUserService
 {

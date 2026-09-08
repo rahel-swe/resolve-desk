@@ -1,4 +1,4 @@
-namespace ContosoPizza.Models;
+namespace InsightDesk.Models;
 
 public class RefreshToken
 {

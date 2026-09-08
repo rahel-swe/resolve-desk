@@ -2,12 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using ContosoPizza.Dtos;
-using ContosoPizza.Models;
-using ContosoPizza.Repositories;
+using InsightDesk.Dtos;
+using InsightDesk.Models;
+using InsightDesk.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ContosoPizza.Services;
+namespace InsightDesk.Services;
 
 public class AuthService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IConfiguration configuration) : IAuthService
 {

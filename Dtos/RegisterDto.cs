@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ContosoPizza.Dtos;
+namespace InsightDesk.Dtos;
 
 public class RegisterDto
 {

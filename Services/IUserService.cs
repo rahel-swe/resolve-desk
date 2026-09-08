@@ -1,6 +1,6 @@
-using ContosoPizza.Dtos;
+using InsightDesk.Dtos;
 
-namespace ContosoPizza.Services;
+namespace InsightDesk.Services;
 
 public interface IUserService
 {

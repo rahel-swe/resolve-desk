@@ -1,9 +1,9 @@
 
-using ContosoPizza.Data;
-using ContosoPizza.Models;
+using InsightDesk.Data;
+using InsightDesk.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContosoPizza.Repositories;
+namespace InsightDesk.Repositories;
 
 public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {

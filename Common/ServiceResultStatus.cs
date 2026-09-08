@@ -1,4 +1,4 @@
-namespace ContosoPizza.Common;
+namespace InsightDesk.Common;
 
 public enum ServiceResultStatus
 {

@@ -1,8 +1,8 @@
-using ContosoPizza.Dtos;
-using ContosoPizza.Services;
+using InsightDesk.Dtos;
+using InsightDesk.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ContosoPizza.Controllers;
+namespace InsightDesk.Controllers;
 
 [ApiController]
 [Route("api/auth")]

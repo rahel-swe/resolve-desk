@@ -1,4 +1,4 @@
-namespace ContosoPizza.Dtos;
+namespace InsightDesk.Dtos;
 
 public class RefreshTokenRequestDto
 {

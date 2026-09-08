@@ -1,6 +1,6 @@
-using ContosoPizza.Models;
+using InsightDesk.Models;
 
-namespace ContosoPizza.Repositories;
+namespace InsightDesk.Repositories;
 
 public interface IUserRepository
 {

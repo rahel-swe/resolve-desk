@@ -1,8 +1,8 @@
-using ContosoPizza.Common;
+using InsightDesk.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ContosoPizza.Middleware;
+namespace InsightDesk.Middleware;
 
 public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {

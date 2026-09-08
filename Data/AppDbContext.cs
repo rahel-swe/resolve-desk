@@ -1,7 +1,7 @@
-using ContosoPizza.Models;
+using InsightDesk.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContosoPizza.Data;
+namespace InsightDesk.Data;
 
 public class AppDbContext : DbContext
 {

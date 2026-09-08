@@ -1,8 +1,8 @@
 using System.Text;
-using ContosoPizza.Data;
-using ContosoPizza.Middleware;
-using ContosoPizza.Repositories;
-using ContosoPizza.Services;
+using InsightDesk.Data;
+using InsightDesk.Middleware;
+using InsightDesk.Repositories;
+using InsightDesk.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

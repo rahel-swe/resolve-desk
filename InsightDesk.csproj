@@ -4,6 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>InsightDesk</AssemblyName>
+    <RootNamespace>InsightDesk</RootNamespace>
+    <PackageId>InsightDesk</PackageId>
     <UserSecretsId>bf26caf6-348f-417f-830f-f6d50f96b8c9</UserSecretsId>
   </PropertyGroup>
 
