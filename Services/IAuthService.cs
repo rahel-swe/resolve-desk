@@ -11,4 +11,6 @@ public interface IAuthService
     string GenerateAccessToken(User user);
 
     Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request);
+
+    Task<bool> LogoutAsync(RefreshTokenRequestDto request);
 }

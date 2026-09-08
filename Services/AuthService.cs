@@ -28,6 +28,20 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
         await _userRepository.CreateUser(user);
     }
 
+    private static string GenerateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    private static string HashRefreshToken(string refreshToken)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken));
+
+        return Convert.ToBase64String(hash);
+    }
+
 
     public async Task<TokenResponseDto?> LoginAsync(LoginDto request)
     {
@@ -77,7 +91,11 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
 
         if (storedToken is null) return null;
 
-        if (storedToken.RevokedAt is not null) return null;
+        if (storedToken.RevokedAt is not null)
+        {
+            await _refreshTokenRepository.RevokeAllForUserAsync(storedToken.UserId);
+            return null;
+        }
 
         if (storedToken.ExpiresAt <= DateTime.UtcNow) return null;
 
@@ -109,19 +127,22 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
 
     }
 
-    private static string GenerateRefreshToken()
+    public async Task<bool> LogoutAsync(RefreshTokenRequestDto request)
     {
-        var randomBytes = RandomNumberGenerator.GetBytes(64);
+        var tokenHash = HashRefreshToken(request.RefreshToken);
 
-        return Convert.ToBase64String(randomBytes);
+        var storedToken = await _refreshTokenRepository.GetByHashAsync(tokenHash);
+
+        if (storedToken is null) return false;
+
+        if (storedToken.RevokedAt != null) return false;
+
+        await _refreshTokenRepository.RevokeAsync(storedToken);
+
+        return true;
     }
 
-    private static string HashRefreshToken(string refreshToken)
-    {
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken));
 
-        return Convert.ToBase64String(hash);
-    }
 
     public string GenerateAccessToken(User user)
     {

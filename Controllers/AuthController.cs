@@ -38,4 +38,14 @@ public class AuthController(IAuthService authService, IUserService userService) 
 
         return Ok(result);
     }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(RefreshTokenRequestDto request)
+    {
+        var revoked = await _authService.LogoutAsync(request);
+
+        if (!revoked) return NoContent();
+
+        return NoContent();
+    }
 }
