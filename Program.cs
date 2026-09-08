@@ -1,12 +1,11 @@
 using System.Text;
-using InsightDesk.Data;
-using InsightDesk.Middleware;
-using InsightDesk.Repositories;
-using InsightDesk.Services;
+using SupportPilotAi.Data;
+using SupportPilotAi.Middleware;
+using SupportPilotAi.Repositories;
+using SupportPilotAi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +25,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IPizzaService, PizzaService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IPizzaRepository, PizzaRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

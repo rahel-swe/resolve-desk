@@ -1,4 +1,4 @@
-namespace InsightDesk.Common;
+namespace SupportPilotAi.Common;
 
 public class ServiceResult<T>
 {

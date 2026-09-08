@@ -1,6 +1,6 @@
-using InsightDesk.Dtos;
+using SupportPilotAi.Dtos;
 
-namespace InsightDesk.Services;
+namespace SupportPilotAi.Services;
 
 public interface IUserService
 {

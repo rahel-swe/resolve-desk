@@ -1,8 +1,8 @@
-using InsightDesk.Dtos;
-using InsightDesk.Services;
+using SupportPilotAi.Dtos;
+using SupportPilotAi.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InsightDesk.Controllers;
+namespace SupportPilotAi.Controllers;
 
 [ApiController]
 [Route("api/auth")]

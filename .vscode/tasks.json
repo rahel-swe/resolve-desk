@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/InsightDesk.csproj",
+                "${workspaceFolder}/SupportPilotAi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/InsightDesk.csproj",
+                "${workspaceFolder}/SupportPilotAi.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/InsightDesk.csproj"
+                "${workspaceFolder}/SupportPilotAi.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

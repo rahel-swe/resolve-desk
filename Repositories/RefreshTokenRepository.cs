@@ -1,9 +1,9 @@
 
-using InsightDesk.Data;
-using InsightDesk.Models;
+using SupportPilotAi.Data;
+using SupportPilotAi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace InsightDesk.Repositories;
+namespace SupportPilotAi.Repositories;
 
 public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {

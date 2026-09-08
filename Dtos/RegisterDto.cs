@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace InsightDesk.Dtos;
+namespace SupportPilotAi.Dtos;
 
 public class RegisterDto
 {

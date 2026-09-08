@@ -1,7 +1,7 @@
-using InsightDesk.Dtos;
-using InsightDesk.Models;
+using SupportPilotAi.Dtos;
+using SupportPilotAi.Models;
 
-namespace InsightDesk.Services;
+namespace SupportPilotAi.Services;
 
 public interface IAuthService
 {

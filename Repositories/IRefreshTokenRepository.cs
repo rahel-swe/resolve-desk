@@ -1,6 +1,6 @@
-using InsightDesk.Models;
+using SupportPilotAi.Models;
 
-namespace InsightDesk.Repositories;
+namespace SupportPilotAi.Repositories;
 
 public interface IRefreshTokenRepository
 {

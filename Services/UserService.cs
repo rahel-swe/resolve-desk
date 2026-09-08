@@ -1,10 +1,10 @@
 
-using InsightDesk.Common;
-using InsightDesk.Dtos;
-using InsightDesk.Models;
-using InsightDesk.Repositories;
+using SupportPilotAi.Common;
+using SupportPilotAi.Dtos;
+using SupportPilotAi.Models;
+using SupportPilotAi.Repositories;
 
-namespace InsightDesk.Services;
+namespace SupportPilotAi.Services;
 
 public class UserService(IUserRepository userRepository, IAuthService authService) : IUserService
 {

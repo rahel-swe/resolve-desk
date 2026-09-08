@@ -1,8 +1,8 @@
-using InsightDesk.Common;
+using SupportPilotAi.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InsightDesk.Middleware;
+namespace SupportPilotAi.Middleware;
 
 public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {

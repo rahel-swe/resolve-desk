@@ -1,4 +1,4 @@
-namespace InsightDesk.Models;
+namespace SupportPilotAi.Models;
 
 public class User
 {

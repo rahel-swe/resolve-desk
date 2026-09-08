@@ -1,4 +1,4 @@
-namespace InsightDesk.Dtos;
+namespace SupportPilotAi.Dtos;
 
 public class TokenResponseDto
 {

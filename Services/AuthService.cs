@@ -2,12 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using InsightDesk.Dtos;
-using InsightDesk.Models;
-using InsightDesk.Repositories;
+using SupportPilotAi.Dtos;
+using SupportPilotAi.Models;
+using SupportPilotAi.Repositories;
 using Microsoft.IdentityModel.Tokens;
 
-namespace InsightDesk.Services;
+namespace SupportPilotAi.Services;
 
 public class AuthService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IConfiguration configuration) : IAuthService
 {
