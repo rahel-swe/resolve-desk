@@ -1,10 +1,10 @@
 
-using SupportPilotAi.Common;
-using SupportPilotAi.Dtos;
-using SupportPilotAi.Models;
-using SupportPilotAi.Repositories;
+using SupportPilotAI.Common;
+using SupportPilotAI.Dtos;
+using SupportPilotAI.Models;
+using SupportPilotAI.Repositories;
 
-namespace SupportPilotAi.Services;
+namespace SupportPilotAI.Services;
 
 public class UserService(IUserRepository userRepository, IAuthService authService) : IUserService
 {

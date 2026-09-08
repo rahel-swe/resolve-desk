@@ -1,9 +1,9 @@
 
-using SupportPilotAi.Data;
-using SupportPilotAi.Models;
+using SupportPilotAI.Data;
+using SupportPilotAI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace SupportPilotAi.Repositories;
+namespace SupportPilotAI.Repositories;
 
 public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {

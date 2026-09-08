@@ -1,4 +1,6 @@
-namespace SupportPilotAi.Models;
+using SupportPilotAI.Enums;
+
+namespace SupportPilotAI.Models;
 
 public class User
 {
@@ -13,4 +15,6 @@ public class User
     public string Role { get; set; } = "User";
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
+
+
 }

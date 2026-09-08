@@ -1,8 +1,8 @@
-using SupportPilotAi.Common;
+using SupportPilotAI.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SupportPilotAi.Middleware;
+namespace SupportPilotAI.Middleware;
 
 public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {

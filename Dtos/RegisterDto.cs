@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SupportPilotAi.Dtos;
+namespace SupportPilotAI.Dtos;
 
 public class RegisterDto
 {

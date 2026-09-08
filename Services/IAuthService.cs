@@ -1,7 +1,7 @@
-using SupportPilotAi.Dtos;
-using SupportPilotAi.Models;
+using SupportPilotAI.Dtos;
+using SupportPilotAI.Models;
 
-namespace SupportPilotAi.Services;
+namespace SupportPilotAI.Services;
 
 public interface IAuthService
 {

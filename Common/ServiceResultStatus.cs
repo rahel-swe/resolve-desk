@@ -1,4 +1,4 @@
-namespace SupportPilotAi.Common;
+namespace SupportPilotAI.Common;
 
 public enum ServiceResultStatus
 {

@@ -1,6 +1,6 @@
-using SupportPilotAi.Dtos;
+using SupportPilotAI.Dtos;
 
-namespace SupportPilotAi.Services;
+namespace SupportPilotAI.Services;
 
 public interface IUserService
 {

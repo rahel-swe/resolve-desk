@@ -1,6 +1,6 @@
-using SupportPilotAi.Models;
+using SupportPilotAI.Models;
 
-namespace SupportPilotAi.Repositories;
+namespace SupportPilotAI.Repositories;
 
 public interface IRefreshTokenRepository
 {

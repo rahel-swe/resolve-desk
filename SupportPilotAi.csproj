@@ -4,9 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>SupportPilotAi</AssemblyName>
-    <RootNamespace>SupportPilotAi</RootNamespace>
-    <PackageId>SupportPilotAi</PackageId>
+    <AssemblyName>SupportPilotAI</AssemblyName>
+    <RootNamespace>SupportPilotAI</RootNamespace>
+    <PackageId>SupportPilotAI</PackageId>
     <UserSecretsId>bf26caf6-348f-417f-830f-f6d50f96b8c9</UserSecretsId>
   </PropertyGroup>
 

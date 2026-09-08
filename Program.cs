@@ -1,8 +1,8 @@
 using System.Text;
-using SupportPilotAi.Data;
-using SupportPilotAi.Middleware;
-using SupportPilotAi.Repositories;
-using SupportPilotAi.Services;
+using SupportPilotAI.Data;
+using SupportPilotAI.Middleware;
+using SupportPilotAI.Repositories;
+using SupportPilotAI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -25,9 +25,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<ITicketCommentRepository, TicketCommentRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

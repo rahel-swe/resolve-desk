@@ -1,4 +1,4 @@
-namespace SupportPilotAi.Models;
+namespace SupportPilotAI.Models;
 
 public class RefreshToken
 {

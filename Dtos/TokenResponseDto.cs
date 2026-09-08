@@ -1,4 +1,4 @@
-namespace SupportPilotAi.Dtos;
+namespace SupportPilotAI.Dtos;
 
 public class TokenResponseDto
 {

@@ -1,8 +1,8 @@
-using SupportPilotAi.Dtos;
-using SupportPilotAi.Services;
+using SupportPilotAI.Dtos;
+using SupportPilotAI.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SupportPilotAi.Controllers;
+namespace SupportPilotAI.Controllers;
 
 [ApiController]
 [Route("api/auth")]
