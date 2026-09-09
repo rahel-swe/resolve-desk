@@ -35,5 +35,4 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
         return Ok(result);
     }
 
-
 }

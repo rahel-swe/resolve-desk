@@ -9,9 +9,10 @@ namespace SupportPilotAI.Controllers;
 [Authorize(Policy = "AdminOrUser")]
 [ApiController]
 [Route("api/tickets")]
-public class TicketController(ITicketService ticketService) : ControllerBase
+public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService) : ControllerBase
 {
     private readonly ITicketService _ticketService = ticketService;
+    private readonly ITicketAIService _ticketAIService = ticketAIService;
 
     [HttpGet]
     public async Task<ActionResult<List<TicketResponseDto>>> GetAllTickets()
@@ -50,6 +51,19 @@ public class TicketController(ITicketService ticketService) : ControllerBase
 
         if (result is null)
             return NotFound();
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id}/priority-suggestion")]
+    public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id)
+    {
+        var ticket = await _ticketService.GetTicketByIdAsync(id);
+
+        if (ticket is null) return NotFound();
+
+        var result = await _ticketAIService.SuggestPriorityAsync(
+            ticket.Title, ticket.Description, ticket.Category);
 
         return Ok(result);
     }
