@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupportPilotAI.Dtos;
 using SupportPilotAI.Models;
@@ -5,6 +7,7 @@ using SupportPilotAI.Services;
 
 namespace SupportPilotAI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/tickets")]
 public class TicketCommentController(ITicketCommentService ticketCommentService) : ControllerBase
@@ -15,7 +18,11 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
     [HttpPost("{id}/comments")]
     public async Task<ActionResult> CreateTicketComment(int id, CreateTicketCommentDto request)
     {
-        await _ticketCommentService.AddTicketCommentAsync(id, request);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId is null) return Unauthorized();
+
+        await _ticketCommentService.AddTicketCommentAsync(int.Parse(userId), id, request);
 
         return Ok();
     }
