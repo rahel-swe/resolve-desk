@@ -5,11 +5,10 @@ using SupportPilotAI.Enums;
 
 namespace SupportPilotAI.Services;
 
-public class TicketService(ITicketRepository ticketRepository, IUserRepository userRepository) : ITicketService
+public class TicketService(ITicketRepository ticketRepository) : ITicketService
 {
 
     private readonly ITicketRepository _ticketRepository = ticketRepository;
-    private readonly IUserRepository _userRepository = userRepository;
 
     public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto request, int userId)
     {
@@ -18,7 +17,7 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
             Title = request.Title.Trim(),
             Description = request.Description.Trim(),
             Category = request.Category.Trim(),
-            Priority = TicketPriority.Medium,
+            Priority = request.Priority,
             Status = TicketStatus.Open,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

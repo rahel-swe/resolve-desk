@@ -2,6 +2,7 @@ using SupportPilotAI.Dtos;
 using SupportPilotAI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SupportPilotAI.Controllers;
 
@@ -40,12 +41,13 @@ public class AuthController(IAuthService authService, IUserService userService) 
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("me")]
     public ActionResult Me()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var role = User.IsInRole("Admin");
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
         return Ok(new { userId, email, role });
     }
@@ -53,9 +55,7 @@ public class AuthController(IAuthService authService, IUserService userService) 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout(RefreshTokenRequestDto request)
     {
-        var revoked = await _authService.LogoutAsync(request);
-
-        if (!revoked) return NoContent();
+        await _authService.LogoutAsync(request);
 
         return NoContent();
     }

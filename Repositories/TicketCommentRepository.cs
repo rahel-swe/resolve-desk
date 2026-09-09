@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SupportPilotAI.Data;
 using SupportPilotAI.Models;
 
@@ -8,13 +9,20 @@ public class TicketCommentRepository(AppDbContext db) : ITicketCommentRepository
 
     private readonly AppDbContext _db = db;
 
-    public Task AddAsync(TicketComment comment)
+    public async Task AddAsync(TicketComment comment)
     {
-        throw new NotImplementedException();
+        _db.TicketComments.Add(comment);
+
+        await _db.SaveChangesAsync();
     }
 
-    public Task<List<TicketComment>> GetByTicketIdAsync(int ticketId)
+    public async Task<List<TicketComment>> GetByTicketIdAsync(int ticketId)
     {
-        throw new NotImplementedException();
+        var ticketComments = await _db.TicketComments
+        .Where(comment => comment.TicketId == ticketId)
+        .OrderBy(comment => comment.CreatedAt)
+        .ToListAsync();
+
+        return ticketComments;
     }
 }

@@ -34,12 +34,11 @@ public class TicketController(ITicketService ticketService) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TicketResponseDto>> CreateTicket(CreateTicketDto request)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim is null || !int.TryParse(userIdClaim.Value, out var userId))
-            return Unauthorized();
+        if (userId is null) return Unauthorized();
 
-        var result = await _ticketService.CreateTicketAsync(request, userId);
+        var result = await _ticketService.CreateTicketAsync(request, int.Parse(userId));
 
         return Ok(result);
     }
