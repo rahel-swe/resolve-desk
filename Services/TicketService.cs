@@ -2,6 +2,7 @@ using SupportPilotAI.Dtos;
 using SupportPilotAI.Models;
 using SupportPilotAI.Repositories;
 using SupportPilotAI.Enums;
+using SupportPilotAI.Common;
 
 namespace SupportPilotAI.Services;
 
@@ -10,7 +11,7 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     private readonly ITicketRepository _ticketRepository = ticketRepository;
 
-    public async Task<TicketResponseDto> CreateTicketAsync(CreateTicketDto request, int userId)
+    public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
     {
         var ticket = new Ticket
         {
@@ -26,7 +27,7 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
         var createdTicket = await _ticketRepository.CreateAsync(ticket);
 
-        return new TicketResponseDto
+        var ticketResponseDto = new TicketResponseDto
         {
             Title = createdTicket.Title,
             Description = createdTicket.Description,
@@ -37,13 +38,15 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             CreatedByEmail = string.Empty,
             Id = createdTicket.Id
         };
+
+        return new ServiceResult<TicketResponseDto>(ticketResponseDto);
     }
 
-    public async Task<List<TicketResponseDto>> GetAllTicketsAsync()
+    public async Task<ServiceResult<List<TicketResponseDto>>> GetAllTicketsAsync()
     {
         var tickets = await _ticketRepository.GetAllAsync();
 
-        return tickets.Select(ticket => new TicketResponseDto
+        var ticketResponse = tickets.Select(ticket => new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -55,15 +58,18 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         }).ToList();
+
+        return new ServiceResult<List<TicketResponseDto>>(ticketResponse);
     }
 
-    public async Task<TicketResponseDto?> GetTicketByIdAsync(int id)
+    public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
-        if (ticket is null) return null;
+        if (ticket is null)
+            throw new NotFoundException($"Ticket not found with this id: {id}"); ;
 
-        return new TicketResponseDto
+        var ticketResponseDto = new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -76,13 +82,15 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         };
 
+        return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
+
     }
 
-    public async Task<List<TicketResponseDto>> GetUserTicketsAsync(int userId)
+    public async Task<ServiceResult<List<TicketResponseDto>>> GetUserTicketsAsync(int userId)
     {
         var tickets = await _ticketRepository.GetByUserIdAsync(userId);
 
-        return tickets.Select(ticket => new TicketResponseDto
+        var ticketResponseDto = tickets.Select(ticket => new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -94,21 +102,23 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         }).ToList();
+
+        return new ServiceResult<List<TicketResponseDto>>(ticketResponseDto);
     }
 
-    public async Task<TicketResponseDto?> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request)
+    public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null)
-            return null;
+            throw new NotFoundException($"Ticket not found with this id: {id}");
 
         ticket.Status = request.Status;
         ticket.UpdatedAt = DateTime.UtcNow;
 
         await _ticketRepository.UpdateAsync(ticket);
 
-        return new TicketResponseDto
+        var ticketResponseDto = new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -120,5 +130,7 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         };
+
+        return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
     }
 }

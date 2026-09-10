@@ -44,13 +44,10 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         return Ok(result);
     }
 
-    [HttpPatch("{id:int}")]
+    [HttpPatch("{id}")]
     public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request)
     {
         var result = await _ticketService.UpdateTicketStatusAsync(id, request);
-
-        if (result is null)
-            return NotFound();
 
         return Ok(result);
     }
@@ -58,9 +55,9 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     [HttpPost("{id}/priority-suggestion")]
     public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id)
     {
-        var ticket = await _ticketService.GetTicketByIdAsync(id);
+        var respone = await _ticketService.GetTicketByIdAsync(id);
 
-        if (ticket is null) return NotFound();
+        var ticket = respone.Data;
 
         var result = await _ticketAIService.SuggestPriorityAsync(
             ticket.Title, ticket.Description, ticket.Category);
