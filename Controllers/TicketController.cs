@@ -18,7 +18,8 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     public async Task<ActionResult<List<TicketResponseDto>>> GetAllTickets()
     {
         var result = await _ticketService.GetAllTicketsAsync();
-        return Ok(result);
+
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:int}")]
@@ -26,10 +27,10 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     {
         var result = await _ticketService.GetTicketByIdAsync(id);
 
-        if (result is null)
+        if (result.Data is null)
             return NotFound();
 
-        return Ok(result);
+        return Ok(result.Data);
     }
 
     [HttpPost]
@@ -41,42 +42,64 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
         var result = await _ticketService.CreateTicketAsync(request, int.Parse(userId));
 
-        return Ok(result);
+        return Ok(result.Data);
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch("{id:int}")]
     public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request)
     {
         var result = await _ticketService.UpdateTicketStatusAsync(id, request);
 
-        return Ok(result);
+        if (result.Data is null)
+            return NotFound();
+
+        return Ok(result.Data);
     }
 
     [HttpPost("{id}/priority-suggestion")]
     public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id)
     {
-        var respone = await _ticketService.GetTicketByIdAsync(id);
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
 
-        var ticket = respone.Data;
+        if (ticketResult.Data is null)
+            return NotFound();
 
-        if (ticket is null) return NotFound();
-
-        var result = await _ticketAIService.SuggestResponseAsync(
-            ticket.Title, ticket.Description, ticket.Category);
+        var result = await _ticketAIService.SuggestPriorityAsync(
+            ticketResult.Data.Title,
+            ticketResult.Data.Description,
+            ticketResult.Data.Category);
 
         return Ok(result);
     }
 
+    [HttpPost("{id}/response-suggestion")]
+    public async Task<ActionResult<TicketAIResponseSuggestionDto>> SuggestResponse(int id)
+    {
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
+
+        if (ticketResult.Data is null)
+            return NotFound();
+
+        var result = await _ticketAIService.SuggestResponseAsync(
+            ticketResult.Data.Title,
+            ticketResult.Data.Description,
+            ticketResult.Data.Category);
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id}/categorize")]
     public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id)
     {
         var ticketResult = await _ticketService.GetTicketByIdAsync(id);
 
-        var ticket = ticketResult.Data;
-
-        if (ticket is null)
+        if (ticketResult.Data is null)
             return NotFound();
 
-        var result = await _ticketAIService.CategorizeAsync(ticket.Title, ticket.Description, ticket.Category);
+        var result = await _ticketAIService.CategorizeAsync(
+            ticketResult.Data.Title,
+            ticketResult.Data.Description,
+            ticketResult.Data.Category);
 
         return Ok(result);
     }
