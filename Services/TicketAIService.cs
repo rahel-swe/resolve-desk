@@ -1,43 +1,85 @@
 using SupportPilotAI.Dtos;
-using SupportPilotAI.Enums;
 
 namespace SupportPilotAI.Services;
 
 public class TicketAIService : ITicketAIService
 {
-    public Task<TicketAISuggestionDto> SuggestPriorityAsync(string title, string describtion, string? category)
+    public Task<TicketAIResponseSuggestionDto> SuggestResponseAsync(string title, string description, string? category)
     {
-        var combinedText = $"{title} {describtion} {category}".ToLowerInvariant();
+        var combined = $"{title} {description} {category}".ToLowerInvariant();
 
-        var suggestedPriority = TicketPriority.Medium;
-        var rationale = "Standard priority based on ticket content.";
+        var suggestedReply = "Thanks for reporting this. We are reviewing it and will update you shortly.";
+        var suggestedSteps = new[] { "Collect more details if needed.", "Verify the issue is reproducible.", "Share next steps with the customer." };
+        var escalationRecommendation = "No escalation needed yet; continue normal triage.";
 
-        if (combinedText.Contains("urgent") || combinedText.Contains("down") || combinedText.Contains("outage") || combinedText.Contains("critical") || combinedText.Contains("blocked"))
+        if (combined.Contains("login") || combined.Contains("cannot login"))
         {
-            suggestedPriority = TicketPriority.Critical;
-            rationale = "Urgent language or business-impact keywords were detected.";
-        }
-        else if (combinedText.Contains("error") ||
-                 combinedText.Contains("cannot login") ||
-                 combinedText.Contains("not working") ||
-                 combinedText.Contains("issue"))
-        {
-            suggestedPriority = TicketPriority.High;
-            rationale = "The ticket describes a significant issue that likely needs fast attention.";
+            suggestedReply = "Thanks for reporting the login issue. Please verify your credentials and retry. If the issue persists, we will help you troubleshoot further.";
 
-        }
-        else if (combinedText.Contains("question") ||
-                 combinedText.Contains("help") ||
-                 combinedText.Contains("how to"))
-        {
-            suggestedPriority = TicketPriority.Low;
-            rationale = "The request appears informational or low-risk.";
+            suggestedSteps =
+            [
+            "Confirm the account is active.",
+            "Clear browser cache or retry in a different browser.",
+            "Check whether the issue affects one user or multiple users."
+        ];
+
+            escalationRecommendation = "Escalate to the identity or authentication team if multiple users are impacted.";
         }
 
-        return Task.FromResult(new TicketAISuggestionDto
+        else if (combined.Contains("outage") || combined.Contains("down"))
         {
-            SuggestedPriority = suggestedPriority,
-            Rationale = rationale
+            suggestedReply = "We are aware of the outage and are actively investigating. Please share any impact details to help us confirm scope.";
+            suggestedSteps =
+            [
+            "Confirm the affected systems and users.",
+            "Collect timestamps and error messages.",
+            "Monitor for any related incidents."
+        ];
+            escalationRecommendation = "Escalate to the incident response team immediately.";
+        }
+
+        return Task.FromResult(new TicketAIResponseSuggestionDto
+        {
+            SuggestedReply = suggestedReply,
+            SuggestedSteps = suggestedSteps,
+            EscalationRecommendation = escalationRecommendation
         });
+    }
+
+    public Task<TicketCategorizationDto> CategorizeAsync(string title, string description, string category)
+    {
+        var combined = $"{title} {description} {category}".ToLowerInvariant();
+
+        var department = "General";
+        var issueType = "General Inquiry";
+        var tags = new List<string>();
+
+        if (combined.Contains("login") || combined.Contains("password") || combined.Contains("access"))
+        {
+            department = "IT Support";
+            issueType = "Authentication Issue";
+            tags = ["login", "access", "credentials"];
+
+        }
+        else if (combined.Contains("invoice") || combined.Contains("billing") || combined.Contains("refund"))
+        {
+            department = "Finance";
+            issueType = "Billing Request";
+            tags = new List<string> { "billing", "invoice", "refund" };
+        }
+        else if (combined.Contains("outage") || combined.Contains("down") || combined.Contains("server"))
+        {
+            department = "IT Support";
+            issueType = "Service Disruption";
+            tags = new List<string> { "outage", "infrastructure", "incident" };
+        }
+
+        return Task.FromResult(new TicketCategorizationDto
+        {
+            Department = department,
+            IssueType = issueType,
+            Tags = tags
+        });
+
     }
 }

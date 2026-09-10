@@ -59,8 +59,24 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
         var ticket = respone.Data;
 
-        var result = await _ticketAIService.SuggestPriorityAsync(
+        if (ticket is null) return NotFound();
+
+        var result = await _ticketAIService.SuggestResponseAsync(
             ticket.Title, ticket.Description, ticket.Category);
+
+        return Ok(result);
+    }
+
+    public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id)
+    {
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
+
+        var ticket = ticketResult.Data;
+
+        if (ticket is null)
+            return NotFound();
+
+        var result = await _ticketAIService.CategorizeAsync(ticket.Title, ticket.Description, ticket.Category);
 
         return Ok(result);
     }
