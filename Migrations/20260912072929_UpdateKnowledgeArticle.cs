@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SupportPilotAI.Migrations
+namespace ResolveDesk.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateKnowledgeArticle : Migration

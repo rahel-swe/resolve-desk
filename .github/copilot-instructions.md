@@ -1,10 +1,10 @@
-# Copilot instructions for SupportPilotAI
+# Copilot instructions for ResolveDesk
 
 ## Project overview
 
-SupportPilotAI is an ASP.NET Core Web API targeting .NET 10. The application is an AI-assisted support portal: users authenticate with JWT access tokens and refresh tokens, create and update support tickets, add comments, and request deterministic AI suggestions for priority, response text, and categorization. PostgreSQL is accessed through Entity Framework Core and Npgsql.
+ResolveDesk is an ASP.NET Core Web API targeting .NET 10. The application is an AI-assisted support portal: users authenticate with JWT access tokens and refresh tokens, create and update support tickets, add comments, and request deterministic AI suggestions for priority, response text, and categorization. PostgreSQL is accessed through Entity Framework Core and Npgsql.
 
-The intended business direction is documented in `SUPPORTPILOT_AI_PLAN_V1.md`. It describes future knowledge-base, automation, and analytics work; do not assume those planned endpoints exist until they are wired into the application.
+The intended business direction is documented in `RESOLVEDESK_PROJECT_PLAN.md`. It prioritizes authorized support workflows, SQL correctness, tests, CI/deployment, and measured AI drafts; do not assume planned endpoints exist until they are wired into the application.
 
 ## Build, run, and test
 
@@ -12,13 +12,13 @@ Run commands from the repository root:
 
 ```powershell
 dotnet restore
-dotnet build .\SupportPilotAI.csproj
-dotnet run --project .\SupportPilotAI.csproj
-dotnet watch --project .\SupportPilotAI.csproj run
-dotnet publish .\SupportPilotAI.csproj
+dotnet build .\ResolveDesk.csproj
+dotnet run --project .\ResolveDesk.csproj
+dotnet watch --project .\ResolveDesk.csproj run
+dotnet publish .\ResolveDesk.csproj
 ```
 
-The VS Code tasks `build`, `publish`, and `watch` in `.vscode/tasks.json` invoke the same project commands. `.vscode/launch.json` starts the Development environment and launches the built `bin/Debug/net10.0/SupportPilotAI.dll`.
+The VS Code tasks `build`, `publish`, and `watch` in `.vscode/tasks.json` invoke the same project commands. `.vscode/launch.json` starts the Development environment and launches the built `bin/Debug/net10.0/ResolveDesk.dll`.
 
 There is currently no test project or test suite in the repository, so there is no project-specific full-suite or single-test command yet. For a future .NET test project, run one test with:
 
@@ -30,8 +30,8 @@ Entity Framework CLI is pinned in `dotnet-tools.json`:
 
 ```powershell
 dotnet tool restore
-dotnet ef migrations add <MigrationName> --project .\SupportPilotAI.csproj
-dotnet ef database update --project .\SupportPilotAI.csproj
+dotnet ef migrations add <MigrationName> --project .\ResolveDesk.csproj
+dotnet ef database update --project .\ResolveDesk.csproj
 ```
 
 Set `ConnectionStrings:DefaultConnection` for a PostgreSQL database before running migrations or the application. Keep local secrets out of tracked `appsettings*.json`; use .NET user secrets or another local configuration source.

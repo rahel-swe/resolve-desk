@@ -1,8 +1,8 @@
-using SupportPilotAI.Common;
+using ResolveDesk.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SupportPilotAI.Middleware;
+namespace ResolveDesk.Middleware;
 
 public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {

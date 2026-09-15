@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SupportPilotAI.Data;
+using ResolveDesk.Data;
 
 #nullable disable
 
-namespace SupportPilotAI.Migrations
+namespace ResolveDesk.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260912052303_AddKnowledgeArticle")]
@@ -25,7 +25,7 @@ namespace SupportPilotAI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SupportPilotAI.Models.KnowledgeArticle", b =>
+            modelBuilder.Entity("ResolveDesk.Models.KnowledgeArticle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace SupportPilotAI.Migrations
                     b.ToTable("KnowledgeArticles");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.RefreshToken", b =>
+            modelBuilder.Entity("ResolveDesk.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,7 +78,7 @@ namespace SupportPilotAI.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -125,7 +125,7 @@ namespace SupportPilotAI.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.TicketComment", b =>
+            modelBuilder.Entity("ResolveDesk.Models.TicketComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,7 +155,7 @@ namespace SupportPilotAI.Migrations
                     b.ToTable("TicketComments");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.User", b =>
+            modelBuilder.Entity("ResolveDesk.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,9 +184,9 @@ namespace SupportPilotAI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.RefreshToken", b =>
+            modelBuilder.Entity("ResolveDesk.Models.RefreshToken", b =>
                 {
-                    b.HasOne("SupportPilotAI.Models.User", "User")
+                    b.HasOne("ResolveDesk.Models.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -195,13 +195,13 @@ namespace SupportPilotAI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
                 {
-                    b.HasOne("SupportPilotAI.Models.User", "AssignedAgent")
+                    b.HasOne("ResolveDesk.Models.User", "AssignedAgent")
                         .WithMany()
                         .HasForeignKey("AssignedAgentId");
 
-                    b.HasOne("SupportPilotAI.Models.User", "User")
+                    b.HasOne("ResolveDesk.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -212,15 +212,15 @@ namespace SupportPilotAI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.TicketComment", b =>
+            modelBuilder.Entity("ResolveDesk.Models.TicketComment", b =>
                 {
-                    b.HasOne("SupportPilotAI.Models.Ticket", "Ticket")
+                    b.HasOne("ResolveDesk.Models.Ticket", "Ticket")
                         .WithMany("Comments")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SupportPilotAI.Models.User", "User")
+                    b.HasOne("ResolveDesk.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -231,12 +231,12 @@ namespace SupportPilotAI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
                 {
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("SupportPilotAI.Models.User", b =>
+            modelBuilder.Entity("ResolveDesk.Models.User", b =>
                 {
                     b.Navigation("RefreshTokens");
                 });

@@ -1,6 +1,6 @@
-using SupportPilotAI.Dtos;
+using ResolveDesk.Dtos;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public interface IUserService
 {

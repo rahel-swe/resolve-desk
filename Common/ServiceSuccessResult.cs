@@ -1,4 +1,4 @@
-namespace SupportPilotAI.Common;
+namespace ResolveDesk.Common;
 
 public class ServiceResult<T>(T? data, string? message = null)
 {

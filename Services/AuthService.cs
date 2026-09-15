@@ -2,14 +2,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
-using SupportPilotAI.Repositories;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
+using ResolveDesk.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
-using SupportPilotAI.Common;
+using ResolveDesk.Common;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public class AuthService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IConfiguration configuration) : IAuthService
 {

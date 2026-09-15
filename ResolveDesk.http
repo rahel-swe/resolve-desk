@@ -1,0 +1,5 @@
+@ResolveDesk_HostAddress = http://localhost:5051
+
+GET {{ResolveDesk_HostAddress}}/weatherforecast/
+Accept: application/json
+

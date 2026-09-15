@@ -1,11 +1,11 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
-using SupportPilotAI.Services;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
+using ResolveDesk.Services;
 
-namespace SupportPilotAI.Controllers;
+namespace ResolveDesk.Controllers;
 
 [Authorize]
 [ApiController]

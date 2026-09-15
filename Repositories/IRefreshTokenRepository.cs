@@ -1,6 +1,6 @@
-using SupportPilotAI.Models;
+using ResolveDesk.Models;
 
-namespace SupportPilotAI.Repositories;
+namespace ResolveDesk.Repositories;
 
 public interface IRefreshTokenRepository
 {

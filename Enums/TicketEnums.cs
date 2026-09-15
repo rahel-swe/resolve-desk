@@ -1,4 +1,4 @@
-namespace SupportPilotAI.Enums;
+namespace ResolveDesk.Enums;
 
 public enum TicketPriority
 {

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using SupportPilotAI.Common;
-using SupportPilotAI.Data;
-using SupportPilotAI.Models;
+using ResolveDesk.Common;
+using ResolveDesk.Data;
+using ResolveDesk.Models;
 
-namespace SupportPilotAI.Repositories;
+namespace ResolveDesk.Repositories;
 
 public class KnowledgeArticleRepository(AppDbContext db) : IKnowledgeArticleRepository
 {

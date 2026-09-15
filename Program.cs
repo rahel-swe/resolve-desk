@@ -1,8 +1,8 @@
 using System.Text;
-using SupportPilotAI.Data;
-using SupportPilotAI.Middleware;
-using SupportPilotAI.Repositories;
-using SupportPilotAI.Services;
+using ResolveDesk.Data;
+using ResolveDesk.Middleware;
+using ResolveDesk.Repositories;
+using ResolveDesk.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

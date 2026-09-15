@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using SupportPilotAI.Data;
-using SupportPilotAI.Models;
+using ResolveDesk.Data;
+using ResolveDesk.Models;
 
-namespace SupportPilotAI.Repositories;
+namespace ResolveDesk.Repositories;
 
 public class TicketRepository(AppDbContext db) : ITicketRepository
 {

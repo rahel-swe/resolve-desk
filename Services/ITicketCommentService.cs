@@ -1,7 +1,7 @@
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public interface ITicketCommentService
 {

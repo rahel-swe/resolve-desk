@@ -1,4 +1,4 @@
-namespace SupportPilotAI.Dtos;
+namespace ResolveDesk.Dtos;
 
 public class LoginDto
 {

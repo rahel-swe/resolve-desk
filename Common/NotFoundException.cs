@@ -1,3 +1,3 @@
-namespace SupportPilotAI.Common;
+namespace ResolveDesk.Common;
 
 public sealed class NotFoundException(string message) : Exception(message);

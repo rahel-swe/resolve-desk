@@ -1,7 +1,7 @@
-using SupportPilotAI.Common;
-using SupportPilotAI.Dtos;
+using ResolveDesk.Common;
+using ResolveDesk.Dtos;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public interface IKnowledgeArticleService
 {

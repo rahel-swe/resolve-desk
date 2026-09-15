@@ -1,6 +1,6 @@
-using SupportPilotAI.Enums;
+using ResolveDesk.Enums;
 
-namespace SupportPilotAI.Dtos;
+namespace ResolveDesk.Dtos;
 
 public class TicketResponseDto
 {

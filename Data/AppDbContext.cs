@@ -1,7 +1,7 @@
-using SupportPilotAI.Models;
+using ResolveDesk.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace SupportPilotAI.Data;
+namespace ResolveDesk.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

@@ -1,7 +1,7 @@
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Enums;
+using ResolveDesk.Dtos;
+using ResolveDesk.Enums;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public class TicketAIService : ITicketAIService
 {

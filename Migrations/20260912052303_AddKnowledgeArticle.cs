@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace SupportPilotAI.Migrations
+namespace ResolveDesk.Migrations
 {
     /// <inheritdoc />
     public partial class AddKnowledgeArticle : Migration

@@ -1,7 +1,7 @@
 
-using SupportPilotAI.Enums;
+using ResolveDesk.Enums;
 
-namespace SupportPilotAI.Models;
+namespace ResolveDesk.Models;
 
 public class Ticket
 {

@@ -1,10 +1,10 @@
 
-using SupportPilotAI.Common;
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
-using SupportPilotAI.Repositories;
+using ResolveDesk.Common;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
+using ResolveDesk.Repositories;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public class UserService(IUserRepository userRepository, IAuthService authService) : IUserService
 {

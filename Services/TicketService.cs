@@ -1,10 +1,10 @@
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
-using SupportPilotAI.Repositories;
-using SupportPilotAI.Enums;
-using SupportPilotAI.Common;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
+using ResolveDesk.Repositories;
+using ResolveDesk.Enums;
+using ResolveDesk.Common;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public class TicketService(ITicketRepository ticketRepository) : ITicketService
 {

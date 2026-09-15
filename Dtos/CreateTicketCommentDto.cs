@@ -1,7 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace SupportPilotAI.Dtos;
+namespace ResolveDesk.Dtos;
 
 public class CreateTicketCommentDto
 {

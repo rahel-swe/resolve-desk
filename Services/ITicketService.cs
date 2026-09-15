@@ -1,8 +1,8 @@
-using SupportPilotAI.Common;
-using SupportPilotAI.Dtos;
-using SupportPilotAI.Models;
+using ResolveDesk.Common;
+using ResolveDesk.Dtos;
+using ResolveDesk.Models;
 
-namespace SupportPilotAI.Services;
+namespace ResolveDesk.Services;
 
 public interface ITicketService
 {

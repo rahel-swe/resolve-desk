@@ -1,4 +1,4 @@
-namespace SupportPilotAI.Models;
+namespace ResolveDesk.Models;
 
 public class KnowledgeArticle
 {

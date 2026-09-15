@@ -4,10 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace SupportPilotAI.Migrations
+namespace ResolveDesk.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrateProjectToAIPoweredSupportPilot : Migration
+    public partial class MigrateProjectToAIPoweredResolveDesk : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,9 +1,9 @@
 
-using SupportPilotAI.Data;
-using SupportPilotAI.Models;
+using ResolveDesk.Data;
+using ResolveDesk.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace SupportPilotAI.Repositories;
+namespace ResolveDesk.Repositories;
 
 public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {
