@@ -11,6 +11,23 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     private readonly ITicketRepository _ticketRepository = ticketRepository;
 
+    private static bool CanReadTicket(Ticket ticket, CurrentUser caller)
+    {
+        if (caller.IsAdmin || caller.IsSupportAgent)
+            return true;
+
+        return caller.IsCustomer && ticket.UserId == caller.Id;
+    }
+
+    private static bool CanUpdateStatus(Ticket ticket, CurrentUser caller)
+    {
+        if (caller.IsAdmin)
+            return true;
+
+        return caller.IsSupportAgent &&
+               ticket.AssignedAgentId == caller.Id;
+    }
+
     public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
     {
         var ticket = new Ticket
@@ -42,9 +59,11 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<TicketResponseDto>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<List<TicketResponseDto>>> GetAllTicketsAsync()
+    public async Task<ServiceResult<List<TicketResponseDto>>> GetAllTicketsAsync(CurrentUser caller)
     {
-        var tickets = await _ticketRepository.GetAllAsync();
+        var tickets = caller.IsAdmin || caller.IsSupportAgent
+        ? await _ticketRepository.GetAllAsync()
+        : await _ticketRepository.GetByUserIdAsync(caller.Id);
 
         var ticketResponse = tickets.Select(ticket => new TicketResponseDto
         {
@@ -62,11 +81,11 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<List<TicketResponseDto>>(ticketResponse);
     }
 
-    public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id)
+    public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id, CurrentUser caller)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
-        if (ticket is null)
+        if (ticket is null || !CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}"); ;
 
         var ticketResponseDto = new TicketResponseDto
@@ -86,9 +105,12 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     }
 
-    public async Task<ServiceResult<List<TicketResponseDto>>> GetUserTicketsAsync(int userId)
+    public async Task<ServiceResult<List<TicketResponseDto>>> GetUserTicketsAsync(int userId, CurrentUser caller)
     {
         var tickets = await _ticketRepository.GetByUserIdAsync(userId);
+
+        if (!caller.IsAdmin && caller.Id != userId)
+            throw new NotFoundException($"User with this id: {userId} dose not have any ticket!"); ;
 
         var ticketResponseDto = tickets.Select(ticket => new TicketResponseDto
         {
@@ -106,11 +128,11 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<List<TicketResponseDto>>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request)
+    public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller)
     {
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
-        if (ticket is null)
+        if (ticket is null || !CanUpdateStatus(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}");
 
         ticket.Status = request.Status;

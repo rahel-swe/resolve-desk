@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ResolveDesk.Common;
 using ResolveDesk.Dtos;
 using ResolveDesk.Services;
 
@@ -16,16 +17,24 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
     [HttpGet]
     public async Task<ActionResult<List<TicketResponseDto>>> GetAllTickets()
+
     {
-        var result = await _ticketService.GetAllTicketsAsync();
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketService.GetAllTicketsAsync(caller);
 
         return Ok(result.Data);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<TicketResponseDto>> GetTicketById(int id)
     {
-        var result = await _ticketService.GetTicketByIdAsync(id);
+
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketService.GetTicketByIdAsync(id, caller);
 
         if (result.Data is null)
             return NotFound();
@@ -36,19 +45,22 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     [HttpPost]
     public async Task<ActionResult<TicketResponseDto>> CreateTicket(CreateTicketDto request)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userId is null) return Unauthorized();
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
 
-        var result = await _ticketService.CreateTicketAsync(request, int.Parse(userId));
+        var result = await _ticketService.CreateTicketAsync(request, caller.Id);
 
         return Ok(result.Data);
     }
 
-    [HttpPatch("{id:int}")]
+    [HttpPatch("{id}")]
     public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request)
     {
-        var result = await _ticketService.UpdateTicketStatusAsync(id, request);
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketService.UpdateTicketStatusAsync(id, request, caller);
 
         if (result.Data is null)
             return NotFound();
@@ -59,7 +71,10 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     [HttpPost("{id}/priority-suggestion")]
     public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id)
     {
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
 
         if (ticketResult.Data is null)
             return NotFound();
@@ -75,7 +90,10 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     [HttpPost("{id}/response-suggestion")]
     public async Task<ActionResult<TicketAIResponseSuggestionDto>> SuggestResponse(int id)
     {
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
 
         if (ticketResult.Data is null)
             return NotFound();
@@ -91,7 +109,10 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     [HttpPost("{id}/categorize")]
     public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id)
     {
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id);
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
 
         if (ticketResult.Data is null)
             return NotFound();

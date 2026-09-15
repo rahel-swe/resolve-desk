@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ResolveDesk.Dtos;
-using ResolveDesk.Models;
 using ResolveDesk.Services;
 
 namespace ResolveDesk.Controllers;
