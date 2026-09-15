@@ -18,11 +18,9 @@ public class TicketCommentRepository(AppDbContext db) : ITicketCommentRepository
 
     public async Task<List<TicketComment>> GetByTicketIdAsync(int ticketId)
     {
-        var ticketComments = await _db.TicketComments
-        .Where(comment => comment.TicketId == ticketId)
-        .OrderBy(comment => comment.CreatedAt)
-        .ToListAsync();
-
-        return ticketComments;
+        return await _db.TicketComments
+            .Where(comment => comment.TicketId == ticketId)
+            .OrderBy(comment => comment.CreatedAt)
+            .ToListAsync();
     }
 }

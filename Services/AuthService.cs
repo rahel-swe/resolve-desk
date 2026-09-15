@@ -7,6 +7,7 @@ using SupportPilotAI.Models;
 using SupportPilotAI.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
+using SupportPilotAI.Common;
 
 namespace SupportPilotAI.Services;
 
@@ -57,7 +58,8 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
             user = await _userRepository.GetByEmailAsync(request.Email);
         }
 
-        if (user is null) return null;
+        if (user is null)
+            throw new NotFoundException($"Not found user with this email: {request.Email}");
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             return null;

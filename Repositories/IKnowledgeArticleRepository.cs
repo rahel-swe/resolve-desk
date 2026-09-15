@@ -4,13 +4,13 @@ namespace SupportPilotAI.Repositories;
 
 public interface IKnowledgeArticleRepository
 {
-    Task CreateArticle(KnowledgeArticle article);
+    Task<KnowledgeArticle> CreateAsync(KnowledgeArticle article);
 
-    Task<KnowledgeArticle> GetArticleById(int id);
+    Task<KnowledgeArticle?> GetByIdAsync(int id);
 
-    Task<List<KnowledgeArticle>> GetAllArticles();
+    Task<List<KnowledgeArticle>> GetAllAsync();
 
-    Task<List<KnowledgeArticle>> SearchByCategoryOrKeyword(string keywords, string category);
+    Task<List<KnowledgeArticle>> SearchByCategoryOrKeyword(string? keywords, string? category);
 
-    Task UpdateArticle(KnowledgeArticle article);
+    Task UpdateAsync(KnowledgeArticle article);
 }

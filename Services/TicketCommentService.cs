@@ -13,9 +13,10 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
 
     private async Task CheckTicketExistence(int ticketId)
     {
-        var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+        var exists = await _ticketRepository.ExistsAsync(ticketId);
 
-        if (ticket is null) throw new NotFoundException($"Ticket not found with this id: {ticketId}");
+        if (!exists)
+            throw new NotFoundException($"Ticket not found with this id: {ticketId}");
     }
 
     public async Task AddTicketCommentAsync(int userId, int ticketId, CreateTicketCommentDto request)

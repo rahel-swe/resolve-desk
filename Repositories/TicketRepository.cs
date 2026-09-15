@@ -55,4 +55,9 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         _db.Tickets.Remove(ticket);
         await _db.SaveChangesAsync();
     }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _db.Tickets.AnyAsync(t => t.Id == id);
+    }
 }

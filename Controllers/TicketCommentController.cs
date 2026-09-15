@@ -28,7 +28,7 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
     }
 
     [HttpGet("{id}/comments")]
-    public async Task<ActionResult<List<TicketComment>>> GetTicketCommentsById(int id)
+    public async Task<ActionResult<List<TicketCommentResponseDto>>> GetTicketCommentsById(int id)
     {
         var result = await _ticketCommentService.GetTicketCommentsAsync(id);
 
