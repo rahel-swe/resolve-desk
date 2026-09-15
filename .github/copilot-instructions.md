@@ -1,5 +1,9 @@
 # Copilot instructions for ResolveDesk
 
+## Collaboration preferences
+
+Read `AGENTS.md` at the repository root before working. Default to senior-engineer mentorship: review code, explain concepts, and give tasks for the user to type. Edit files only when explicitly requested. The commands below are reference examples, not permission to run builds, tests, the app, migrations, or installs.
+
 ## Project overview
 
 ResolveDesk is an ASP.NET Core Web API targeting .NET 10. The application is an AI-assisted support portal: users authenticate with JWT access tokens and refresh tokens, create and update support tickets, add comments, and request deterministic AI suggestions for priority, response text, and categorization. PostgreSQL is accessed through Entity Framework Core and Npgsql.
