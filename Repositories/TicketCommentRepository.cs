@@ -23,4 +23,9 @@ public class TicketCommentRepository(AppDbContext db) : ITicketCommentRepository
             .OrderBy(comment => comment.CreatedAt)
             .ToListAsync();
     }
+
+    public async Task<TicketComment?> GetCommentByIdAsync(int id)
+    {
+        return await _db.TicketComments.FirstOrDefaultAsync(comment => comment.Id == id);
+    }
 }

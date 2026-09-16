@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ResolveDesk.Common;
 using ResolveDesk.Dtos;
 using ResolveDesk.Services;
 
@@ -17,11 +17,10 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
     [HttpPost("{id}/comments")]
     public async Task<ActionResult> CreateTicketComment(int id, CreateTicketCommentDto request)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
 
-        if (userId is null) return Unauthorized();
-
-        await _ticketCommentService.AddTicketCommentAsync(int.Parse(userId), id, request);
+        await _ticketCommentService.AddTicketCommentAsync(caller.Id, id, request, caller);
 
         return Ok();
     }
@@ -29,7 +28,20 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
     [HttpGet("{id}/comments")]
     public async Task<ActionResult<List<TicketCommentResponseDto>>> GetTicketCommentsById(int id)
     {
-        var result = await _ticketCommentService.GetTicketCommentsAsync(id);
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketCommentService.GetTicketCommentsAsync(id, caller);
+
+        return Ok(result);
+    }
+    [HttpGet("{id}/comments/{commentId}")]
+    public async Task<ActionResult<TicketCommentResponseDto>> GetTicketCommentsById(int id, int commentId)
+    {
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketCommentService.GetCommentByIdAsync(id, commentId, caller);
 
         return Ok(result);
     }
