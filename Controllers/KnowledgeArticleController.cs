@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ResolveDesk.Common;
 using ResolveDesk.Dtos;
 using ResolveDesk.Services;
 
@@ -34,19 +34,20 @@ public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticl
         return Ok(result.Data);
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPost]
     public async Task<ActionResult<KnowledgeArticleResponseDto>> CreateArticle(CreateKnowledgeArticleDto request)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userId is null)
+        if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _knowledgeArticleService.CreateArticleAsync(request, int.Parse(userId));
+        var result = await _knowledgeArticleService.CreateArticleAsync(request, caller);
 
         return Ok(result.Data);
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpPut("{id}")]
     public async Task<ActionResult<KnowledgeArticleResponseDto>> UpdateArticle(int id, UpdateKnowledgeArticleDto request)
     {

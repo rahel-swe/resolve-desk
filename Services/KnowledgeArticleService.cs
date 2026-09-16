@@ -9,7 +9,7 @@ public class KnowledgeArticleService(IKnowledgeArticleRepository knowledgeArticl
 {
     private readonly IKnowledgeArticleRepository _knowledgeArticleRepository = knowledgeArticleRepository;
 
-    public async Task<ServiceResult<KnowledgeArticleResponseDto>> CreateArticleAsync(CreateKnowledgeArticleDto request, int userId)
+    public async Task<ServiceResult<KnowledgeArticleResponseDto>> CreateArticleAsync(CreateKnowledgeArticleDto request, CurrentUser caller)
     {
         var article = new KnowledgeArticle
         {
@@ -21,7 +21,7 @@ public class KnowledgeArticleService(IKnowledgeArticleRepository knowledgeArticl
                 .Select(tag => tag.Trim())
                 .Distinct()
                 .ToList(),
-            CreatedByUserId = userId,
+            CreatedByUserId = caller.Id,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
