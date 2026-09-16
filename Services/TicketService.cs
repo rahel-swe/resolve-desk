@@ -28,6 +28,19 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
                ticket.AssignedAgentId == caller.Id;
     }
 
+    private static bool IsValidStatusTransition(TicketStatus current, TicketStatus next)
+    {
+        return current switch
+        {
+            TicketStatus.Open => next == TicketStatus.InProgress,
+            TicketStatus.InProgress => next == TicketStatus.WaitingForCustomer || next == TicketStatus.Resolved,
+            TicketStatus.WaitingForCustomer => next == TicketStatus.InProgress,
+            TicketStatus.Resolved => next == TicketStatus.Closed || next == TicketStatus.InProgress,
+            TicketStatus.Closed => false,
+            _ => false
+        };
+    }
+
     public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
     {
         var ticket = new Ticket
@@ -130,10 +143,15 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller)
     {
+
+
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null || !CanUpdateStatus(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}");
+
+        if (!IsValidStatusTransition(ticket.Status, request.Status))
+            throw new ConflictException($"Cannot change ticket status from {ticket.Status} to {request.Status}.");
 
         ticket.Status = request.Status;
         ticket.UpdatedAt = DateTime.UtcNow;
