@@ -28,13 +28,13 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TicketResponseDto>> GetTicketById(int id)
+    public async Task<ActionResult<TicketResponseDto>> GetTicketById(int id, CancellationToken cancellationToken)
     {
 
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketService.GetTicketByIdAsync(id, caller);
+        var result = await _ticketService.GetTicketByIdAsync(id, caller, cancellationToken);
 
         if (result.Data is null)
             return NotFound();
@@ -55,12 +55,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request)
+    public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketService.UpdateTicketStatusAsync(id, request, caller);
+        var result = await _ticketService.UpdateTicketStatusAsync(id, request, caller, cancellationToken);
 
         if (result.Data is null)
             return NotFound();
@@ -69,12 +69,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/priority-suggestion")]
-    public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id)
+    public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller, cancellationToken);
 
         if (ticketResult.Data is null)
             return NotFound();
@@ -88,12 +88,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/response-suggestion")]
-    public async Task<ActionResult<TicketAIResponseSuggestionDto>> SuggestResponse(int id)
+    public async Task<ActionResult<TicketAIResponseSuggestionDto>> SuggestResponse(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller, cancellationToken);
 
         if (ticketResult.Data is null)
             return NotFound();
@@ -107,12 +107,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/categorize")]
-    public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id)
+    public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller);
+        var ticketResult = await _ticketService.GetTicketByIdAsync(id, caller, cancellationToken);
 
         if (ticketResult.Data is null)
             return NotFound();
@@ -126,12 +126,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpGet("{id}/history")]
-    public async Task<ActionResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int id)
+    public async Task<ActionResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketService.GetHistoryByTicketIdAsync(id, caller);
+        var result = await _ticketService.GetHistoryByTicketIdAsync(id, caller, cancellationToken);
 
         return Ok(result);
 

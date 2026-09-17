@@ -94,9 +94,9 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<List<TicketResponseDto>>(ticketResponse);
     }
 
-    public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id, CurrentUser caller)
+    public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var ticket = await _ticketRepository.GetByIdAsync(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
 
         if (ticket is null || !CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}"); ;
@@ -141,9 +141,9 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<List<TicketResponseDto>>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller)
+    public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var ticket = await _ticketRepository.GetByIdAsync(id);
+        var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
 
         if (ticket is null || !CanUpdateStatus(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}");
@@ -182,14 +182,14 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int ticketId, CurrentUser caller)
+    public async Task<ServiceResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int ticketId, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+        var ticket = await _ticketRepository.GetByIdAsync(ticketId, cancellationToken);
 
         if (ticket is null || !CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {ticketId}");
 
-        var histories = await _ticketRepository.GetHistoryByTicketIdAsync(ticketId);
+        var histories = await _ticketRepository.GetHistoryByTicketIdAsync(ticketId, cancellationToken);
 
         var response = histories.Select((history) => new TicketHistoryResponseDto
         {
@@ -198,7 +198,7 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             NewStatus = history.NewStatus,
             OldStatus = history.OldStatus,
             ActorUserId = history.ActorUserId,
-            ActorEmail = history.ActorUser.Email,
+            ActorEmail = history.ActorUser.Email ?? string.Empty,
             CreatedAt = history.CreatedAt
         }).ToList();
 

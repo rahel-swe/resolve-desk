@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Data;
-using ResolveDesk.Dtos;
 using ResolveDesk.Models;
 
 namespace ResolveDesk.Repositories;
@@ -26,12 +25,12 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .ToListAsync();
     }
 
-    public async Task<Ticket?> GetByIdAsync(int id)
+    public async Task<Ticket?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await _db.Tickets
         .Include(t => t.User)
         .Include(t => t.AssignedAgent)
-        .FirstOrDefaultAsync(t => t.Id == id);
+        .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
     public Task<List<Ticket>> GetByUserIdAsync(int userId)
@@ -57,18 +56,17 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
 
     public async Task UpdateStatusWithHistoryAsync(Ticket ticket, TicketHistory history)
     {
-        _db.Tickets.Update(ticket);
         _db.TicketHistories.Add(history);
 
         await _db.SaveChangesAsync();
     }
 
-    public async Task<List<TicketHistory>> GetHistoryByTicketIdAsync(int ticketId)
+    public async Task<List<TicketHistory>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken)
     {
         return await _db.TicketHistories
         .Where(history => history.TicketId == ticketId)
         .Include(history => history.ActorUser)
         .OrderBy(history => history.CreatedAt)
-        .ToListAsync();
+        .ToListAsync(cancellationToken);
     }
 }
