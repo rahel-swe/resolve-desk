@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Data;
+using ResolveDesk.Dtos;
 using ResolveDesk.Models;
 
 namespace ResolveDesk.Repositories;
@@ -43,13 +44,6 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .ToListAsync();
     }
 
-    public async Task UpdateAsync(Ticket ticket)
-    {
-        _db.Tickets.Update(ticket);
-
-        await _db.SaveChangesAsync();
-    }
-
     public async Task DeleteAsync(Ticket ticket)
     {
         _db.Tickets.Remove(ticket);
@@ -59,5 +53,22 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
     public async Task<bool> ExistsAsync(int id)
     {
         return await _db.Tickets.AnyAsync(t => t.Id == id);
+    }
+
+    public async Task UpdateStatusWithHistoryAsync(Ticket ticket, TicketHistory history)
+    {
+        _db.Tickets.Update(ticket);
+        _db.TicketHistories.Add(history);
+
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<List<TicketHistory>> GetHistoryByTicketIdAsync(int ticketId)
+    {
+        return await _db.TicketHistories
+        .Where(history => history.TicketId == ticketId)
+        .Include(history => history.ActorUser)
+        .OrderBy(history => history.CreatedAt)
+        .ToListAsync();
     }
 }

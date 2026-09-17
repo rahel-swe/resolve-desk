@@ -124,4 +124,16 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
         return Ok(result);
     }
+
+    [HttpGet("{id}/history")]
+    public async Task<ActionResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int id)
+    {
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var result = await _ticketService.GetHistoryByTicketIdAsync(id, caller);
+
+        return Ok(result);
+
+    }
 }

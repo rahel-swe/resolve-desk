@@ -143,8 +143,6 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller)
     {
-
-
         var ticket = await _ticketRepository.GetByIdAsync(id);
 
         if (ticket is null || !CanUpdateStatus(ticket, caller))
@@ -153,10 +151,20 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         if (!IsValidStatusTransition(ticket.Status, request.Status))
             throw new ConflictException($"Cannot change ticket status from {ticket.Status} to {request.Status}.");
 
+
+        var history = new TicketHistory
+        {
+            ActorUserId = caller.Id,
+            OldStatus = ticket.Status,
+            NewStatus = request.Status,
+            TicketId = ticket.Id,
+            CreatedAt = DateTime.UtcNow
+        };
+
         ticket.Status = request.Status;
         ticket.UpdatedAt = DateTime.UtcNow;
 
-        await _ticketRepository.UpdateAsync(ticket);
+        await _ticketRepository.UpdateStatusWithHistoryAsync(ticket, history);
 
         var ticketResponseDto = new TicketResponseDto
         {
@@ -172,5 +180,28 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
+    }
+
+    public async Task<ServiceResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int ticketId, CurrentUser caller)
+    {
+        var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+
+        if (ticket is null || !CanReadTicket(ticket, caller))
+            throw new NotFoundException($"Ticket not found with this id: {ticketId}");
+
+        var histories = await _ticketRepository.GetHistoryByTicketIdAsync(ticketId);
+
+        var response = histories.Select((history) => new TicketHistoryResponseDto
+        {
+            Id = history.Id,
+            TicketId = history.TicketId,
+            NewStatus = history.NewStatus,
+            OldStatus = history.OldStatus,
+            ActorUserId = history.ActorUserId,
+            ActorEmail = history.ActorUser.Email,
+            CreatedAt = history.CreatedAt
+        }).ToList();
+
+        return new ServiceResult<List<TicketHistoryResponseDto>>(response);
     }
 }

@@ -14,4 +14,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<TicketComment> TicketComments => Set<TicketComment>();
 
     public DbSet<KnowledgeArticle> KnowledgeArticles => Set<KnowledgeArticle>();
+
+    public DbSet<TicketHistory> TicketHistories => Set<TicketHistory>();
 }
