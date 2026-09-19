@@ -11,10 +11,10 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
     private readonly ITicketCommentRepository _ticketCommentRepository = ticketCommentRepository;
 
 
-    private async Task<Ticket> CheckTicketExistence(int ticketId)
+    private async Task<Ticket> CheckTicketExistence(int ticketId, CancellationToken cancellationToken)
     {
 
-        var ticket = await _ticketRepository.GetByIdAsync(ticketId);
+        var ticket = await _ticketRepository.GetByIdAsync(ticketId, cancellationToken);
 
         if (ticket is null)
             throw new NotFoundException($"Ticket not found with this id: {ticketId}");
@@ -22,9 +22,9 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
         return ticket;
     }
 
-    private async Task<bool> CanReadTicket(int ticketId, CurrentUser caller)
+    private async Task<bool> CanReadTicket(int ticketId, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var ticket = await CheckTicketExistence(ticketId);
+        var ticket = await CheckTicketExistence(ticketId, cancellationToken);
 
         if (caller.IsAdmin || caller.IsSupportAgent)
             return true;
@@ -32,9 +32,9 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
         return caller.IsCustomer && ticket!.UserId == caller.Id;
     }
 
-    public async Task AddTicketCommentAsync(int userId, int ticketId, CreateTicketCommentDto request, CurrentUser caller)
+    public async Task AddTicketCommentAsync(int userId, int ticketId, CreateTicketCommentDto request, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var canRead = await CanReadTicket(ticketId, caller);
+        var canRead = await CanReadTicket(ticketId, caller, cancellationToken);
 
         if (!canRead)
             throw new NotFoundException($"Ticket not found with this id: {ticketId}");
@@ -50,9 +50,9 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
         await _ticketCommentRepository.AddAsync(comment);
     }
 
-    public async Task<List<TicketCommentResponseDto>> GetTicketCommentsAsync(int ticketId, CurrentUser caller)
+    public async Task<List<TicketCommentResponseDto>> GetTicketCommentsAsync(int ticketId, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var canRead = await CanReadTicket(ticketId, caller);
+        var canRead = await CanReadTicket(ticketId, caller, cancellationToken);
 
         if (!canRead)
             throw new ConflictException("User not allowed to read this ticket comments");
@@ -71,9 +71,9 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
 
     }
 
-    public async Task<TicketCommentResponseDto?> GetCommentByIdAsync(int ticketId, int commentId, CurrentUser caller)
+    public async Task<TicketCommentResponseDto?> GetCommentByIdAsync(int ticketId, int commentId, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var canRead = await CanReadTicket(ticketId, caller);
+        var canRead = await CanReadTicket(ticketId, caller, cancellationToken);
 
         if (!canRead)
             throw new ConflictException("User not allowed to read this ticket comments");

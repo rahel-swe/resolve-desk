@@ -8,5 +8,4 @@ public interface IUserRepository
 
     Task CreateUser(User user);
 
-    Task<int> GetAllUsersCount();
 }

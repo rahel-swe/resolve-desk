@@ -19,9 +19,4 @@ public class UserRepository(AppDbContext db) : IUserRepository
 
         await _db.SaveChangesAsync();
     }
-
-    public async Task<int> GetAllUsersCount()
-    {
-        return await _db.Users.CountAsync();
-    }
 }

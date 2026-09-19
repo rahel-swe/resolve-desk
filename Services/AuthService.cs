@@ -2,61 +2,38 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using ResolveDesk.Common;
 using ResolveDesk.Dtos;
 using ResolveDesk.Models;
 using ResolveDesk.Repositories;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc;
-using ResolveDesk.Common;
 
 namespace ResolveDesk.Services;
 
-public class AuthService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IConfiguration configuration) : IAuthService
+public class AuthService(
+    IUserRepository userRepository,
+    IRefreshTokenRepository refreshTokenRepository,
+    IConfiguration configuration) : IAuthService
 {
-
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IConfiguration _configuration = configuration;
     private readonly IRefreshTokenRepository _refreshTokenRepository = refreshTokenRepository;
 
-    private async Task SeedAdmin()
-    {
-        var user = new User
-        {
-            Email = "example@gmail.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("rahel225"),
-            Role = "Admin"
-        };
-
-        await _userRepository.CreateUser(user);
-    }
-
     private static string GenerateRefreshToken()
     {
         var randomBytes = RandomNumberGenerator.GetBytes(64);
-
         return Convert.ToBase64String(randomBytes);
     }
 
     private static string HashRefreshToken(string refreshToken)
     {
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken));
-
         return Convert.ToBase64String(hash);
     }
 
-
     public async Task<TokenResponseDto?> LoginAsync(LoginDto request)
     {
-
         var user = await _userRepository.GetByEmailAsync(request.Email);
-
-        var allUsersCount = await _userRepository.GetAllUsersCount();
-
-        if (user is null && allUsersCount == 0)
-        {
-            await SeedAdmin();
-            user = await _userRepository.GetByEmailAsync(request.Email);
-        }
 
         if (user is null)
             throw new NotFoundException($"Not found user with this email: {request.Email}");
@@ -65,7 +42,6 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
             return null;
 
         var accessToken = GenerateAccessToken(user);
-
         var refreshToken = GenerateRefreshToken();
 
         var refreshTokenEntity = new RefreshToken
@@ -89,10 +65,10 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
     public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)
     {
         var tokenHash = HashRefreshToken(request.RefreshToken);
-
         var storedToken = await _refreshTokenRepository.GetByHashAsync(tokenHash);
 
-        if (storedToken is null) return null;
+        if (storedToken is null)
+            return null;
 
         if (storedToken.RevokedAt is not null)
         {
@@ -100,15 +76,14 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
             return null;
         }
 
-        if (storedToken.ExpiresAt <= DateTime.UtcNow) return null;
+        if (storedToken.ExpiresAt <= DateTime.UtcNow)
+            return null;
 
         var user = storedToken.User;
 
-        // This method revoke (invalid) the old (stored token)
         await _refreshTokenRepository.RevokeAsync(storedToken);
 
         var newAccessToken = GenerateAccessToken(user);
-
         var newRefreshToken = GenerateRefreshToken();
 
         var newRefreshTokenEntity = new RefreshToken
@@ -125,52 +100,41 @@ public class AuthService(IUserRepository userRepository, IRefreshTokenRepository
             Token = newAccessToken,
             RefreshToken = newRefreshToken,
             Email = user.Email,
-            Role = user.Role,
+            Role = user.Role
         };
-
     }
 
     public async Task<bool> LogoutAsync(RefreshTokenRequestDto request)
     {
         var tokenHash = HashRefreshToken(request.RefreshToken);
-
         var storedToken = await _refreshTokenRepository.GetByHashAsync(tokenHash);
 
-        if (storedToken is null) return false;
-
-        if (storedToken.RevokedAt != null) return false;
+        if (storedToken is null || storedToken.RevokedAt != null)
+            return false;
 
         await _refreshTokenRepository.RevokeAsync(storedToken);
-
         return true;
     }
-
-
 
     public string GenerateAccessToken(User user)
     {
         var claims = new[]
         {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, user.Role)
-    };
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            // uncomment this in production and remove the add hour
-            // expires: DateTime.UtcNow.AddMinutes(15),
             expires: DateTime.UtcNow.AddHours(10),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
-
 }

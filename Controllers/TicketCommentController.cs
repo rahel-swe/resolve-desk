@@ -15,33 +15,33 @@ public class TicketCommentController(ITicketCommentService ticketCommentService)
 
 
     [HttpPost("{id}/comments")]
-    public async Task<ActionResult> CreateTicketComment(int id, CreateTicketCommentDto request)
+    public async Task<ActionResult> CreateTicketComment(int id, CreateTicketCommentDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        await _ticketCommentService.AddTicketCommentAsync(caller.Id, id, request, caller);
+        await _ticketCommentService.AddTicketCommentAsync(caller.Id, id, request, caller, cancellationToken);
 
         return Ok();
     }
 
     [HttpGet("{id}/comments")]
-    public async Task<ActionResult<List<TicketCommentResponseDto>>> GetTicketCommentsById(int id)
+    public async Task<ActionResult<List<TicketCommentResponseDto>>> GetTicketCommentsById(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketCommentService.GetTicketCommentsAsync(id, caller);
+        var result = await _ticketCommentService.GetTicketCommentsAsync(id, caller, cancellationToken);
 
         return Ok(result);
     }
     [HttpGet("{id}/comments/{commentId}")]
-    public async Task<ActionResult<TicketCommentResponseDto>> GetTicketCommentsById(int id, int commentId)
+    public async Task<ActionResult<TicketCommentResponseDto>> GetTicketCommentsById(int id, int commentId, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketCommentService.GetCommentByIdAsync(id, commentId, caller);
+        var result = await _ticketCommentService.GetCommentByIdAsync(id, commentId, caller, cancellationToken);
 
         return Ok(result);
     }
