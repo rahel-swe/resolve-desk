@@ -18,7 +18,10 @@ public class AuthController(IAuthService authService, IUserService userService) 
     {
         var result = await _authService.LoginAsync(request);
 
+        Console.WriteLine(result);
+
         if (result is null) return Unauthorized();
+
 
         return Ok(result);
     }

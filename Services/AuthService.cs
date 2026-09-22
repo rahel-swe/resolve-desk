@@ -39,7 +39,7 @@ public class AuthService(
             throw new NotFoundException($"Not found user with this email: {request.Email}");
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return null;
+            throw new NotFoundException($"Email or password is wrong, please try again.");
 
         var accessToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();

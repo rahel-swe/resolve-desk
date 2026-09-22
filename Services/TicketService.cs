@@ -3,6 +3,7 @@ using ResolveDesk.Models;
 using ResolveDesk.Repositories;
 using ResolveDesk.Enums;
 using ResolveDesk.Common;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ResolveDesk.Services;
 
@@ -72,13 +73,14 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<TicketResponseDto>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<List<TicketResponseDto>>> GetAllTicketsAsync(CurrentUser caller)
+    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetAllTicketsAsync(TicketListQueryDto query, CurrentUser caller)
     {
-        var tickets = caller.IsAdmin || caller.IsSupportAgent
-        ? await _ticketRepository.GetAllAsync()
-        : await _ticketRepository.GetByUserIdAsync(caller.Id);
+        var (Items, totalCount) = caller.IsAdmin || caller.IsSupportAgent
+        ? await _ticketRepository.GetAllAsync(query)
+        : await _ticketRepository.GetByUserIdAsync(query, caller.Id);
 
-        var ticketResponse = tickets.Select(ticket => new TicketResponseDto
+
+        var ticketResponse = Items.Select(ticket => new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -91,7 +93,16 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         }).ToList();
 
-        return new ServiceResult<List<TicketResponseDto>>(ticketResponse);
+        var pageResultDto = new PageResultDto<TicketResponseDto>
+        {
+            Items = ticketResponse,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+        };
+
+        return new ServiceResult<PageResultDto<TicketResponseDto>>(pageResultDto);
     }
 
     public async Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id, CurrentUser caller, CancellationToken cancellationToken)
@@ -118,14 +129,14 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     }
 
-    public async Task<ServiceResult<List<TicketResponseDto>>> GetUserTicketsAsync(int userId, CurrentUser caller)
+    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetUserTicketsAsync(TicketListQueryDto query, int userId, CurrentUser caller)
     {
-        var tickets = await _ticketRepository.GetByUserIdAsync(userId);
+        var (Items, totalCount) = await _ticketRepository.GetByUserIdAsync(query, userId);
 
         if (!caller.IsAdmin && caller.Id != userId)
             throw new NotFoundException($"User with this id: {userId} dose not have any ticket!"); ;
 
-        var ticketResponseDto = tickets.Select(ticket => new TicketResponseDto
+        var ticketResponseDto = Items.Select(ticket => new TicketResponseDto
         {
             Id = ticket.Id,
             Title = ticket.Title,
@@ -138,7 +149,17 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
             AssignedAgentEmail = ticket.AssignedAgent?.Email
         }).ToList();
 
-        return new ServiceResult<List<TicketResponseDto>>(ticketResponseDto);
+
+        var pageResultDto = new PageResultDto<TicketResponseDto>
+        {
+            Items = ticketResponseDto,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+
+        };
+        return new ServiceResult<PageResultDto<TicketResponseDto>>(pageResultDto);
     }
 
     public async Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller, CancellationToken cancellationToken)

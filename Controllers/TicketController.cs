@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ResolveDesk.Common;
 using ResolveDesk.Dtos;
+using ResolveDesk.Enums;
 using ResolveDesk.Services;
 
 namespace ResolveDesk.Controllers;
@@ -15,13 +16,15 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     private readonly ITicketAIService _ticketAIService = ticketAIService;
 
     [HttpGet]
-    public async Task<ActionResult<List<TicketResponseDto>>> GetAllTickets()
+    public async Task<ActionResult<PageResultDto<TicketResponseDto>>> GetAllTickets([FromQuery] TicketListQueryDto query)
 
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketService.GetAllTicketsAsync(caller);
+
+
+        var result = await _ticketService.GetAllTicketsAsync(query, caller);
 
         return Ok(result.Data);
     }

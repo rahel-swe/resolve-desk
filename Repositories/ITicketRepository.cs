@@ -1,4 +1,5 @@
 using ResolveDesk.Dtos;
+using ResolveDesk.Enums;
 using ResolveDesk.Models;
 
 namespace ResolveDesk.Repositories;
@@ -7,8 +8,8 @@ public interface ITicketRepository
 {
     Task<Ticket> CreateAsync(Ticket ticket);
     Task<bool> ExistsAsync(int id);
-    Task<List<Ticket>> GetAllAsync();
-    Task<List<Ticket>> GetByUserIdAsync(int userId);
+    Task<(List<Ticket> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query);
+    Task<(List<Ticket> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId);
     Task DeleteAsync(Ticket ticket);
 
     Task UpdateStatusWithHistoryAsync(Ticket ticket, TicketHistory history);

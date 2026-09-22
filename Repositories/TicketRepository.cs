@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Data;
+using ResolveDesk.Dtos;
+using ResolveDesk.Enums;
 using ResolveDesk.Models;
 
 namespace ResolveDesk.Repositories;
@@ -16,13 +18,35 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         return ticket;
     }
 
-    public async Task<List<Ticket>> GetAllAsync()
+    public async Task<(List<Ticket> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query)
     {
-        return await _db.Tickets
+        var ticketsQuery = _db.Tickets.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var search = query.Search.Trim();
+            ticketsQuery = ticketsQuery.Where(ticket =>
+                ticket.Title.Contains(search) ||
+                ticket.Description.Contains(search) ||
+                ticket.Category.Contains(search));
+        }
+
+        if (query.Status is not null)
+            ticketsQuery = ticketsQuery.Where(t => t.Status == query.Status);
+
+        var totalCount = ticketsQuery.Count();
+
+
+
+        var items = await ticketsQuery
         .Include(t => t.User)
         .Include(t => t.AssignedAgent)
         .OrderByDescending(t => t.CreatedAt)
+        .Skip((query.Page - 1) * query.PageSize)
+        .Take(query.PageSize)
         .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<Ticket?> GetByIdAsync(int id, CancellationToken cancellationToken)
@@ -33,14 +57,33 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
-    public Task<List<Ticket>> GetByUserIdAsync(int userId)
+    public async Task<(List<Ticket> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId)
     {
-        return _db.Tickets
+
+
+        var ticketsQuery = _db.Tickets.Where(t => t.UserId == userId).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(query.
+        Search))
+            ticketsQuery = ticketsQuery.Where(ticket => ticket.Title.Contains(query.Search));
+
+        if (query.Status is not null)
+            ticketsQuery = ticketsQuery.Where(t => t.Status == query.Status);
+
+
+        var totalCount = ticketsQuery.Count();
+
+
+        var items = await ticketsQuery
         .Where(t => t.UserId == userId)
         .Include(t => t.User)
         .Include(t => t.AssignedAgent)
         .OrderByDescending(t => t.CreatedAt)
+        .Skip((query.Page - 1) * query.PageSize)
+        .Take(query.PageSize)
         .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task DeleteAsync(Ticket ticket)
