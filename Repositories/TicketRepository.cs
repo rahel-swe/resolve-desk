@@ -18,9 +18,9 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         return ticket;
     }
 
-    public async Task<(List<Ticket> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query)
+    public async Task<(List<Ticket> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query, CancellationToken cancellationToken)
     {
-        var ticketsQuery = _db.Tickets.AsQueryable();
+        var ticketsQuery = _db.Tickets.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
@@ -34,7 +34,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         if (query.Status is not null)
             ticketsQuery = ticketsQuery.Where(t => t.Status == query.Status);
 
-        var totalCount = ticketsQuery.Count();
+        var totalCount = await ticketsQuery.CountAsync(cancellationToken);
 
 
 
@@ -44,7 +44,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .OrderByDescending(t => t.CreatedAt)
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
-        .ToListAsync();
+        .ToListAsync(cancellationToken);
 
         return (items, totalCount);
     }
@@ -57,11 +57,9 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
-    public async Task<(List<Ticket> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId)
+    public async Task<(List<Ticket> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId, CancellationToken cancellationToken)
     {
-
-
-        var ticketsQuery = _db.Tickets.Where(t => t.UserId == userId).AsQueryable();
+        var ticketsQuery = _db.Tickets.AsNoTracking().Where(t => t.UserId == userId).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.
         Search))
@@ -71,17 +69,16 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             ticketsQuery = ticketsQuery.Where(t => t.Status == query.Status);
 
 
-        var totalCount = ticketsQuery.Count();
+        var totalCount = await ticketsQuery.CountAsync(cancellationToken);
 
 
         var items = await ticketsQuery
-        .Where(t => t.UserId == userId)
         .Include(t => t.User)
         .Include(t => t.AssignedAgent)
         .OrderByDescending(t => t.CreatedAt)
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
-        .ToListAsync();
+        .ToListAsync(cancellationToken);
 
         return (items, totalCount);
     }

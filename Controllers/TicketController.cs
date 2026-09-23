@@ -16,7 +16,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     private readonly ITicketAIService _ticketAIService = ticketAIService;
 
     [HttpGet]
-    public async Task<ActionResult<PageResultDto<TicketResponseDto>>> GetAllTickets([FromQuery] TicketListQueryDto query)
+    public async Task<ActionResult<PageResultDto<TicketResponseDto>>> GetAllTickets([FromQuery] TicketListQueryDto query, CancellationToken cancellationToken)
 
     {
         if (!User.TryGetCurrentUser(out var caller))
@@ -24,7 +24,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
 
 
-        var result = await _ticketService.GetAllTicketsAsync(query, caller);
+        var result = await _ticketService.GetAllTicketsAsync(query, caller, cancellationToken);
 
         return Ok(result.Data);
     }

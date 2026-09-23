@@ -73,11 +73,16 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         return new ServiceResult<TicketResponseDto>(ticketResponseDto);
     }
 
-    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetAllTicketsAsync(TicketListQueryDto query, CurrentUser caller)
+    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetAllTicketsAsync(TicketListQueryDto query, CurrentUser caller, CancellationToken cancellationToken)
     {
+        query.Page = Math.Max(query.Page, 1);
+        query.PageSize = Math.Clamp(query.PageSize, 1, 50);
+
         var (Items, totalCount) = caller.IsAdmin || caller.IsSupportAgent
-        ? await _ticketRepository.GetAllAsync(query)
-        : await _ticketRepository.GetByUserIdAsync(query, caller.Id);
+        ? await _ticketRepository.GetAllAsync(query, cancellationToken)
+        : await _ticketRepository.GetByUserIdAsync(query, caller.Id, cancellationToken);
+
+
 
 
         var ticketResponse = Items.Select(ticket => new TicketResponseDto
@@ -129,12 +134,18 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
     }
 
-    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetUserTicketsAsync(TicketListQueryDto query, int userId, CurrentUser caller)
+    public async Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetUserTicketsAsync(TicketListQueryDto query, int userId, CurrentUser caller, CancellationToken cancellationToken)
     {
-        var (Items, totalCount) = await _ticketRepository.GetByUserIdAsync(query, userId);
+        query.Page = Math.Max(query.Page, 1);
+        query.PageSize = Math.Clamp(query.PageSize, 1, 50);
+
+
+        var (Items, totalCount) = await _ticketRepository.GetByUserIdAsync(query, userId, cancellationToken);
 
         if (!caller.IsAdmin && caller.Id != userId)
             throw new NotFoundException($"User with this id: {userId} dose not have any ticket!"); ;
+
+
 
         var ticketResponseDto = Items.Select(ticket => new TicketResponseDto
         {
