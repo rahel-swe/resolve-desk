@@ -16,4 +16,6 @@ public interface ITicketRepository
 
     Task<Ticket?> GetByIdAsync(int id, CancellationToken cancellationToken);
     Task<List<TicketHistoryResponseDto>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken);
+
+    Task SaveChangesAsync(CancellationToken cancellationToken);
 }

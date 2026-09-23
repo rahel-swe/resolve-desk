@@ -131,6 +131,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
     }
 
     public async Task<List<TicketHistoryResponseDto>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken)
+#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     {
         return await _db.TicketHistories
         .Where(history => history.TicketId == ticketId)
@@ -147,5 +148,10 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             CreatedAt = history.CreatedAt
         })
         .ToListAsync(cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        await _db.SaveChangesAsync();
     }
 }

@@ -12,4 +12,6 @@ public interface ITicketService
     Task<ServiceResult<TicketResponseDto?>> UpdateTicketStatusAsync(int id, UpdateTicketStatusDto request, CurrentUser caller, CancellationToken cancellationToken);
 
     Task<ServiceResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int ticketId, CurrentUser caller, CancellationToken cancellationToken);
+
+    Task<ServiceResult<TicketResponseDto?>> AssignTicketAsync(int id, AssignTicketDto request, CurrentUser caller, CancellationToken cancellationToken);
 }

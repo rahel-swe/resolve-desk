@@ -41,6 +41,13 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
         };
     }
 
+    private static bool CanAssignTicket(Ticket ticket, CurrentUser caller, int agentId)
+    {
+        if (caller.IsAdmin) return true;
+
+        return caller.IsSupportAgent && ticket.AssignedAgentId is null && agentId == caller.Id;
+    }
+
     public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
     {
         var ticket = new Ticket
@@ -192,5 +199,37 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
 
         return new ServiceResult<List<TicketHistoryResponseDto>>(histories);
+    }
+
+    public async Task<ServiceResult<TicketResponseDto?>> AssignTicketAsync(int id, AssignTicketDto request, CurrentUser caller, CancellationToken cancellationToken)
+    {
+        var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
+
+        if (ticket is null || !CanReadTicket(ticket, caller))
+            throw new NotFoundException($"Ticket not found with id: {id}");
+
+        if (!CanAssignTicket(ticket, caller, request.AssignedAgentId))
+            throw new ConflictException("User is not allowed to assign this ticket.");
+
+        ticket.AssignedAgentId = request.AssignedAgentId;
+        ticket.UpdatedAt = DateTime.UtcNow;
+
+        await _ticketRepository.SaveChangesAsync(cancellationToken);
+
+        var ticketResponseDto = new TicketResponseDto
+        {
+            Id = ticket.Id,
+            Title = ticket.Title,
+            Description = ticket.Description,
+            Category = ticket.Category,
+            Priority = ticket.Priority,
+            Status = ticket.Status,
+            CreatedAt = ticket.CreatedAt,
+            CreatedByEmail = ticket.User?.Email ?? string.Empty,
+            AssignedAgentEmail = ticket.AssignedAgent?.Email
+        };
+
+        return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
+
     }
 }

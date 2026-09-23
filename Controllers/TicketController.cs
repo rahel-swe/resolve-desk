@@ -138,4 +138,15 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         return Ok(result);
 
     }
+
+    [HttpPatch("{id}/assignment")]
+    public async Task<ActionResult> AssignTicketAsync(int id, AssignTicketDto request, CancellationToken cancellationToken)
+    {
+        if (!User.TryGetCurrentUser(out var caller))
+            return Unauthorized();
+
+        var response = await _ticketService.AssignTicketAsync(id, request, caller, cancellationToken);
+
+        return Ok(response);
+    }
 }
