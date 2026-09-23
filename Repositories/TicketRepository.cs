@@ -18,7 +18,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         return ticket;
     }
 
-    public async Task<(List<Ticket> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query, CancellationToken cancellationToken)
+    public async Task<(List<TicketResponseDto> Items, int TotalCount)> GetAllAsync(TicketListQueryDto query, CancellationToken cancellationToken)
     {
         var ticketsQuery = _db.Tickets.AsNoTracking().AsQueryable();
 
@@ -39,11 +39,21 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
 
 
         var items = await ticketsQuery
-        .Include(t => t.User)
-        .Include(t => t.AssignedAgent)
         .OrderByDescending(t => t.CreatedAt)
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
+        .Select(t => new TicketResponseDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            Category = t.Category,
+            Priority = t.Priority,
+            Status = t.Status,
+            CreatedAt = t.CreatedAt,
+            CreatedByEmail = t.User.Email,
+            AssignedAgentEmail = t.AssignedAgent != null ? t.AssignedAgent.Email : null
+        })
         .ToListAsync(cancellationToken);
 
         return (items, totalCount);
@@ -57,13 +67,20 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
-    public async Task<(List<Ticket> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId, CancellationToken cancellationToken)
+    public async Task<(List<TicketResponseDto> Items, int TotalCount)> GetByUserIdAsync(TicketListQueryDto query, int userId, CancellationToken cancellationToken)
     {
         var ticketsQuery = _db.Tickets.AsNoTracking().Where(t => t.UserId == userId).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query.
         Search))
-            ticketsQuery = ticketsQuery.Where(ticket => ticket.Title.Contains(query.Search));
+        {
+            var search = query.Search.Trim();
+
+            ticketsQuery = ticketsQuery.Where(ticket =>
+                ticket.Title.Contains(search) ||
+                ticket.Description.Contains(search) ||
+                ticket.Category.Contains(search));
+        }
 
         if (query.Status is not null)
             ticketsQuery = ticketsQuery.Where(t => t.Status == query.Status);
@@ -78,6 +95,18 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         .OrderByDescending(t => t.CreatedAt)
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
+        .Select(t => new TicketResponseDto
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            Category = t.Category,
+            Priority = t.Priority,
+            Status = t.Status,
+            CreatedAt = t.CreatedAt,
+            CreatedByEmail = t.User.Email,
+            AssignedAgentEmail = t.AssignedAgent != null ? t.AssignedAgent.Email : null
+        })
         .ToListAsync(cancellationToken);
 
         return (items, totalCount);
@@ -101,12 +130,22 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<List<TicketHistory>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken)
+    public async Task<List<TicketHistoryResponseDto>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken)
     {
         return await _db.TicketHistories
         .Where(history => history.TicketId == ticketId)
         .Include(history => history.ActorUser)
         .OrderBy(history => history.CreatedAt)
+        .Select((history) => new TicketHistoryResponseDto
+        {
+            Id = history.Id,
+            TicketId = history.TicketId,
+            NewStatus = history.NewStatus,
+            OldStatus = history.OldStatus,
+            ActorUserId = history.ActorUserId,
+            ActorEmail = history.ActorUser.Email ?? string.Empty,
+            CreatedAt = history.CreatedAt
+        })
         .ToListAsync(cancellationToken);
     }
 }
