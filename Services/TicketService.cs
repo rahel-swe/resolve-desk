@@ -232,7 +232,7 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedAgentEmail = ticket.AssignedAgent?.Email
+            AssignedAgentEmail = assignedAgent?.Email
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);

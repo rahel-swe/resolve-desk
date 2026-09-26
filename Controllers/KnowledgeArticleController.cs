@@ -20,7 +20,7 @@ public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticl
             ? await _knowledgeArticleService.GetAllArticlesAsync()
             : await _knowledgeArticleService.SearchArticlesAsync(keywords, category);
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -31,7 +31,7 @@ public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticl
         if (result.Data is null)
             return NotFound();
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [Authorize(Policy = "AdminOnly")]
@@ -44,7 +44,7 @@ public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticl
 
         var result = await _knowledgeArticleService.CreateArticleAsync(request, caller);
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [Authorize(Policy = "AdminOnly")]
@@ -56,6 +56,6 @@ public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticl
         if (result.Data is null)
             return NotFound();
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 }

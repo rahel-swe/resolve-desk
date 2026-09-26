@@ -26,7 +26,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
         var result = await _ticketService.GetAllTicketsAsync(query, caller, cancellationToken);
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -41,7 +41,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         if (result.Data is null)
             return NotFound();
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [HttpPost]
@@ -53,7 +53,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
 
         var result = await _ticketService.CreateTicketAsync(request, caller.Id);
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [HttpPatch("{id}")]
@@ -67,7 +67,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         if (result.Data is null)
             return NotFound();
 
-        return Ok(result.Data);
+        return Ok(result);
     }
 
     [HttpPost("{id}/priority-suggestion")]
@@ -140,7 +140,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPatch("{id}/assignment")]
-    public async Task<ActionResult> AssignTicketAsync(int id, AssignTicketDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult> AssignTicketAsync(int id, [FromBody] AssignTicketDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
