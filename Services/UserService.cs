@@ -12,6 +12,8 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IAuthService _authService = authService;
 
+
+
     public async Task<TokenResponseDto> RegisterUserAsync(RegisterDto request)
     {
         var user = await _userRepository.GetByEmailAsync(request.Email);

@@ -6,10 +6,11 @@ using ResolveDesk.Common;
 
 namespace ResolveDesk.Services;
 
-public class TicketService(ITicketRepository ticketRepository) : ITicketService
+public class TicketService(ITicketRepository ticketRepository, IUserRepository userRepository) : ITicketService
 {
 
     private readonly ITicketRepository _ticketRepository = ticketRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
     private static bool CanReadTicket(Ticket ticket, CurrentUser caller)
     {
@@ -210,6 +211,11 @@ public class TicketService(ITicketRepository ticketRepository) : ITicketService
 
         if (!CanAssignTicket(ticket, caller, request.AssignedAgentId))
             throw new ConflictException("User is not allowed to assign this ticket.");
+
+        var assignedAgent = await _userRepository.GetByIdAsync(request.AssignedAgentId, cancellationToken);
+
+        if (assignedAgent is null || assignedAgent.Role != "SupportAgent")
+            throw new ConflictException("Assigned user must be a support agent.");
 
         ticket.AssignedAgentId = request.AssignedAgentId;
         ticket.UpdatedAt = DateTime.UtcNow;

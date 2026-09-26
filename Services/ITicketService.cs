@@ -1,5 +1,6 @@
 using ResolveDesk.Common;
 using ResolveDesk.Dtos;
+using ResolveDesk.Models;
 
 namespace ResolveDesk.Services;
 
@@ -14,4 +15,5 @@ public interface ITicketService
     Task<ServiceResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int ticketId, CurrentUser caller, CancellationToken cancellationToken);
 
     Task<ServiceResult<TicketResponseDto?>> AssignTicketAsync(int id, AssignTicketDto request, CurrentUser caller, CancellationToken cancellationToken);
+
 }
