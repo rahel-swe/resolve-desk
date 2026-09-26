@@ -10,11 +10,11 @@ namespace ResolveDesk.Controllers;
 [Authorize(Policy = "AdminOrUser")]
 [ApiController]
 [Route("api/tickets")]
-public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService, AssignTicketHandler assignTicketCommand) : ControllerBase
+public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService, AssignTicketHandler assignTicketHandler) : ControllerBase
 {
     private readonly ITicketService _ticketService = ticketService;
     private readonly ITicketAIService _ticketAIService = ticketAIService;
-    private readonly AssignTicketHandler _assignTicketCommand = assignTicketCommand;
+    private readonly AssignTicketHandler _assignTicketHandler = assignTicketHandler;
 
     [HttpGet]
     public async Task<ActionResult<ServiceResult<PageResultDto<TicketResponseDto>>>> GetAllTickets([FromQuery] TicketListQueryDto query, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ServiceResult<TicketResponseDto>>> GetTicketById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto?>>> GetTicketById(int id, CancellationToken cancellationToken)
     {
 
         if (!User.TryGetCurrentUser(out var caller))
@@ -58,7 +58,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult<ServiceResult<TicketResponseDto>>> UpdateTicketStatus(int id, UpdateTicketStatusDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto?>>> UpdateTicketStatus(int id, UpdateTicketStatusDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -146,7 +146,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var response = await _assignTicketCommand.AssignTicketAsync(id, request, caller, cancellationToken);
+        var response = await _assignTicketHandler.AssignTicketAsync(id, request, caller, cancellationToken);
 
         return Ok(response);
     }

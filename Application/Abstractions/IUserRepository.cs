@@ -1,4 +1,4 @@
-using ResolveDesk.Models;
+using ResolveDesk.Entities;
 
 namespace ResolveDesk.Repositories;
 

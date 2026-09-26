@@ -1,4 +1,4 @@
-namespace ResolveDesk.Models;
+namespace ResolveDesk.Entities;
 
 public class TicketComment
 {

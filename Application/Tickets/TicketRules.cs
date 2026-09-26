@@ -1,6 +1,6 @@
 using ResolveDesk.Common;
 using ResolveDesk.Enums;
-using ResolveDesk.Models;
+using ResolveDesk.Entities;
 
 namespace ResolveDesk.Rules;
 

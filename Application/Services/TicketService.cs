@@ -1,5 +1,5 @@
 using ResolveDesk.Dtos;
-using ResolveDesk.Models;
+using ResolveDesk.Entities;
 using ResolveDesk.Repositories;
 using ResolveDesk.Enums;
 using ResolveDesk.Common;

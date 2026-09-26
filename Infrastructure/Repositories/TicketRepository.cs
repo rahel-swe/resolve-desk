@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Data;
 using ResolveDesk.Dtos;
 using ResolveDesk.Enums;
-using ResolveDesk.Models;
+using ResolveDesk.Entities;
 
 namespace ResolveDesk.Repositories;
 

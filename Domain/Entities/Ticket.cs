@@ -1,7 +1,7 @@
 
 using ResolveDesk.Enums;
 
-namespace ResolveDesk.Models;
+namespace ResolveDesk.Entities;
 
 public class Ticket
 {

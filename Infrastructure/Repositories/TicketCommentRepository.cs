@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Data;
-using ResolveDesk.Models;
+using ResolveDesk.Entities;
 
 namespace ResolveDesk.Repositories;
 
