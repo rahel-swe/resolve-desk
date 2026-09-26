@@ -3,51 +3,16 @@ using ResolveDesk.Models;
 using ResolveDesk.Repositories;
 using ResolveDesk.Enums;
 using ResolveDesk.Common;
+using ResolveDesk.Rules;
 
 namespace ResolveDesk.Services;
 
-public class TicketService(ITicketRepository ticketRepository, IUserRepository userRepository) : ITicketService
+public class TicketService(ITicketRepository ticketRepository, TicketRules ticketRules) : ITicketService
 {
 
     private readonly ITicketRepository _ticketRepository = ticketRepository;
-    private readonly IUserRepository _userRepository = userRepository;
+    private readonly TicketRules _ticketRules = ticketRules;
 
-    private static bool CanReadTicket(Ticket ticket, CurrentUser caller)
-    {
-        if (caller.IsAdmin || caller.IsSupportAgent)
-            return true;
-
-        return caller.IsCustomer && ticket.UserId == caller.Id;
-    }
-
-    private static bool CanUpdateStatus(Ticket ticket, CurrentUser caller)
-    {
-        if (caller.IsAdmin)
-            return true;
-
-        return caller.IsSupportAgent &&
-               ticket.AssignedAgentId == caller.Id;
-    }
-
-    private static bool IsValidStatusTransition(TicketStatus current, TicketStatus next)
-    {
-        return current switch
-        {
-            TicketStatus.Open => next == TicketStatus.InProgress,
-            TicketStatus.InProgress => next == TicketStatus.WaitingForCustomer || next == TicketStatus.Resolved,
-            TicketStatus.WaitingForCustomer => next == TicketStatus.InProgress,
-            TicketStatus.Resolved => next == TicketStatus.Closed || next == TicketStatus.InProgress,
-            TicketStatus.Closed => false,
-            _ => false
-        };
-    }
-
-    private static bool CanAssignTicket(Ticket ticket, CurrentUser caller, int agentId)
-    {
-        if (caller.IsAdmin) return true;
-
-        return caller.IsSupportAgent && ticket.AssignedAgentId is null && agentId == caller.Id;
-    }
 
     public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
     {
@@ -105,7 +70,7 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
     {
         var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
 
-        if (ticket is null || !CanReadTicket(ticket, caller))
+        if (ticket is null || !_ticketRules.CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}"); ;
 
         var ticketResponseDto = new TicketResponseDto
@@ -152,10 +117,10 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
     {
         var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
 
-        if (ticket is null || !CanUpdateStatus(ticket, caller))
+        if (ticket is null || !_ticketRules.CanUpdateStatus(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {id}");
 
-        if (!IsValidStatusTransition(ticket.Status, request.Status))
+        if (!_ticketRules.IsValidStatusTransition(ticket.Status, request.Status))
             throw new ConflictException($"Cannot change ticket status from {ticket.Status} to {request.Status}.");
 
 
@@ -193,7 +158,7 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
     {
         var ticket = await _ticketRepository.GetByIdAsync(ticketId, cancellationToken);
 
-        if (ticket is null || !CanReadTicket(ticket, caller))
+        if (ticket is null || !_ticketRules.CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with this id: {ticketId}");
 
         var histories = await _ticketRepository.GetHistoryByTicketIdAsync(ticketId, cancellationToken);
@@ -202,40 +167,5 @@ public class TicketService(ITicketRepository ticketRepository, IUserRepository u
         return new ServiceResult<List<TicketHistoryResponseDto>>(histories);
     }
 
-    public async Task<ServiceResult<TicketResponseDto?>> AssignTicketAsync(int id, AssignTicketDto request, CurrentUser caller, CancellationToken cancellationToken)
-    {
-        var ticket = await _ticketRepository.GetByIdAsync(id, cancellationToken);
 
-        if (ticket is null || !CanReadTicket(ticket, caller))
-            throw new NotFoundException($"Ticket not found with id: {id}");
-
-        if (!CanAssignTicket(ticket, caller, request.AssignedAgentId))
-            throw new ConflictException("User is not allowed to assign this ticket.");
-
-        var assignedAgent = await _userRepository.GetByIdAsync(request.AssignedAgentId, cancellationToken);
-
-        if (assignedAgent is null || assignedAgent.Role != "SupportAgent")
-            throw new ConflictException("Assigned user must be a support agent.");
-
-        ticket.AssignedAgentId = request.AssignedAgentId;
-        ticket.UpdatedAt = DateTime.UtcNow;
-
-        await _ticketRepository.SaveChangesAsync(cancellationToken);
-
-        var ticketResponseDto = new TicketResponseDto
-        {
-            Id = ticket.Id,
-            Title = ticket.Title,
-            Description = ticket.Description,
-            Category = ticket.Category,
-            Priority = ticket.Priority,
-            Status = ticket.Status,
-            CreatedAt = ticket.CreatedAt,
-            CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedAgentEmail = assignedAgent?.Email
-        };
-
-        return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
-
-    }
 }

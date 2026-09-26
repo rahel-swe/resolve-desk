@@ -9,11 +9,3 @@ public enum TicketPriority
 }
 
 
-public enum TicketStatus
-{
-    Open,
-    InProgress,
-    WaitingForCustomer,
-    Resolved,
-    Closed
-}

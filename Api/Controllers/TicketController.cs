@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ResolveDesk.Handlers;
 using ResolveDesk.Common;
 using ResolveDesk.Dtos;
-using ResolveDesk.Enums;
 using ResolveDesk.Services;
 
 namespace ResolveDesk.Controllers;
@@ -10,13 +10,14 @@ namespace ResolveDesk.Controllers;
 [Authorize(Policy = "AdminOrUser")]
 [ApiController]
 [Route("api/tickets")]
-public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService) : ControllerBase
+public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService, AssignTicketHandler assignTicketCommand) : ControllerBase
 {
     private readonly ITicketService _ticketService = ticketService;
     private readonly ITicketAIService _ticketAIService = ticketAIService;
+    private readonly AssignTicketHandler _assignTicketCommand = assignTicketCommand;
 
     [HttpGet]
-    public async Task<ActionResult<PageResultDto<TicketResponseDto>>> GetAllTickets([FromQuery] TicketListQueryDto query, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<PageResultDto<TicketResponseDto>>>> GetAllTickets([FromQuery] TicketListQueryDto query, CancellationToken cancellationToken)
 
     {
         if (!User.TryGetCurrentUser(out var caller))
@@ -30,7 +31,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TicketResponseDto>> GetTicketById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto>>> GetTicketById(int id, CancellationToken cancellationToken)
     {
 
         if (!User.TryGetCurrentUser(out var caller))
@@ -45,7 +46,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost]
-    public async Task<ActionResult<TicketResponseDto>> CreateTicket(CreateTicketDto request)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto>>> CreateTicket(CreateTicketDto request)
     {
 
         if (!User.TryGetCurrentUser(out var caller))
@@ -57,7 +58,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult<TicketResponseDto>> UpdateTicketStatus(int id, UpdateTicketStatusDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto>>> UpdateTicketStatus(int id, UpdateTicketStatusDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -71,7 +72,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/priority-suggestion")]
-    public async Task<ActionResult<TicketAISuggestionDto>> SuggestPriority(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketAISuggestionDto>>> SuggestPriority(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -90,7 +91,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/response-suggestion")]
-    public async Task<ActionResult<TicketAIResponseSuggestionDto>> SuggestResponse(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketAIResponseSuggestionDto>>> SuggestResponse(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -109,7 +110,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPost("{id}/categorize")]
-    public async Task<ActionResult<TicketCategorizationDto>> CategorizeTicket(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketCategorizationDto>>> CategorizeTicket(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -128,7 +129,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpGet("{id}/history")]
-    public async Task<ActionResult<List<TicketHistoryResponseDto>>> GetHistoryByTicketIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<List<TicketHistoryResponseDto>>>> GetHistoryByTicketIdAsync(int id, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
@@ -140,12 +141,12 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
     }
 
     [HttpPatch("{id}/assignment")]
-    public async Task<ActionResult> AssignTicketAsync(int id, [FromBody] AssignTicketDto request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceResult<TicketResponseDto?>>> AssignTicketAsync(int id, [FromBody] AssignTicketDto request, CancellationToken cancellationToken)
     {
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var response = await _ticketService.AssignTicketAsync(id, request, caller, cancellationToken);
+        var response = await _assignTicketCommand.AssignTicketAsync(id, request, caller, cancellationToken);
 
         return Ok(response);
     }

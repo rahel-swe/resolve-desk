@@ -1,3 +1,4 @@
+using ResolveDesk.Common;
 using ResolveDesk.Dtos;
 using ResolveDesk.Enums;
 
@@ -5,7 +6,7 @@ namespace ResolveDesk.Services;
 
 public class TicketAIService : ITicketAIService
 {
-    public Task<TicketAISuggestionDto> SuggestPriorityAsync(string title, string description, string? category)
+    public async Task<ServiceResult<TicketAISuggestionDto>> SuggestPriorityAsync(string title, string description, string? category)
     {
         var combined = $"{title} {description} {category}".ToLowerInvariant();
 
@@ -32,14 +33,16 @@ public class TicketAIService : ITicketAIService
             rationale = "The request appears informational or low-risk.";
         }
 
-        return Task.FromResult(new TicketAISuggestionDto
+        var responseDto = new TicketAISuggestionDto
         {
             SuggestedPriority = suggestedPriority,
             Rationale = rationale
-        });
+        };
+
+        return new ServiceResult<TicketAISuggestionDto>(responseDto);
     }
 
-    public Task<TicketAIResponseSuggestionDto> SuggestResponseAsync(string title, string description, string? category)
+    public async Task<ServiceResult<TicketAIResponseSuggestionDto>> SuggestResponseAsync(string title, string description, string? category)
     {
         var combined = $"{title} {description} {category}".ToLowerInvariant();
 
@@ -72,15 +75,17 @@ public class TicketAIService : ITicketAIService
             escalationRecommendation = "Escalate to the incident response team immediately.";
         }
 
-        return Task.FromResult(new TicketAIResponseSuggestionDto
+        var resposeDto = new TicketAIResponseSuggestionDto
         {
             SuggestedReply = suggestedReply,
             SuggestedSteps = suggestedSteps,
             EscalationRecommendation = escalationRecommendation
-        });
+        };
+
+        return new ServiceResult<TicketAIResponseSuggestionDto>(resposeDto);
     }
 
-    public Task<TicketCategorizationDto> CategorizeAsync(string title, string description, string? category)
+    public async Task<ServiceResult<TicketCategorizationDto>> CategorizeAsync(string title, string description, string? category)
     {
         var combined = $"{title} {description} {category}".ToLowerInvariant();
 
@@ -107,11 +112,13 @@ public class TicketAIService : ITicketAIService
             tags = ["outage", "infrastructure", "incident"];
         }
 
-        return Task.FromResult(new TicketCategorizationDto
+        var categorizeDto = new TicketCategorizationDto
         {
             Department = department,
             IssueType = issueType,
             Tags = tags
-        });
+        };
+
+        return new ServiceResult<TicketCategorizationDto>(categorizeDto);
     }
 }
