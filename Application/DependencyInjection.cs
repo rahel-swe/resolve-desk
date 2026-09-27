@@ -1,5 +1,4 @@
 using ResolveDesk.Application.Tickets;
-using ResolveDesk.Rules;
 using ResolveDesk.Application.Services;
 
 namespace ResolveDesk.Application;

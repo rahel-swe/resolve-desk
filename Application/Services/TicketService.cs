@@ -3,7 +3,7 @@ using ResolveDesk.Domain.Entities;
 using ResolveDesk.Infrastructure.Repositories;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Application.Common;
-using ResolveDesk.Rules;
+using ResolveDesk.Application.Tickets;
 
 namespace ResolveDesk.Application.Services;
 

@@ -1,3 +1,5 @@
+using ResolveDesk.Domain.Enums;
+
 namespace ResolveDesk.Application.Dtos;
 
 public class TokenResponseDto

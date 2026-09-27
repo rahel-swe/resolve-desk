@@ -1,7 +1,8 @@
 using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Infrastructure.Repositories;
-using ResolveDesk.Rules;
+using ResolveDesk.Application.Tickets;
+using ResolveDesk.Domain.Enums;
 
 namespace ResolveDesk.Application.Tickets;
 
@@ -23,7 +24,7 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
 
         var assignedAgent = await _userRepository.GetByIdAsync(request.AssignedAgentId, cancellationToken);
 
-        if (assignedAgent is null || assignedAgent.Role != "SupportAgent")
+        if (assignedAgent is null || assignedAgent.Role != UserRole.SupportAgent)
             throw new ConflictException("Assigned user must be a support agent.");
 
         ticket.AssignedAgentId = request.AssignedAgentId;

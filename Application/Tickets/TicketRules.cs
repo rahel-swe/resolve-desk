@@ -2,7 +2,7 @@ using ResolveDesk.Application.Common;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Rules;
+namespace ResolveDesk.Application.Tickets;
 
 public class TicketRules
 {

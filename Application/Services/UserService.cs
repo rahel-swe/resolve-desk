@@ -2,6 +2,7 @@
 using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Domain.Entities;
+using ResolveDesk.Domain.Enums;
 using ResolveDesk.Infrastructure.Repositories;
 
 namespace ResolveDesk.Application.Services;
@@ -38,7 +39,7 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         {
             Token = token,
             Email = user.Email,
-            Role = user.Role ?? "User"
+            Role = user.Role.ToString()
         };
     }
 }

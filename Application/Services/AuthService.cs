@@ -58,7 +58,7 @@ public class AuthService(
             Token = accessToken,
             RefreshToken = refreshToken,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role.ToString()
         };
     }
 
@@ -100,7 +100,7 @@ public class AuthService(
             Token = newAccessToken,
             RefreshToken = newRefreshToken,
             Email = user.Email,
-            Role = user.Role
+            Role = user.Role.ToString()
         };
     }
 
@@ -122,7 +122,7 @@ public class AuthService(
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));

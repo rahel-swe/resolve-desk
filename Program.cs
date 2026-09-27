@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ResolveDesk.Application;
 using ResolveDesk.Infrastructure;
+using ResolveDesk.Domain.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,18 +61,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy =>
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy =>
     {
-        policy.RequireRole("Admin");
-    });
-
-    options.AddPolicy("AdminOrUser", policy =>
+        policy.RequireRole(UserRole.Admin.ToString());
+    })
+    .AddPolicy("AdminOrUser", policy =>
     {
         policy.RequireAuthenticatedUser();
     });
-});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
