@@ -1,8 +1,8 @@
-using ResolveDesk.Common;
-using ResolveDesk.Dtos;
-using ResolveDesk.Entities;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Services;
+namespace ResolveDesk.Application.Services;
 
 public interface ITicketService
 {

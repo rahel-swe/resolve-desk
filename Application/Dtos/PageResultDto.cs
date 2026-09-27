@@ -1,4 +1,4 @@
-namespace ResolveDesk.Dtos;
+namespace ResolveDesk.Application.Dtos;
 
 public class PageResultDto<T>
 {

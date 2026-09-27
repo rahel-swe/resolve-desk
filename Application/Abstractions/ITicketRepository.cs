@@ -1,8 +1,8 @@
-using ResolveDesk.Dtos;
-using ResolveDesk.Enums;
-using ResolveDesk.Entities;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Domain.Enums;
+using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Repositories;
+namespace ResolveDesk.Infrastructure.Repositories;
 
 public interface ITicketRepository
 {

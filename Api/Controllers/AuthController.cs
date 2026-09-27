@@ -1,10 +1,10 @@
-using ResolveDesk.Dtos;
-using ResolveDesk.Services;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
-namespace ResolveDesk.Controllers;
+namespace ResolveDesk.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]

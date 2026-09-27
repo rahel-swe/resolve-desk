@@ -1,6 +1,6 @@
-using ResolveDesk.Handlers;
+using ResolveDesk.Application.Tickets;
 using ResolveDesk.Rules;
-using ResolveDesk.Services;
+using ResolveDesk.Application.Services;
 
 namespace ResolveDesk.Application;
 

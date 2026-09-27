@@ -1,4 +1,4 @@
-namespace ResolveDesk.Enums;
+namespace ResolveDesk.Domain.Enums;
 
 public enum TicketPriority
 {

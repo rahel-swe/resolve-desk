@@ -1,10 +1,10 @@
 
-using ResolveDesk.Common;
-using ResolveDesk.Dtos;
-using ResolveDesk.Entities;
-using ResolveDesk.Repositories;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Domain.Entities;
+using ResolveDesk.Infrastructure.Repositories;
 
-namespace ResolveDesk.Services;
+namespace ResolveDesk.Application.Services;
 
 public class UserService(IUserRepository userRepository, IAuthService authService) : IUserService
 {

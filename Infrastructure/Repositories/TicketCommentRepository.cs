@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using ResolveDesk.Data;
-using ResolveDesk.Entities;
+using ResolveDesk.Infrastructure.Data;
+using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Repositories;
+namespace ResolveDesk.Infrastructure.Repositories;
 
 public class TicketCommentRepository(AppDbContext db) : ITicketCommentRepository
 {

@@ -1,7 +1,7 @@
-using ResolveDesk.Entities;
+using ResolveDesk.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ResolveDesk.Data;
+namespace ResolveDesk.Infrastructure.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {

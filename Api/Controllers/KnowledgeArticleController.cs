@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ResolveDesk.Common;
-using ResolveDesk.Dtos;
-using ResolveDesk.Services;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Application.Services;
 
-namespace ResolveDesk.Controllers;
+namespace ResolveDesk.Api.Controllers;
 
 [Authorize(Policy = "AdminOrUser")]
 [ApiController]

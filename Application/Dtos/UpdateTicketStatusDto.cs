@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using ResolveDesk.Enums;
+using ResolveDesk.Domain.Enums;
 
-namespace ResolveDesk.Dtos;
+namespace ResolveDesk.Application.Dtos;
 
 public class UpdateTicketStatusDto
 {

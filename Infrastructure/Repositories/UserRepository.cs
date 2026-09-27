@@ -1,8 +1,8 @@
-using ResolveDesk.Data;
-using ResolveDesk.Entities;
+using ResolveDesk.Infrastructure.Data;
+using ResolveDesk.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ResolveDesk.Repositories;
+namespace ResolveDesk.Infrastructure.Repositories;
 
 public class UserRepository(AppDbContext db) : IUserRepository
 {

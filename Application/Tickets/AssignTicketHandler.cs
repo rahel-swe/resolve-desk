@@ -1,9 +1,9 @@
-using ResolveDesk.Common;
-using ResolveDesk.Dtos;
-using ResolveDesk.Repositories;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Infrastructure.Repositories;
 using ResolveDesk.Rules;
 
-namespace ResolveDesk.Handlers;
+namespace ResolveDesk.Application.Tickets;
 
 public class AssignTicketHandler(ITicketRepository ticketRepository, IUserRepository userRepository, TicketRules ticketRules)
 {

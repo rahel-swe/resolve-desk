@@ -1,11 +1,11 @@
-using ResolveDesk.Dtos;
-using ResolveDesk.Entities;
-using ResolveDesk.Repositories;
-using ResolveDesk.Enums;
-using ResolveDesk.Common;
+using ResolveDesk.Application.Dtos;
+using ResolveDesk.Domain.Entities;
+using ResolveDesk.Infrastructure.Repositories;
+using ResolveDesk.Domain.Enums;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Rules;
 
-namespace ResolveDesk.Services;
+namespace ResolveDesk.Application.Services;
 
 public class TicketService(ITicketRepository ticketRepository, TicketRules ticketRules) : ITicketService
 {

@@ -1,4 +1,4 @@
-namespace ResolveDesk.Entities;
+namespace ResolveDesk.Domain.Entities;
 
 public class TicketComment
 {

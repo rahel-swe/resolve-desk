@@ -1,7 +1,7 @@
-using ResolveDesk.Common;
-using ResolveDesk.Dtos;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Application.Dtos;
 
-namespace ResolveDesk.Services;
+namespace ResolveDesk.Application.Services;
 
 public interface ITicketCommentService
 {

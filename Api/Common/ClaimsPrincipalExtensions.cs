@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace ResolveDesk.Common;
+namespace ResolveDesk.Application.Common;
 
 public static class ClaimsPrincipalExtentions
 {

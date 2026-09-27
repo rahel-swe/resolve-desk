@@ -1,6 +1,6 @@
-using ResolveDesk.Entities;
+using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Repositories;
+namespace ResolveDesk.Infrastructure.Repositories;
 
 public interface IRefreshTokenRepository
 {

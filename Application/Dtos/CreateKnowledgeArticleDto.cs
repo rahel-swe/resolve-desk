@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ResolveDesk.Dtos;
+namespace ResolveDesk.Application.Dtos;
 
 public class CreateKnowledgeArticleDto
 {

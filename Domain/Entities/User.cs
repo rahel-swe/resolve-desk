@@ -1,6 +1,6 @@
-using ResolveDesk.Enums;
+using ResolveDesk.Domain.Enums;
 
-namespace ResolveDesk.Entities;
+namespace ResolveDesk.Domain.Entities;
 
 public class User
 {

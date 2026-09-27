@@ -1,6 +1,6 @@
-using ResolveDesk.Common;
-using ResolveDesk.Enums;
-using ResolveDesk.Entities;
+using ResolveDesk.Application.Common;
+using ResolveDesk.Domain.Enums;
+using ResolveDesk.Domain.Entities;
 
 namespace ResolveDesk.Rules;
 

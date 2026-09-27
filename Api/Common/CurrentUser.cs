@@ -1,4 +1,4 @@
-namespace ResolveDesk.Common;
+namespace ResolveDesk.Application.Common;
 
 public sealed record CurrentUser(int Id, string? Email, string Role)
 {
