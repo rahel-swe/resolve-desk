@@ -1,4 +1,4 @@
-using ResolveDesk.Application.Common;
+using ResolveDesk.Api.Common;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Domain.Entities;
 

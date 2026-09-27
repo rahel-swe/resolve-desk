@@ -1,4 +1,4 @@
-namespace ResolveDesk.Application.Common;
+namespace ResolveDesk.Api.Common;
 
 public class ServiceResult<T>(T? data, string? message = null)
 {

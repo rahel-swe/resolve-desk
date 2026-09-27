@@ -1,4 +1,4 @@
-using ResolveDesk.Application.Common;
+using ResolveDesk.Api.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 

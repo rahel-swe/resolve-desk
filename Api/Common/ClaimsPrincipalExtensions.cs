@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using ResolveDesk.Domain.Enums;
 
-namespace ResolveDesk.Application.Common;
+namespace ResolveDesk.Api.Common;
 
 public static class ClaimsPrincipalExtentions
 {

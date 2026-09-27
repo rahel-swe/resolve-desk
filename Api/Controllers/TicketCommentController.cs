@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ResolveDesk.Application.Common;
+using ResolveDesk.Api.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Application.Services;
 

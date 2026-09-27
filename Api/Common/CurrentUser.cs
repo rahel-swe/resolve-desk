@@ -1,6 +1,6 @@
 using ResolveDesk.Domain.Enums;
 
-namespace ResolveDesk.Application.Common;
+namespace ResolveDesk.Api.Common;
 
 public sealed record CurrentUser(int Id, string? Email, UserRole Role)
 {
