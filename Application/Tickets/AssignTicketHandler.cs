@@ -1,8 +1,8 @@
-using ResolveDesk.Api.Common;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Infrastructure.Repositories;
-using ResolveDesk.Application.Tickets;
 using ResolveDesk.Domain.Enums;
+using ResolveDesk.Api.Common;
 
 namespace ResolveDesk.Application.Tickets;
 

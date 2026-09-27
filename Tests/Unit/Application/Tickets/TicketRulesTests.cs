@@ -1,4 +1,4 @@
-using ResolveDesk.Api.Common;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Domain.Entities;
 using ResolveDesk.Application.Tickets;
 using ResolveDesk.Domain.Enums;
@@ -48,7 +48,7 @@ public class TicketRulesTests
     }
 
     [Fact]
-    public void CanReadTicket_WhenAdminOrSupportAgentOwnsTicket_ReturnTrue()
+    public void CanReadTicket_WhenUserIsAdmin_ReturnsTrue()
     {
         var rules = new TicketRules();
 

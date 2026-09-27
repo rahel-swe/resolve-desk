@@ -1,6 +1,6 @@
 using ResolveDesk.Api.Common;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
-using ResolveDesk.Domain.Entities;
 
 namespace ResolveDesk.Application.Services;
 

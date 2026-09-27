@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Domain.Enums;
 
 namespace ResolveDesk.Api.Common;

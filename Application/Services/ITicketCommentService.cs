@@ -1,4 +1,4 @@
-using ResolveDesk.Api.Common;
+using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
 
 namespace ResolveDesk.Application.Services;
