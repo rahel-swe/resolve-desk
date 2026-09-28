@@ -115,4 +115,20 @@ public class TicketRulesTests
 
         Assert.True(result);
     }
+
+    [Theory]
+    [InlineData(TicketStatus.Open, TicketStatus.InProgress, true)]
+    [InlineData(TicketStatus.Open, TicketStatus.Resolved, false)]
+    [InlineData(TicketStatus.InProgress, TicketStatus.WaitingForCustomer, true)]
+    [InlineData(TicketStatus.InProgress, TicketStatus.Resolved, true)]
+    [InlineData(TicketStatus.Resolved, TicketStatus.Closed, true)]
+    [InlineData(TicketStatus.Closed, TicketStatus.InProgress, false)]
+    public void IsValidStatusTransition_ReturnsExpectedResult(TicketStatus current, TicketStatus next, bool expected)
+    {
+        var rules = new TicketRules();
+
+        var result = rules.IsValidStatusTransition(current, next);
+
+        Assert.Equal(expected, result);
+    }
 }
