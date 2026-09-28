@@ -6,7 +6,7 @@ using ResolveDesk.Application.Dtos;
 using ResolveDesk.Application.Tickets;
 using ResolveDesk.Domain.Entities;
 using ResolveDesk.Domain.Enums;
-using ResolveDesk.Infrastructure.Repositories;
+using ResolveDesk.Application.Abstractions;
 
 namespace ResolveDesk.Application.Services;
 

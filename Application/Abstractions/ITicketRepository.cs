@@ -1,7 +1,7 @@
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Infrastructure.Repositories;
+namespace ResolveDesk.Application.Abstractions;
 
 public interface ITicketRepository
 {

@@ -1,6 +1,6 @@
 using ResolveDesk.Application.Common;
 using ResolveDesk.Application.Dtos;
-using ResolveDesk.Infrastructure.Repositories;
+using ResolveDesk.Application.Abstractions;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Api.Common;
 

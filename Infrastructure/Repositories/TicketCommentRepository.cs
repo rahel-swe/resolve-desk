@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Infrastructure.Data;
 using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Infrastructure.Repositories;
+namespace ResolveDesk.Application.Abstractions;
 
 public class TicketCommentRepository(AppDbContext db) : ITicketCommentRepository
 {

@@ -1,7 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Infrastructure.Data;
-using ResolveDesk.Infrastructure.Repositories;
+using ResolveDesk.Application.Abstractions;
 
 namespace ResolveDesk.Infrastructure;
 

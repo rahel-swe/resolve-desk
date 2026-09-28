@@ -4,7 +4,7 @@ using ResolveDesk.Application.Dtos;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Domain.Entities;
 
-namespace ResolveDesk.Infrastructure.Repositories;
+namespace ResolveDesk.Application.Abstractions;
 
 public class TicketRepository(AppDbContext db) : ITicketRepository
 {

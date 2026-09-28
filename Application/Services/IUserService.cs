@@ -1,5 +1,4 @@
 using ResolveDesk.Application.Dtos;
-using ResolveDesk.Domain.Entities;
 
 namespace ResolveDesk.Application.Services;
 

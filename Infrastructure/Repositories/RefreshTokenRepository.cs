@@ -3,7 +3,7 @@ using ResolveDesk.Infrastructure.Data;
 using ResolveDesk.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ResolveDesk.Infrastructure.Repositories;
+namespace ResolveDesk.Application.Abstractions;
 
 public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {

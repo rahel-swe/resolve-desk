@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using ResolveDesk.Api.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Domain.Entities;
-using ResolveDesk.Infrastructure.Repositories;
+using ResolveDesk.Application.Abstractions;
 
 namespace ResolveDesk.Application.Services;
 
