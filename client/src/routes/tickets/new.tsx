@@ -1,4 +1,3 @@
-import { getAuthToken } from '#/services/auth-service'
 import { createTicket } from '#/services/ticket-service'
 import { Button } from '#/components/ui/button'
 import {
@@ -19,6 +18,7 @@ import {
 import { Textarea } from '#/components/ui/textarea'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useAuth } from '#/providers/auth-provider'
 
 export const Route = createFileRoute('/tickets/new')({
   component: NewTicketPage,
@@ -32,9 +32,10 @@ function NewTicketPage() {
   const [priority, setPriority] = useState('1')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!isAuthenticated) {
       navigate({ to: '/sign-in' })
     }
   }, [navigate])
@@ -74,9 +75,6 @@ function NewTicketPage() {
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            Create
-          </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground">
             New ticket
           </h1>

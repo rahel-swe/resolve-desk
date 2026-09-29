@@ -29,7 +29,8 @@ import {
 } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { getAuthToken, getCurrentUserProfile } from '#/services/auth-service'
+import { getCurrentUserProfile } from '#/services/auth-service'
+import { useAuth } from '#/providers/auth-provider'
 import type { User } from '#/providers/auth-provider'
 import {
   getTicketByIdApi,
@@ -82,9 +83,10 @@ function TicketDetailPage() {
   const [busyAction, setBusyAction] = useState('')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!isAuthenticated) {
       navigate({ to: '/sign-in' })
       return
     }
@@ -111,6 +113,7 @@ function TicketDetailPage() {
 
         const suggestion = await getTicketPrioritySuggestion(ticketIdNumber)
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (isMounted) {
           setPrioritySuggestion(
             `${formatTicketPriority(suggestion.suggestedPriority)} - ${suggestion.rationale}`,
@@ -264,9 +267,6 @@ function TicketDetailPage() {
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Ticket #{ticket.id}
-          </p>
           <h1 className="mt-2 max-w-4xl font-heading text-4xl font-semibold uppercase tracking-wider text-foreground">
             {ticket.title}
           </h1>
@@ -436,7 +436,7 @@ function TicketDetailPage() {
                 </label>
                 <Select
                   value={selectedStatus}
-                  onValueChange={setSelectedStatus}
+                  onValueChange={(value) => setSelectedStatus(String(value))}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />

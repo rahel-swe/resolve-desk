@@ -1,10 +1,6 @@
 import AuthCard from '#/components/auth/auth-card'
 import PasswordField from '#/components/auth/password-field'
-import {
-  getCurrentUser,
-  registerWithApi,
-  saveSession,
-} from '#/services/auth-service'
+import { useAuth } from '#/providers/auth-provider'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -12,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 export function SignUpPage() {
   const navigate = useNavigate()
+  const { isAuthenticated, register } = useAuth()
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -20,12 +17,10 @@ export function SignUpPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const user = getCurrentUser()
-
-    if (user) {
+    if (isAuthenticated) {
       navigate({ to: '/dashboard' })
     }
-  }, [navigate])
+  }, [isAuthenticated, navigate])
 
   const handleSubmit = async () => {
     setError('')
@@ -38,13 +33,11 @@ export function SignUpPage() {
     try {
       setIsSubmitting(true)
 
-      const session = await registerWithApi(
+      await register(
         fullName.trim(),
         email.trim(),
         password,
       )
-
-      saveSession(session)
 
       await navigate({
         to: '/dashboard',

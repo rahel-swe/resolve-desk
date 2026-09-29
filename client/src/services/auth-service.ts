@@ -1,4 +1,11 @@
-import { apiRequest, REFRESH_TOKEN_KEY, TOKEN_KEY, USER_KEY } from '#/lib/api'
+import { apiRequest } from '#/lib/api'
+import {
+  clearSession,
+  getAuthToken,
+  getCurrentUser,
+  getRefreshToken,
+  saveSession,
+} from '#/services/auth-storage'
 import type { User } from '#/providers/auth-provider'
 
 export type AuthResponse = {
@@ -8,22 +15,12 @@ export type AuthResponse = {
   refreshToken: string
 }
 
-export function getRefreshToken() {
-  if (typeof window === 'undefined') return null
-  return window.localStorage.getItem(REFRESH_TOKEN_KEY)
-}
-
-export function getCurrentUser() {
-  if (typeof window === 'undefined') return null
-  const raw = window.localStorage.getItem(USER_KEY)
-  return raw ? (JSON.parse(raw) as { email: string; role: string }) : null
-}
-
-export function clearSession() {
-  if (typeof window === 'undefined') return
-  window.localStorage.removeItem(TOKEN_KEY)
-  window.localStorage.removeItem(REFRESH_TOKEN_KEY)
-  window.localStorage.removeItem(USER_KEY)
+export {
+  clearSession,
+  getAuthToken,
+  getCurrentUser,
+  getRefreshToken,
+  saveSession,
 }
 
 export async function registerWithApi(
@@ -34,6 +31,7 @@ export async function registerWithApi(
   return apiRequest<AuthResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ fullName, email, password }),
+    skipAuthRefresh: true,
   })
 }
 
@@ -41,21 +39,22 @@ export async function signInWithApi(email: string, password: string) {
   return apiRequest<AuthResponse>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
+    skipAuthRefresh: true,
   })
 }
 
-export function saveSession(session: AuthResponse) {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(TOKEN_KEY, session.token)
-  window.localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken)
-  window.localStorage.setItem(
-    USER_KEY,
-    JSON.stringify({ email: session.email, role: session.role }),
-  )
-}
-
 export async function getCurrentUserProfile() {
-  return apiRequest<User>('/api/auth/me')
+  const profile = await apiRequest<{
+    userId: string
+    email: string
+    role: User['role']
+  }>('/api/auth/me')
+
+  return {
+    id: Number(profile.userId),
+    email: profile.email,
+    role: profile.role,
+  } satisfies User
 }
 
 export async function logoutFromApi() {
@@ -70,6 +69,7 @@ export async function logoutFromApi() {
     await apiRequest('/api/auth/logout', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
+      skipAuthRefresh: true,
     })
   } finally {
     clearSession()

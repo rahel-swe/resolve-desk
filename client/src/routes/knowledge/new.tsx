@@ -1,4 +1,3 @@
-import { getAuthToken } from '#/services/auth-service'
 import { createKnowledgeArticle } from '#/services/ticket-service'
 import { Button } from '#/components/ui/button'
 import {
@@ -11,6 +10,7 @@ import {
 import { Input } from '#/components/ui/input'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useAuth } from '#/providers/auth-provider'
 
 export const Route = createFileRoute('/knowledge/new')({
   component: NewKnowledgePage,
@@ -24,9 +24,10 @@ function NewKnowledgePage() {
   const [tagsInput, setTagsInput] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!isAuthenticated) {
       navigate({ to: '/sign-in' })
     }
   }, [navigate])
@@ -69,9 +70,6 @@ function NewKnowledgePage() {
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            Publish
-          </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground">
             New knowledge article
           </h1>

@@ -1,4 +1,3 @@
-import { getAuthToken } from '#/services/auth-service'
 import { getKnowledgeArticles } from '#/services/ticket-service'
 import type { ApiKnowledgeArticle } from '#/services/ticket-service'
 import { Badge } from '#/components/ui/badge'
@@ -14,6 +13,7 @@ import { Input } from '#/components/ui/input'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { formatDateTime } from '#/lib/ticket-utils'
+import { useAuth } from '#/providers/auth-provider'
 
 export const Route = createFileRoute('/knowledge')({ component: KnowledgePage })
 
@@ -23,9 +23,10 @@ function KnowledgePage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!isAuthenticated) {
       navigate({ to: '/sign-in' })
       return
     }
@@ -74,9 +75,6 @@ function KnowledgePage() {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            Library
-          </p>
           <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground">
             Knowledge base
           </h1>

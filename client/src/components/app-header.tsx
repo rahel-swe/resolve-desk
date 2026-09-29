@@ -1,18 +1,11 @@
 import { Button } from '#/components/ui/button'
+import { useAuth } from '#/providers/auth-provider'
 import { Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
 import AppTitle from './app-title'
 import MobileSidebar from './mobile-sidebar'
-import { getCurrentUser, getAuthToken } from '../services/auth-service'
 
 export function AppHeader() {
-  const [sessionUser, setSessionUser] = useState(() => getCurrentUser())
-
-  useEffect(() => {
-    setSessionUser(getCurrentUser())
-  }, [])
-
-  const isAuthenticated = Boolean(getAuthToken()) || Boolean(sessionUser)
+  const { isAuthenticated } = useAuth()
 
   return (
     <header className="backdrop-blur-sm">

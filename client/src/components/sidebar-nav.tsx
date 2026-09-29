@@ -1,25 +1,19 @@
 import { navItems } from '#/constants/nav-items'
-import { logoutFromApi } from '#/lib/api'
+import { useAuth } from '#/providers/auth-provider'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Button } from './ui/button'
 
 type SidebarNavProps = {
   onNavigate?: () => void
-  onSetSession?: (
-    userSesssion: {
-      email: string
-      role: string
-    } | null,
-  ) => void
 }
 
-const SidebarNav = ({ onNavigate, onSetSession }: SidebarNavProps) => {
+const SidebarNav = ({ onNavigate }: SidebarNavProps) => {
   const navigate = useNavigate()
+  const { signOut } = useAuth()
 
   const handleLogout = async () => {
-    await logoutFromApi()
-    if (onSetSession) onSetSession(null)
+    await signOut()
     navigate({
       to: '/sign-in',
     })

@@ -1,12 +1,9 @@
-import { useState } from 'react'
 import SidebarNav from './sidebar-nav'
 import AppTitle from './app-title'
-import { getCurrentUser, getAuthToken } from '../services/auth-service'
+import { useAuth } from '#/providers/auth-provider'
 
 const DesktopSidebar = () => {
-  const [sessionUser, setSessionUser] = useState(() => getCurrentUser())
-
-  const isAuthenticated = Boolean(getAuthToken()) || Boolean(sessionUser)
+  const { isAuthenticated } = useAuth()
 
   if (!isAuthenticated) return null
 
@@ -17,7 +14,7 @@ const DesktopSidebar = () => {
       </div>
 
       <div className="flex-1 p-3">
-        <SidebarNav onSetSession={setSessionUser} />
+        <SidebarNav />
       </div>
     </aside>
   )

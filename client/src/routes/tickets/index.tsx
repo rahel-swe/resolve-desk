@@ -7,10 +7,11 @@ import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
 
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { getAuthToken } from '#/services/auth-service'
+
 import { getTickets } from '#/services/ticket-service'
 import type { ApiTicket } from '#/services/ticket-service'
 import { formatTicketStatus, formatTicketPriority } from '#/lib/ticket-utils'
+import { useAuth } from '#/providers/auth-provider'
 
 const statusFilters = [
   'All',
@@ -32,9 +33,10 @@ function TicketsPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!isAuthenticated) {
       navigate({ to: '/sign-in' })
       return
     }
@@ -100,9 +102,6 @@ function TicketsPage() {
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Ticket queue
-          </p>
           <h1 className="mt-2 font-heading text-4xl font-semibold uppercase tracking-wider text-foreground">
             Work inbox
           </h1>

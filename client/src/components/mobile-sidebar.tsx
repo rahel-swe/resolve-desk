@@ -5,16 +5,14 @@ import { useState } from 'react'
 
 import SidebarNav from './sidebar-nav'
 import { Button } from './ui/button'
-import { getCurrentUser, getAuthToken } from '../services/auth-service'
+import { useAuth } from '#/providers/auth-provider'
 
 const MobileSidebar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { isAuthenticated } = useAuth()
 
   const openSidebar = () => setIsOpen(true)
   const closeSidebar = () => setIsOpen(false)
-  const [sessionUser] = useState(() => getCurrentUser())
-
-  const isAuthenticated = Boolean(getAuthToken()) || Boolean(sessionUser)
 
   if (!isAuthenticated) return null
 
