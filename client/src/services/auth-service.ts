@@ -1,4 +1,4 @@
-import { apiRequest } from '#/lib/api'
+import { apiRequest, REFRESH_TOKEN_KEY, TOKEN_KEY, USER_KEY } from '#/lib/api'
 import type { User } from '#/providers/auth-provider'
 
 export type AuthResponse = {
@@ -6,15 +6,6 @@ export type AuthResponse = {
   email: string
   role: string
   refreshToken: string
-}
-
-const TOKEN_KEY = 'resolvedesk.token'
-const USER_KEY = 'resolvedesk.user'
-const REFRESH_TOKEN_KEY = 'resolvedesk.refreshToken'
-
-export function getAuthToken() {
-  if (typeof window === 'undefined') return null
-  return window.localStorage.getItem(TOKEN_KEY)
 }
 
 export function getRefreshToken() {

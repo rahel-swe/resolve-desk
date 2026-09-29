@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
-import { formatDateTime } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
+import { formatDateTime } from '#/lib/ticket-utils'
 
 export const Route = createFileRoute('/knowledge')({ component: KnowledgePage })
 

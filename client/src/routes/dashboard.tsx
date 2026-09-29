@@ -9,12 +9,12 @@ import {
 import { TicketCard } from '#/components/tickets/ticket-card'
 import { TicketEmptyState } from '#/components/tickets/ticket-empty-state'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import { formatTicketPriority } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { getAuthToken } from '#/services/auth-service'
 import { getTickets } from '#/services/ticket-service'
 import type { ApiTicket } from '#/services/ticket-service'
+import { formatTicketPriority } from '#/lib/ticket-utils'
 
 export const Route = createFileRoute('/dashboard')({ component: DashboardPage })
 

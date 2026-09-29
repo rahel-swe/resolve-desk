@@ -1,5 +1,5 @@
 import { Badge } from '#/components/ui/badge'
-import { formatTicketPriority, formatTicketStatus } from '#/lib/api'
+import { formatTicketPriority, formatTicketStatus } from '#/lib/ticket-utils'
 import { cn } from '#/lib/utils'
 import type { ApiTicket } from '#/services/ticket-service'
 

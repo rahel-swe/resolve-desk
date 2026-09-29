@@ -10,9 +10,9 @@ import {
   TicketPriorityBadge,
   TicketStatusBadge,
 } from '#/components/tickets/ticket-badges'
-import { formatDateTime } from '#/lib/api'
 import { Link } from '@tanstack/react-router'
 import type { ApiTicket } from '#/services/ticket-service'
+import { formatDateTime } from '#/lib/ticket-utils'
 
 export function TicketCard({ ticket }: { ticket: ApiTicket }) {
   return (

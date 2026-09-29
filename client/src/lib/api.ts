@@ -1,5 +1,3 @@
-import { getAuthToken } from '#/services/auth-service'
-
 export type ApiResponse<T> = {
   isSuccess: boolean
   message: string
@@ -32,10 +30,16 @@ const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   'http://localhost:5051'
 
-export async function apiRequest<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+export const TOKEN_KEY = 'resolvedesk.token'
+export const USER_KEY = 'resolvedesk.user'
+export const REFRESH_TOKEN_KEY = 'resolvedesk.refreshToken'
+
+export function getAuthToken() {
+  if (typeof window === 'undefined') return null
+  return window.localStorage.getItem(TOKEN_KEY)
+}
+
+const getHeaders = (init: RequestInit = {}) => {
   const headers = new Headers(init.headers)
   const token = getAuthToken()
 
@@ -50,6 +54,15 @@ export async function apiRequest<T>(
   ) {
     headers.set('Content-Type', 'application/json')
   }
+
+  return headers
+}
+
+export async function apiRequest<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
+  const headers = getHeaders()
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
@@ -85,51 +98,4 @@ export async function apiRequest<T>(
   }
 
   return payload as T
-}
-
-export function formatTicketStatus(value: number) {
-  switch (value) {
-    case 0:
-      return 'Open'
-    case 1:
-      return 'In Progress'
-    case 2:
-      return 'Waiting'
-    case 3:
-      return 'Resolved'
-    case 4:
-      return 'Closed'
-    default:
-      return 'Open'
-  }
-}
-
-export function formatTicketPriority(value: number) {
-  switch (value) {
-    case 0:
-      return 'Low'
-    case 1:
-      return 'Medium'
-    case 2:
-      return 'High'
-    case 3:
-      return 'Critical'
-    default:
-      return 'Medium'
-  }
-}
-
-export function formatDateTime(value: string) {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(date)
 }

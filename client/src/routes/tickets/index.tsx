@@ -4,13 +4,13 @@ import { Input } from '#/components/ui/input'
 import { TicketCard } from '#/components/tickets/ticket-card'
 import { TicketEmptyState } from '#/components/tickets/ticket-empty-state'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import { formatTicketPriority, formatTicketStatus } from '#/lib/api'
 
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { getAuthToken } from '#/services/auth-service'
 import { getTickets } from '#/services/ticket-service'
 import type { ApiTicket } from '#/services/ticket-service'
+import { formatTicketStatus, formatTicketPriority } from '#/lib/ticket-utils'
 
 const statusFilters = [
   'All',

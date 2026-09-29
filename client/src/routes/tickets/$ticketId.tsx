@@ -50,7 +50,7 @@ import {
   formatTicketPriority,
   formatDateTime,
   formatTicketStatus,
-} from '#/lib/api'
+} from '#/lib/ticket-utils'
 
 const statusOptions = [
   { value: '0', label: 'Open' },
