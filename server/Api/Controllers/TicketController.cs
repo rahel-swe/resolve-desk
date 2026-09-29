@@ -24,7 +24,6 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
             return Unauthorized();
 
 
-
         var result = await _ticketService.GetAllTicketsAsync(query, caller, cancellationToken);
 
         return Ok(result);

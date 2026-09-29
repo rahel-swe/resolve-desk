@@ -4,7 +4,7 @@ import {
   getCurrentUser,
   signInWithApi,
   saveSession,
-} from '#/components/services/auth-service'
+} from '#/services/auth-service'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -20,10 +20,7 @@ export function SignInPage() {
 
   useEffect(() => {
     const user = getCurrentUser()
-    console.log(user)
-    if (user) {
-      navigate({ to: '/dashboard' })
-    }
+    if (user) navigate({ to: '/dashboard' })
   }, [navigate])
 
   const handleSubmit = async () => {

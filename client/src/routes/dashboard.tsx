@@ -9,11 +9,12 @@ import {
 import { TicketCard } from '#/components/tickets/ticket-card'
 import { TicketEmptyState } from '#/components/tickets/ticket-empty-state'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import { formatTicketPriority, getTickets } from '#/lib/api'
-import type { ApiTicket } from '#/lib/api'
+import { formatTicketPriority } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { getAuthToken } from '#/components/services/auth-service'
+import { getAuthToken } from '#/services/auth-service'
+import { getTickets } from '#/services/ticket-service'
+import type { ApiTicket } from '#/services/ticket-service'
 
 export const Route = createFileRoute('/dashboard')({ component: DashboardPage })
 
@@ -36,6 +37,7 @@ function DashboardPage() {
         const apiTickets = await getTickets()
         if (isMounted) setTickets(apiTickets)
       } catch (caughtError) {
+        console.log(caughtError)
         if (isMounted) {
           setError(
             caughtError instanceof Error

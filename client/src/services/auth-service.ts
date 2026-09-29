@@ -66,3 +66,21 @@ export function saveSession(session: AuthResponse) {
 export async function getCurrentUserProfile() {
   return apiRequest<User>('/api/auth/me')
 }
+
+export async function logoutFromApi() {
+  const refreshToken = getRefreshToken()
+
+  if (!refreshToken) {
+    clearSession()
+    return
+  }
+
+  try {
+    await apiRequest('/api/auth/logout', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    })
+  } finally {
+    clearSession()
+  }
+}

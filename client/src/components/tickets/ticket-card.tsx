@@ -6,9 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card'
-import { TicketPriorityBadge, TicketStatusBadge } from '#/components/tickets/ticket-badges'
-import { formatDateTime, type ApiTicket } from '#/lib/api'
+import {
+  TicketPriorityBadge,
+  TicketStatusBadge,
+} from '#/components/tickets/ticket-badges'
+import { formatDateTime } from '#/lib/api'
 import { Link } from '@tanstack/react-router'
+import type { ApiTicket } from '#/services/ticket-service'
 
 export function TicketCard({ ticket }: { ticket: ApiTicket }) {
   return (
@@ -58,7 +62,10 @@ export function TicketCard({ ticket }: { ticket: ApiTicket }) {
         </div>
 
         <div className="flex justify-end">
-          <Link to="/tickets/$ticketId" params={{ ticketId: String(ticket.id) }}>
+          <Link
+            to="/tickets/$ticketId"
+            params={{ ticketId: String(ticket.id) }}
+          >
             <Button variant="secondary" size="sm">
               Open ticket
             </Button>

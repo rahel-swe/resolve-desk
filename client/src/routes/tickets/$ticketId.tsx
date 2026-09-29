@@ -20,20 +20,7 @@ import {
   TicketStatusBadge,
 } from '#/components/tickets/ticket-badges'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import {
-  assignTicket,
-  createTicketComment,
-  formatDateTime,
-  formatTicketPriority,
-  formatTicketStatus,
-  getTicketByIdApi,
-  getTicketComments,
-  getTicketHistory,
-  getTicketPrioritySuggestion,
-  getTicketResponseSuggestion,
-  updateTicketStatus,
-} from '#/lib/api'
-import type { ApiTicket, ApiTicketComment, ApiTicketHistory } from '#/lib/api'
+
 import {
   Link,
   createFileRoute,
@@ -42,11 +29,28 @@ import {
 } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import {
-  getAuthToken,
-  getCurrentUserProfile,
-} from '#/components/services/auth-service'
+import { getAuthToken, getCurrentUserProfile } from '#/services/auth-service'
 import type { User } from '#/providers/auth-provider'
+import {
+  getTicketByIdApi,
+  getTicketComments,
+  getTicketHistory,
+  getTicketPrioritySuggestion,
+  updateTicketStatus,
+  assignTicket,
+  createTicketComment,
+  getTicketResponseSuggestion,
+} from '#/services/ticket-service'
+import type {
+  ApiTicket,
+  ApiTicketComment,
+  ApiTicketHistory,
+} from '#/services/ticket-service'
+import {
+  formatTicketPriority,
+  formatDateTime,
+  formatTicketStatus,
+} from '#/lib/api'
 
 const statusOptions = [
   { value: '0', label: 'Open' },

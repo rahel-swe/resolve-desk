@@ -1,10 +1,10 @@
 import {
   getCurrentUserProfile,
   getRefreshToken,
+  logoutFromApi,
   signInWithApi,
-} from '#/components/services/auth-service'
-import type { AuthResponse } from '#/components/services/auth-service'
-import { logoutFromApi } from '#/lib/api'
+} from '#/services/auth-service'
+import type { AuthResponse } from '#/services/auth-service'
 import { createContext, useCallback, useContext, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 
@@ -36,7 +36,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const userData = await getCurrentUserProfile()
       setUser(userData)
     } catch (error) {
-      console.log('Auth provider error', error)
     } finally {
       setIsLoading(false)
     }

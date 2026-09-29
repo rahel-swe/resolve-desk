@@ -4,7 +4,7 @@ import {
   getCurrentUser,
   registerWithApi,
   saveSession,
-} from '#/components/services/auth-service'
+} from '#/services/auth-service'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Link, useNavigate } from '@tanstack/react-router'

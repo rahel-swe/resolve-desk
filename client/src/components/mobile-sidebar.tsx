@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 import SidebarNav from './sidebar-nav'
 import { Button } from './ui/button'
-import { getCurrentUser, getAuthToken } from './services/auth-service'
+import { getCurrentUser, getAuthToken } from '../services/auth-service'
 
 const MobileSidebar = () => {
   const [isOpen, setIsOpen] = useState(false)

@@ -1,7 +1,7 @@
 import { Badge } from '#/components/ui/badge'
 import { formatTicketPriority, formatTicketStatus } from '#/lib/api'
-import type { ApiTicket } from '#/lib/api'
 import { cn } from '#/lib/utils'
+import type { ApiTicket } from '#/services/ticket-service'
 
 const statusClasses: Record<string, string> = {
   Open: 'bg-destructive/10 text-destructive ring-1 ring-destructive/20',
