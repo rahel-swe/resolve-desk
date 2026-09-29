@@ -10,6 +10,7 @@ import { AppHeader } from '#/components/app-header'
 
 import appCss from '../globals.css?url'
 import DesktopSidebar from '#/components/desktop-sidebar'
+import { AuthProvider } from '#/providers/auth-provider'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -49,18 +50,20 @@ function RootDocument() {
         <HeadContent />
       </head>
 
-      <body className="bg-background text-foreground">
-        <div className="min-h-screen bg-background flex">
-          <DesktopSidebar />
+      <body className="dark bg-background text-foreground">
+        <AuthProvider>
+          <div className="min-h-screen bg-background flex">
+            <DesktopSidebar />
 
-          <div className="flex flex-col w-full">
-            <AppHeader />
+            <div className="flex flex-col w-full">
+              <AppHeader />
 
-            <main>
-              <Outlet />
-            </main>
+              <main>
+                <Outlet />
+              </main>
+            </div>
           </div>
-        </div>
+        </AuthProvider>
 
         <TanstackDevTools />
 

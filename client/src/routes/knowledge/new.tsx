@@ -1,3 +1,4 @@
+import { getAuthToken } from '#/components/services/auth-service'
 import { Button } from '#/components/ui/button'
 import {
   Card,
@@ -7,7 +8,7 @@ import {
   CardTitle,
 } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
-import { createKnowledgeArticle, getAuthToken } from '#/lib/api'
+import { createKnowledgeArticle } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 

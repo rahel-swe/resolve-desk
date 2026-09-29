@@ -1,7 +1,7 @@
-import { getCurrentUser, getAuthToken } from '#/lib/api'
 import { useState } from 'react'
 import SidebarNav from './sidebar-nav'
 import AppTitle from './app-title'
+import { getCurrentUser, getAuthToken } from './services/auth-service'
 
 const DesktopSidebar = () => {
   const [sessionUser, setSessionUser] = useState(() => getCurrentUser())

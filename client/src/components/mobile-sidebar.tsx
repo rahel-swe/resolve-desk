@@ -1,11 +1,11 @@
 import { Cancel01Icon, Menu01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Link, Navigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import SidebarNav from './sidebar-nav'
-import { getCurrentUser, getAuthToken } from '#/lib/api'
 import { Button } from './ui/button'
+import { getCurrentUser, getAuthToken } from './services/auth-service'
 
 const MobileSidebar = () => {
   const [isOpen, setIsOpen] = useState(false)

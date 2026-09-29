@@ -1,3 +1,9 @@
+import {
+  getAuthToken,
+  getRefreshToken,
+  clearSession,
+} from '#/components/services/auth-service'
+
 export type ApiTicket = {
   id: number
   title: string
@@ -40,19 +46,6 @@ export type ApiKnowledgeArticle = {
   createdByEmail: string
 }
 
-export type AuthResponse = {
-  token: string
-  email: string
-  role: string
-  refreshToken: string
-}
-
-export type CurrentUserProfile = {
-  userId: string
-  email: string
-  role: string
-}
-
 export type ApiResponse<T> = {
   isSuccess: boolean
   message: string
@@ -93,43 +86,6 @@ const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   'http://localhost:5051'
 
-const TOKEN_KEY = 'resolvedesk.token'
-const USER_KEY = 'resolvedesk.user'
-const REFRESH_TOKEN_KEY = 'resolvedesk.refreshToken'
-
-export function getAuthToken() {
-  if (typeof window === 'undefined') return null
-  return window.localStorage.getItem(TOKEN_KEY)
-}
-
-export function getRefreshToken() {
-  if (typeof window === 'undefined') return null
-  return window.localStorage.getItem(REFRESH_TOKEN_KEY)
-}
-
-export function getCurrentUser() {
-  if (typeof window === 'undefined') return null
-  const raw = window.localStorage.getItem(USER_KEY)
-  return raw ? (JSON.parse(raw) as { email: string; role: string }) : null
-}
-
-export function saveSession(session: AuthResponse) {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(TOKEN_KEY, session.token)
-  window.localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken)
-  window.localStorage.setItem(
-    USER_KEY,
-    JSON.stringify({ email: session.email, role: session.role }),
-  )
-}
-
-export function clearSession() {
-  if (typeof window === 'undefined') return
-  window.localStorage.removeItem(TOKEN_KEY)
-  window.localStorage.removeItem(REFRESH_TOKEN_KEY)
-  window.localStorage.removeItem(USER_KEY)
-}
-
 export async function apiRequest<T>(
   path: string,
   init: RequestInit = {},
@@ -159,10 +115,10 @@ export async function apiRequest<T>(
   }
 
   const contentType = response.headers.get('content-type') ?? ''
-  const payload = contentType.includes('application/json') ||
-    contentType.includes('+json')
-    ? await response.json()
-    : await response.text()
+  const payload =
+    contentType.includes('application/json') || contentType.includes('+json')
+      ? await response.json()
+      : await response.text()
 
   if (isApiEnvelope<T>(payload) && !payload.isSuccess) {
     throw new Error(payload.message || 'Request failed.')
@@ -183,28 +139,6 @@ export async function apiRequest<T>(
   }
 
   return payload as T
-}
-
-export async function loginWithApi(email: string, password: string) {
-  return apiRequest<AuthResponse>('/api/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  })
-}
-
-export async function registerWithApi(
-  fullName: string,
-  email: string,
-  password: string,
-) {
-  return apiRequest<AuthResponse>('/api/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({ fullName, email, password }),
-  })
-}
-
-export async function getCurrentUserProfile() {
-  return apiRequest<CurrentUserProfile>('/api/auth/me')
 }
 
 export async function getTickets() {
@@ -303,9 +237,7 @@ export async function getTicketResponseSuggestion(ticketId: number) {
     suggestedReply: string
     suggestedSteps: string[]
     escalationRecommendation: string
-  }>(
-    `/api/tickets/${ticketId}/response-suggestion`,
-  )
+  }>(`/api/tickets/${ticketId}/response-suggestion`)
 }
 
 export function formatTicketStatus(value: number) {

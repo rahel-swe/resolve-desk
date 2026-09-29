@@ -132,7 +132,7 @@ public class AuthService(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(10),
+            expires: DateTime.UtcNow.AddMinutes(15),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

@@ -1,9 +1,6 @@
 import { Badge } from '#/components/ui/badge'
-import {
-  formatTicketPriority,
-  formatTicketStatus,
-  type ApiTicket,
-} from '#/lib/api'
+import { formatTicketPriority, formatTicketStatus } from '#/lib/api'
+import type { ApiTicket } from '#/lib/api'
 import { cn } from '#/lib/utils'
 
 const statusClasses: Record<string, string> = {

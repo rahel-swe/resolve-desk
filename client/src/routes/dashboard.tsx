@@ -9,14 +9,11 @@ import {
 import { TicketCard } from '#/components/tickets/ticket-card'
 import { TicketEmptyState } from '#/components/tickets/ticket-empty-state'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import {
-  formatTicketPriority,
-  getAuthToken,
-  getTickets,
-  type ApiTicket,
-} from '#/lib/api'
+import { formatTicketPriority, getTickets } from '#/lib/api'
+import type { ApiTicket } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
+import { getAuthToken } from '#/components/services/auth-service'
 
 export const Route = createFileRoute('/dashboard')({ component: DashboardPage })
 
@@ -114,7 +111,9 @@ function DashboardPage() {
                 <span className="font-heading text-4xl font-semibold text-foreground">
                   {stat.value}
                 </span>
-                <span className="text-xs text-muted-foreground">{stat.note}</span>
+                <span className="text-xs text-muted-foreground">
+                  {stat.note}
+                </span>
               </div>
             </CardContent>
           </Card>

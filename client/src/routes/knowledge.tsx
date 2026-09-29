@@ -1,3 +1,4 @@
+import { getAuthToken } from '#/components/services/auth-service'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import {
@@ -8,14 +9,10 @@ import {
   CardTitle,
 } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
-import {
-  formatDateTime,
-  getKnowledgeArticles,
-  type ApiKnowledgeArticle,
-} from '#/lib/api'
+import { formatDateTime, getKnowledgeArticles } from '#/lib/api'
+import type { ApiKnowledgeArticle } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { getAuthToken } from '#/lib/api'
 
 export const Route = createFileRoute('/knowledge')({ component: KnowledgePage })
 

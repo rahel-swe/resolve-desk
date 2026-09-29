@@ -1,8 +1,12 @@
 import AuthCard from '#/components/auth/auth-card'
 import PasswordField from '#/components/auth/password-field'
+import {
+  getCurrentUser,
+  signInWithApi,
+  saveSession,
+} from '#/components/services/auth-service'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { getCurrentUser, loginWithApi, saveSession } from '#/lib/api'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
@@ -16,7 +20,7 @@ export function SignInPage() {
 
   useEffect(() => {
     const user = getCurrentUser()
-
+    console.log(user)
     if (user) {
       navigate({ to: '/dashboard' })
     }
@@ -33,7 +37,7 @@ export function SignInPage() {
     try {
       setIsSubmitting(true)
 
-      const session = await loginWithApi(email.trim(), password)
+      const session = await signInWithApi(email.trim(), password)
 
       saveSession(session)
 

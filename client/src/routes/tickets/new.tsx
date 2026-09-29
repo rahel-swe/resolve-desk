@@ -1,3 +1,4 @@
+import { getAuthToken } from '#/components/services/auth-service'
 import { Button } from '#/components/ui/button'
 import {
   Card,
@@ -15,7 +16,7 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { Textarea } from '#/components/ui/textarea'
-import { createTicket, getAuthToken } from '#/lib/api'
+import { createTicket } from '#/lib/api'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 

@@ -26,19 +26,14 @@ import {
   formatDateTime,
   formatTicketPriority,
   formatTicketStatus,
-  getAuthToken,
-  getCurrentUserProfile,
   getTicketByIdApi,
   getTicketComments,
   getTicketHistory,
   getTicketPrioritySuggestion,
   getTicketResponseSuggestion,
-  type ApiTicket,
-  type ApiTicketComment,
-  type ApiTicketHistory,
-  type CurrentUserProfile,
   updateTicketStatus,
 } from '#/lib/api'
+import type { ApiTicket, ApiTicketComment, ApiTicketHistory } from '#/lib/api'
 import {
   Link,
   createFileRoute,
@@ -47,6 +42,11 @@ import {
 } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
+import {
+  getAuthToken,
+  getCurrentUserProfile,
+} from '#/components/services/auth-service'
+import type { User } from '#/providers/auth-provider'
 
 const statusOptions = [
   { value: '0', label: 'Open' },
@@ -68,9 +68,7 @@ function TicketDetailPage() {
   const [ticket, setTicket] = useState<ApiTicket | null>(null)
   const [comments, setComments] = useState<ApiTicketComment[]>([])
   const [history, setHistory] = useState<ApiTicketHistory[]>([])
-  const [currentUser, setCurrentUser] = useState<CurrentUserProfile | null>(
-    null,
-  )
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [prioritySuggestion, setPrioritySuggestion] = useState('')
   const [responseSuggestion, setResponseSuggestion] = useState('')
   const [commentMessage, setCommentMessage] = useState('')
@@ -254,7 +252,7 @@ function TicketDetailPage() {
 
   if (!ticket) return null
 
-  const currentUserId = currentUser ? Number(currentUser.userId) : null
+  const currentUserId = currentUser ? Number(currentUser.id) : null
   const canUseSelfAssignment =
     currentUser?.role === 'SupportAgent' && currentUserId !== null
 
@@ -343,7 +341,7 @@ function TicketDetailPage() {
                 value={commentMessage}
                 onChange={(event) => setCommentMessage(event.target.value)}
                 placeholder="Write a customer update or internal support note."
-                className="min-h-[120px]"
+                className="min-h-30"
               />
               <div className="flex justify-end">
                 <Button
@@ -432,7 +430,10 @@ function TicketDetailPage() {
                 <label className="text-sm font-medium text-foreground">
                   Update status
                 </label>
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <Select
+                  value={selectedStatus}
+                  onValueChange={setSelectedStatus}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -528,13 +529,7 @@ function TicketDetailPage() {
   )
 }
 
-function MetadataBlock({
-  label,
-  value,
-}: {
-  label: string
-  value: ReactNode
-}) {
+function MetadataBlock({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="border border-border bg-background p-3">
       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">

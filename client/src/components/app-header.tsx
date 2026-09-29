@@ -1,9 +1,9 @@
 import { Button } from '#/components/ui/button'
-import { getAuthToken, getCurrentUser } from '#/lib/api'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import AppTitle from './app-title'
 import MobileSidebar from './mobile-sidebar'
+import { getCurrentUser, getAuthToken } from './services/auth-service'
 
 export function AppHeader() {
   const [sessionUser, setSessionUser] = useState(() => getCurrentUser())
