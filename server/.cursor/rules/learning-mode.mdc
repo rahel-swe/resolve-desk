@@ -1,8 +1,0 @@
----
-description: ResolveDesk mentorship, learning preferences, and edit permissions
-alwaysApply: true
----
-
-Read and follow AGENTS.md at the repository root for learning preferences and project context.
-Default to code review, explanations, and tasks for the user to type. Edit files only when explicitly asked.
-Do not run builds, tests, the app, migrations, or installs unless explicitly requested.

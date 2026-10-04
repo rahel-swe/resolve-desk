@@ -17,6 +17,12 @@ The dev server listens on `0.0.0.0` so it also works inside Docker.
 
 ## Environment
 
+Copy the example:
+
+```bash
+cp .env.example .env
+```
+
 ```bash
 VITE_API_BASE_URL=http://localhost:5051
 ```
@@ -48,10 +54,13 @@ Open `http://localhost:5007`.
 ## Scripts
 
 ```bash
+bun run dev
 bun run build
 bun run lint
 bun run format
 bun run check
+bun run docker:build
+bun run docker:run
 ```
 
 ## Stack

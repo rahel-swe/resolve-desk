@@ -13,7 +13,18 @@ The API runs at `http://localhost:5051` and restarts when server files change.
 
 ## Configuration
 
-Set these values for local development:
+Use `.env.example` as a reference for environment variable names:
+
+```bash
+ASPNETCORE_ENVIRONMENT=Development
+ASPNETCORE_URLS=http://localhost:5051
+ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=resolvedesk;Username=postgres;Password=postgres
+Jwt__Key=replace-with-a-long-local-development-secret-at-least-32-characters
+Jwt__Issuer=ResolveDesk
+Jwt__Audience=ResolveDeskClient
+```
+
+ASP.NET Core also supports these configuration keys:
 
 ```text
 ConnectionStrings:DefaultConnection
@@ -33,10 +44,22 @@ dotnet tool restore
 dotnet ef database update
 ```
 
+From the repo root:
+
+```bash
+bun run db:update
+```
+
 ## Tests
 
 ```bash
 dotnet test
+```
+
+From the repo root:
+
+```bash
+bun run test:server
 ```
 
 ## Structure
