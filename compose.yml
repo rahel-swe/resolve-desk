@@ -1,0 +1,72 @@
+name: resolvedesk
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: resolvedesk-app-db
+    environment:
+      POSTGRES_DB: resolvedesk
+      POSTGRES_USER: rahel
+      POSTGRES_PASSWORD: resolvedesk-local-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - resolvedesk_app_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rahel -d resolvedesk"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: resolvedesk-app-server
+    pull_policy: build
+    container_name: resolvedesk-app-server
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5051
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:?Set DATABASE_CONNECTION_STRING in .env}
+      Jwt__Key: ${RESOLVEDESK_JWT_KEY:?Set RESOLVEDESK_JWT_KEY in .env}
+      Jwt__Issuer: ResolveDesk
+      Jwt__Audience: ResolveDeskClient
+    ports:
+      - "5051:5051"
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: resolvedesk-app-client
+    pull_policy: build
+    container_name: resolvedesk-app-client
+    depends_on:
+      - server
+    environment:
+      VITE_API_BASE_URL: ${CLIENT_API_BASE_URL:-http://localhost:5051}
+    ports:
+      - "3000:3000"
+
+  migrate:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    profiles: ["tools"]
+    working_dir: /src
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:?Set DATABASE_CONNECTION_STRING in .env}
+      Jwt__Key: ${RESOLVEDESK_JWT_KEY:?Set RESOLVEDESK_JWT_KEY in .env}
+      Jwt__Issuer: ResolveDesk
+      Jwt__Audience: ResolveDeskClient
+    volumes:
+      - ./server:/src
+    command: sh -c "dotnet tool restore && dotnet restore ResolveDesk.csproj && dotnet ef database update --project ResolveDesk.csproj"
+
+volumes:
+  resolvedesk_app_pgdata:

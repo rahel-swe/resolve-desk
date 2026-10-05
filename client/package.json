@@ -13,8 +13,8 @@
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
-    "docker:build": "docker build -t react-app .",
-    "docker:run": "docker run -d -p 3000:3000 --name resolvedesk-client react-app"
+    "docker:build": "docker build -t resolvedesk-app-client .",
+    "docker:run": "docker run -d -p 3000:3000 --name resolvedesk-app-client resolvedesk-app-client"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

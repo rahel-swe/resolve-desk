@@ -20,28 +20,35 @@ bun run setup
 bun run dev
 bun run build
 bun run check
-bun run test
-```
-
-Useful focused commands:
-
-```bash
-bun run dev:client
-bun run dev:server
-bun run db:update
-bun run docker:client:build
-bun run docker:client:run
+bun run db:migrate
+bun run docker:migrate
+bun run docker:up
+bun run docker:down
 ```
 
 ## Environment
 
-Copy the frontend example before local work:
+Root `.env` is for Docker Compose. It should stay small:
+
+```text
+DATABASE_CONNECTION_STRING  one PostgreSQL connection string for the API
+RESOLVEDESK_JWT_KEY         local JWT signing key
+CLIENT_API_BASE_URL         browser API URL
+```
+
+```bash
+cp .env.example .env
+```
+
+Client `.env` is for Vite when running the client directly:
 
 ```bash
 cp client/.env.example client/.env
 ```
 
-Use `.env.example` and `server/.env.example` as references for environment variable names. Keep real secrets in local `.env` files, .NET user secrets, or machine environment variables.
+Server secrets should be set with .NET user secrets, machine environment variables, Docker Compose variables, or deployment secrets. `server/.env.example` is only a reference for ASP.NET Core environment variable names.
+
+Keep real secrets out of committed files.
 
 ## Development
 
@@ -63,12 +70,47 @@ bun run dev
 
 Open `http://localhost:3000`.
 
-Docker:
+For client-only Docker commands, use `client/package.json`.
+
+## Docker Compose
+
+The root `compose.yml` runs these named containers:
+
+```text
+resolvedesk-app-db      PostgreSQL
+resolvedesk-app-server  ASP.NET Core API
+resolvedesk-app-client  React/TanStack frontend
+```
+
+First copy the root env example:
 
 ```bash
-cd client
-docker build -t react-app .
-docker run -d -p 3000:3000 --name c1 react-app
+cp .env.example .env
+```
+
+For Compose, the database connection string uses the Docker service name `db`:
+
+```text
+Host=db;Port=5432;Database=resolvedesk;Username=rahel;Password=resolvedesk-local-password
+```
+
+Then run the database migration:
+
+```bash
+bun run docker:migrate
+```
+
+Start the full stack:
+
+```bash
+bun run docker:up
+```
+
+Open:
+
+```text
+client  http://localhost:3000
+server  http://localhost:5051
 ```
 
 ## Server

@@ -34,19 +34,19 @@ VITE_API_BASE_URL=http://localhost:5051
 Build the image:
 
 ```bash
-docker build -t react-app .
+bun run docker:build
 ```
 
 Run the image:
 
 ```bash
-docker run -d -p 3000:3000 --name c1 react-app
+bun run docker:run
 ```
 
 Run with live source code mounted:
 
 ```bash
-docker run -d -p 5007:3000 -v "${PWD}:/app" -v /app/node_modules react-app
+docker run -d -p 5007:3000 -v "${PWD}:/app" -v /app/node_modules resolvedesk-app-client
 ```
 
 Open `http://localhost:5007`.
