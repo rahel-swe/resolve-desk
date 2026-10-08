@@ -3,7 +3,7 @@ name: resolvedesk
 services:
   db:
     image: postgres:17-alpine
-    container_name: resolvedesk-app-db
+    container_name: db
     environment:
       POSTGRES_DB: resolvedesk
       POSTGRES_USER: rahel
@@ -22,9 +22,9 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: resolvedesk-app-server
+    image: server
     pull_policy: build
-    container_name: resolvedesk-app-server
+    container_name: server
     depends_on:
       db:
         condition: service_healthy
@@ -42,9 +42,9 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: resolvedesk-app-client
+    image: client
     pull_policy: build
-    container_name: resolvedesk-app-client
+    container_name: client
     depends_on:
       - server
     environment:
@@ -60,13 +60,16 @@ services:
       db:
         condition: service_healthy
     environment:
+      NUGET_PACKAGES: /root/.nuget/packages
       ConnectionStrings__DefaultConnection: ${DATABASE_CONNECTION_STRING:?Set DATABASE_CONNECTION_STRING in .env}
       Jwt__Key: ${RESOLVEDESK_JWT_KEY:?Set RESOLVEDESK_JWT_KEY in .env}
       Jwt__Issuer: ResolveDesk
       Jwt__Audience: ResolveDeskClient
     volumes:
       - ./server:/src
+      - resolvedesk_nuget_cache:/root/.nuget/packages
     command: sh -c "dotnet tool restore && dotnet restore ResolveDesk.csproj && dotnet ef database update --project ResolveDesk.csproj"
 
 volumes:
   resolvedesk_app_pgdata:
+  resolvedesk_nuget_cache:
