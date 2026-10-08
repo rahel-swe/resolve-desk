@@ -11,6 +11,8 @@ import { AppHeader } from '#/components/app-header'
 import appCss from '../globals.css?url'
 import DesktopSidebar from '#/components/desktop-sidebar'
 import { AuthProvider } from '#/providers/auth-provider'
+import RootError from '#/pages/root-error'
+import NotFound from '#/pages/not-found'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -40,6 +42,8 @@ export const Route = createRootRoute({
     ],
   }),
 
+  errorComponent: RootError,
+  notFoundComponent: NotFound,
   shellComponent: RootDocument,
 })
 
