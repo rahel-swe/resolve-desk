@@ -33,9 +33,8 @@ function isApiEnvelope<T>(payload: unknown): payload is ApiResponse<T> {
   )
 }
 
-const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  'http://localhost:5051'
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5051'
 
 function buildHeaders(init: RequestInit = {}) {
   const headers = new Headers(init.headers)
