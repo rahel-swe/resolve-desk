@@ -33,7 +33,24 @@ export function getRefreshToken() {
 export function getCurrentUser() {
   if (typeof window === 'undefined') return null
   const raw = window.localStorage.getItem(USER_KEY)
-  return raw ? (JSON.parse(raw) as StoredUser) : null
+  if (!raw) return null
+  try {
+    const user: unknown = JSON.parse(raw)
+    if (
+      typeof user === 'object' &&
+      user !== null &&
+      'email' in user &&
+      typeof user.email === 'string' &&
+      'role' in user &&
+      typeof user.role === 'string' &&
+      ['Admin', 'SupportAgent', 'Customer', 'User'].includes(user.role)
+    )
+      return user as StoredUser
+  } catch {
+    // Invalid or stale browser storage must not crash session restoration.
+  }
+  window.localStorage.removeItem(USER_KEY)
+  return null
 }
 
 export function saveSession(session: StoredSession) {

@@ -65,7 +65,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const syncFromStorage = useCallback(() => {
     setHasToken(Boolean(getAuthToken()))
-    setUser(getStoredUserSnapshot())
+    const stored = getStoredUserSnapshot()
+    setUser((current) =>
+      current &&
+      stored &&
+      current.email === stored.email &&
+      current.role === stored.role
+        ? current
+        : stored,
+    )
   }, [])
 
   const reloadUser = useCallback(async () => {
@@ -79,6 +87,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     try {
       const userData = await getCurrentUserProfile()
+      if (userData.email !== getCurrentUser()?.email) return
       setUser(userData)
       setHasToken(true)
     } catch {
