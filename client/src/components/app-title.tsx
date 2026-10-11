@@ -12,11 +12,11 @@ const AppTitle = ({
     <Link
       to={isAuthenticated ? '/dashboard' : '/sign-in'}
       className={cn(
-        'text-2xl uppercase text-foreground font-semibold',
+        'font-heading text-[30px] leading-none tracking-tight text-foreground',
         className,
       )}
     >
-      Resolve_Desk
+      Resolve<span className="text-primary">Desk</span>
     </Link>
   )
 }
