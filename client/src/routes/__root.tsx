@@ -13,6 +13,10 @@ import DesktopSidebar from '#/components/desktop-sidebar'
 import { AuthProvider } from '#/providers/auth-provider'
 import RootError from '#/pages/root-error'
 import NotFound from '#/pages/not-found'
+import { WorkspaceProvider } from '#/providers/workspace-provider'
+import { SidebarProvider } from '#/components/ui/sidebar'
+import { TooltipProvider } from '#/components/ui/tooltip'
+import type { CSSProperties } from 'react'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -25,7 +29,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Dockerized ResolveDesk',
+        title: 'ResolveDesk · Support workspace',
       },
       {
         name: 'description',
@@ -56,20 +60,25 @@ function RootDocument() {
 
       <body className="dark bg-background text-foreground">
         <AuthProvider>
-          <div className="min-h-screen bg-background flex">
+          <WorkspaceProvider>
+          <TooltipProvider>
+          <SidebarProvider style={{ '--sidebar-width': '15.5rem' } as CSSProperties}>
+            <a href="#main-content" className="sr-only fixed top-3 left-3 z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only">Skip to content</a>
             <DesktopSidebar />
 
-            <div className="flex flex-col w-full">
+            <div className="flex min-w-0 flex-1 flex-col">
               <AppHeader />
 
-              <main>
+              <main id="main-content" className="flex-1">
                 <Outlet />
               </main>
             </div>
-          </div>
+          </SidebarProvider>
+          </TooltipProvider>
+          </WorkspaceProvider>
         </AuthProvider>
 
-        <TanstackDevTools />
+        {import.meta.env.DEV && <TanstackDevTools />}
 
         <Scripts />
       </body>

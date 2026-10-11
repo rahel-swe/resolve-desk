@@ -13,6 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
@@ -38,6 +42,26 @@ const DashboardRoute = DashboardRouteImport.update({
 const KnowledgeRoute = KnowledgeRouteImport.update({
   id: '/knowledge',
   path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TicketsRoute = TicketsRouteImport.update({
@@ -80,6 +104,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/tickets': typeof TicketsRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -92,6 +120,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/knowledge/new': typeof KnowledgeNewRoute
@@ -105,6 +137,10 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/tickets': typeof TicketsRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
@@ -119,6 +155,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/tickets'
     | '/sign-in'
     | '/sign-up'
@@ -131,6 +171,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/sign-in'
     | '/sign-up'
     | '/knowledge/new'
@@ -143,6 +187,10 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/dashboard'
     | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/tickets'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
@@ -157,6 +205,10 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   KnowledgeRoute: typeof KnowledgeRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
+  ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
+  TeamRoute: typeof TeamRoute
   TicketsRoute: typeof TicketsRouteWithChildren
 }
 
@@ -188,6 +240,34 @@ declare module '@tanstack/react-router' {
       path: '/knowledge'
       fullPath: '/knowledge'
       preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tickets': {
@@ -288,6 +368,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRoute: DashboardRoute,
   KnowledgeRoute: KnowledgeRouteWithChildren,
+  ProfileRoute: ProfileRoute,
+  ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
+  TeamRoute: TeamRoute,
   TicketsRoute: TicketsRouteWithChildren,
 }
 export const routeTree = rootRouteImport

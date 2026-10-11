@@ -1,53 +1,27 @@
-import { navItems } from '#/constants/nav-items'
-import { useAuth } from '#/providers/auth-provider'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { Button } from './ui/button'
+import { Link, useLocation } from '@tanstack/react-router'
+import { navItems } from '#/constants/nav-items'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '#/components/ui/sidebar'
+import { useWorkspace } from '#/providers/workspace-provider'
 
-type SidebarNavProps = {
-  onNavigate?: () => void
-}
-
-const SidebarNav = ({ onNavigate }: SidebarNavProps) => {
-  const navigate = useNavigate()
-  const { signOut } = useAuth()
-
-  const handleLogout = async () => {
-    await signOut()
-    navigate({
-      to: '/sign-in',
-    })
-  }
-
+export default function SidebarNav() {
+  const { pathname } = useLocation()
+  const { setOpenMobile } = useSidebar()
+  const { queue } = useWorkspace()
+  const openCount = queue.data.filter((ticket) => ticket.status === 0).length
   return (
-    <nav className="flex flex-col gap-1">
-      {navItems.map((item) => (
-        <Link
-          key={item.to}
-          to={item.to}
-          onClick={onNavigate}
-          className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground mx-auto max-w-42 w-full"
-          activeProps={{
-            className: 'bg-muted text-foreground',
-          }}
-        >
-          {'icon' in item ? (
-            <HugeiconsIcon icon={item.icon} className="size-9 shrink-0" />
-          ) : null}
-
-          <span className="text-base">{item.label}</span>
-        </Link>
-      ))}
-
-      <Button
-        variant={'destructive'}
-        className={'mt-16 max-w-42 mx-auto w-full'}
-        onClick={handleLogout}
-      >
-        Log out
-      </Button>
+    <nav aria-label="Workspace navigation">
+      <SidebarMenu className="gap-2">
+        {navItems.map((item) => (
+          <SidebarMenuItem key={item.to} className={item.to === '/team' ? 'mt-5 border-t pt-5' : ''}>
+            <SidebarMenuButton render={<Link to={item.to} />} isActive={pathname === item.to || pathname.startsWith(`${item.to}/`)} onClick={() => setOpenMobile(false)} className="h-12 gap-3 rounded-md border-l-2 border-transparent px-4 text-sm text-muted-foreground data-active:border-primary data-active:bg-sidebar-accent/65 data-active:text-foreground [&_svg]:size-5 data-active:[&_svg]:text-primary">
+              <HugeiconsIcon icon={item.icon} strokeWidth={1.5} /><span>{item.label}</span>
+              {item.preview && <span className="ml-auto rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">Preview</span>}
+              {item.to === '/tickets' && !queue.loading && !queue.error && openCount > 0 && <span className="ml-auto rounded-full bg-muted px-2 py-1 text-xs">{openCount}</span>}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
     </nav>
   )
 }
-
-export default SidebarNav
