@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight01Icon,
-  Note01Icon,
+  BubbleChatIcon,
+  File02Icon,
   Search01Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -74,7 +75,7 @@ export function WorkspaceSummary() {
                   className="flex gap-3 hover:text-primary"
                 >
                   <HugeiconsIcon
-                    icon={Note01Icon}
+                    icon={BubbleChatIcon}
                     className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                   />
                   <span className="min-w-0">
@@ -103,7 +104,7 @@ export function WorkspaceSummary() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search help articles…"
-            className="rounded-md border-input bg-muted/20 pr-3 pl-9 text-xs"
+            className="pl-9 text-xs"
           />
         </div>
         <ul className="mt-4 space-y-4">
@@ -115,7 +116,7 @@ export function WorkspaceSummary() {
                 className="flex items-start gap-3 hover:text-primary"
               >
                 <HugeiconsIcon
-                  icon={Note01Icon}
+                  icon={File02Icon}
                   className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                 />
                 <span className="min-w-0">

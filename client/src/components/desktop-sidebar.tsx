@@ -1,5 +1,5 @@
 import { Link, useLocation } from '@tanstack/react-router'
-import { Settings01Icon } from '@hugeicons/core-free-icons'
+import { Settings02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import SidebarNav from './sidebar-nav'
 import AppTitle from './app-title'
@@ -39,7 +39,11 @@ export default function DesktopSidebar() {
               onClick={() => setOpenMobile(false)}
               className="h-11 gap-3 rounded-md px-4 text-muted-foreground"
             >
-              <HugeiconsIcon icon={Settings01Icon} className="size-5" />
+              <HugeiconsIcon
+                icon={Settings02Icon}
+                strokeWidth={1.8}
+                className="size-5"
+              />
               <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

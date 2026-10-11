@@ -30,7 +30,7 @@ export default function SidebarNav() {
               onClick={() => setOpenMobile(false)}
               className="h-12 gap-3 rounded-md border-l-2 border-transparent px-4 text-sm text-muted-foreground data-active:border-primary data-active:bg-sidebar-accent/65 data-active:text-foreground [&_svg]:size-5 data-active:[&_svg]:text-primary"
             >
-              <HugeiconsIcon icon={item.icon} strokeWidth={1.5} />
+              <HugeiconsIcon icon={item.icon} strokeWidth={1.8} />
               <span>{item.label}</span>
               {item.preview && (
                 <span className="ml-auto rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">

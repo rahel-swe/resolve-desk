@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { Notification01Icon, Search01Icon } from '@hugeicons/core-free-icons'
+import { Notification02Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -31,6 +31,7 @@ export function AppHeader() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
+
   if (!isAuthenticated)
     return (
       <header className="flex h-20 items-center justify-between px-5 sm:px-9">
@@ -92,7 +93,7 @@ export function AppHeader() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search tickets…"
-            className="h-10 rounded-md border-input bg-muted/30 pr-3 pl-9 text-xs"
+            className="h-10 pl-9 text-xs"
           />
         </form>
         <DropdownMenu>
@@ -105,7 +106,11 @@ export function AppHeader() {
               />
             }
           >
-            <HugeiconsIcon icon={Notification01Icon} className="size-5" />
+            <HugeiconsIcon
+              icon={Notification02Icon}
+              strokeWidth={1.8}
+              className="size-5"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"

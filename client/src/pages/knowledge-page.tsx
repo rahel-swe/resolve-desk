@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   ArrowRight01Icon,
-  BookOpen01Icon,
+  BookOpen02Icon,
   PlusSignIcon,
   Search01Icon,
 } from '@hugeicons/core-free-icons'
@@ -78,7 +78,7 @@ export default function KnowledgePage() {
               })
             }
             placeholder="Search articles, topics, or tags…"
-            className="rounded-md border-input bg-muted/20 pr-3 pl-9"
+            className="pl-9"
           />
         </div>
         <Select
@@ -128,7 +128,7 @@ export default function KnowledgePage() {
                   onClick={() => setSelectedArticle(article)}
                 >
                   <HugeiconsIcon
-                    icon={BookOpen01Icon}
+                    icon={BookOpen02Icon}
                     className="size-6! shrink-0 text-muted-foreground"
                   />
                   <span className="min-w-0 flex-1">
