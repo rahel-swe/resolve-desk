@@ -64,8 +64,8 @@ export async function getTickets(signal?: AbortSignal) {
   return tickets
 }
 
-export async function getTicketByIdApi(id: number) {
-  return await apiRequest<ApiTicket>(`/api/tickets/${id}`)
+export async function getTicketByIdApi(id: number, signal?: AbortSignal) {
+  return apiRequest<ApiTicket>(`/api/tickets/${id}`, { signal })
 }
 
 export async function getKnowledgeArticles(signal?: AbortSignal) {
@@ -98,8 +98,8 @@ export async function assignTicket(ticketId: number, assignedAgentId: number) {
   })
 }
 
-export async function getTicketComments(ticketId: number) {
-  return apiRequest<ApiTicketComment[]>(`/api/tickets/${ticketId}/comments`)
+export async function getTicketComments(ticketId: number, signal?: AbortSignal) {
+  return apiRequest<ApiTicketComment[]>(`/api/tickets/${ticketId}/comments`, { signal })
 }
 
 export async function createTicketComment(ticketId: number, message: string) {
@@ -109,8 +109,8 @@ export async function createTicketComment(ticketId: number, message: string) {
   })
 }
 
-export async function getTicketHistory(ticketId: number) {
-  return apiRequest<ApiTicketHistory[]>(`/api/tickets/${ticketId}/history`)
+export async function getTicketHistory(ticketId: number, signal?: AbortSignal) {
+  return apiRequest<ApiTicketHistory[]>(`/api/tickets/${ticketId}/history`, { signal })
 }
 
 export async function createKnowledgeArticle(payload: {
