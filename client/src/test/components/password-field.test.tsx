@@ -43,6 +43,7 @@ describe('PasswordField', () => {
     )
 
     expect(passwordInput).toHaveAttribute('type', 'text')
+
     expect(
       screen.getByRole('button', {
         name: 'Hide password',

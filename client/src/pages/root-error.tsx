@@ -1,4 +1,5 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
+import { Button } from '#/components/ui/button'
 
 function RootError({ error, reset }: ErrorComponentProps) {
   const message = error instanceof Error ? error.message : 'Unknown error'
@@ -8,19 +9,15 @@ function RootError({ error, reset }: ErrorComponentProps) {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
         Something went wrong
       </p>
-      <h1 className="text-3xl font-semibold">We could not load this page.</h1>
+      <h1 className="font-heading text-5xl">We could not load this page.</h1>
       {import.meta.env.DEV ? (
         <pre className="max-w-full overflow-auto rounded-md border bg-muted p-4 text-left text-sm">
           {message}
         </pre>
       ) : null}
-      <button
-        type="button"
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        onClick={reset}
-      >
+      <Button type="button" onClick={reset}>
         Try again
-      </button>
+      </Button>
     </section>
   )
 }

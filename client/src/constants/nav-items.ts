@@ -1,23 +1,25 @@
 import {
-  BookOpen01Icon,
-  DashboardSquare01Icon,
-  Ticket01Icon,
+  BookOpen02Icon,
+  Home03Icon,
+  BubbleChatIcon,
+  UserMultiple02Icon,
+  ChartIncreaseIcon,
 } from '@hugeicons/core-free-icons'
 
 export const navItems = [
   {
-    label: 'Dashboard',
+    label: 'Overview',
     to: '/dashboard',
-    icon: DashboardSquare01Icon,
+    icon: Home03Icon,
+    preview: false,
   },
-  {
-    label: 'Tickets',
-    to: '/tickets',
-    icon: Ticket01Icon,
-  },
+  { label: 'Tickets', to: '/tickets', icon: BubbleChatIcon, preview: false },
   {
     label: 'Knowledge',
     to: '/knowledge',
-    icon: BookOpen01Icon,
+    icon: BookOpen02Icon,
+    preview: false,
   },
+  { label: 'Team', to: '/team', icon: UserMultiple02Icon, preview: true },
+  { label: 'Reports', to: '/reports', icon: ChartIncreaseIcon, preview: true },
 ] as const

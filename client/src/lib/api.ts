@@ -85,7 +85,9 @@ function getErrorMessage(payload: unknown, status: number) {
   return `Request failed with status ${status}`
 }
 
-async function refreshAccessToken() {
+let pendingRefresh: Promise<string | null> | null = null
+
+async function requestRefreshedToken() {
   const refreshToken = getRefreshToken()
 
   if (!refreshToken) return null
@@ -96,16 +98,46 @@ async function refreshAccessToken() {
     body: JSON.stringify({ refreshToken }),
   })
 
+  if (getRefreshToken() !== refreshToken)
+    throw new DOMException(
+      'The session changed during token refresh.',
+      'AbortError',
+    )
+
   if (!response.ok) return null
 
   const payload = await response.json()
-  const session = isApiEnvelope<StoredSession>(payload)
+  if (isApiEnvelope<unknown>(payload) && !payload.isSuccess) return null
+  const session = isApiEnvelope<StoredSession | null>(payload)
     ? payload.data
-    : (payload as StoredSession)
+    : (payload as StoredSession | null)
+
+  if (
+    !session?.token ||
+    !session.refreshToken ||
+    !session.email ||
+    !session.role
+  )
+    return null
+
+  // A completed refresh must not restore a session after sign-out or account switching.
+  if (getRefreshToken() !== refreshToken)
+    throw new DOMException(
+      'The session changed during token refresh.',
+      'AbortError',
+    )
 
   saveSession(session)
 
   return session.token
+}
+
+function refreshAccessToken() {
+  if (!pendingRefresh)
+    pendingRefresh = requestRefreshedToken().finally(() => {
+      pendingRefresh = null
+    })
+  return pendingRefresh
 }
 
 export async function apiRequestEnvelope<T>(
@@ -121,7 +153,12 @@ export async function apiRequestEnvelope<T>(
   })
 
   if (response.status === 401 && !skipAuthRefresh) {
-    const newToken = await refreshAccessToken()
+    const currentToken = getAuthToken()
+    // A slower 401 can arrive after another request already rotated the token.
+    const newToken =
+      currentToken && headers.get('Authorization') !== `Bearer ${currentToken}`
+        ? currentToken
+        : await refreshAccessToken()
 
     if (!newToken) {
       clearSession()

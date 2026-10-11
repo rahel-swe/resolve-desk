@@ -58,18 +58,28 @@ function getStoredUserSnapshot(): User | null {
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [user, setUser] = useState<User | null>(() => getStoredUserSnapshot())
-  const [hasToken, setHasToken] = useState(() => Boolean(getAuthToken()))
+  // Start with the same snapshot during SSR and hydration, then restore the session.
+  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [hasToken, setHasToken] = useState(false)
 
   const syncFromStorage = useCallback(() => {
     setHasToken(Boolean(getAuthToken()))
-    setUser(getStoredUserSnapshot())
+    const stored = getStoredUserSnapshot()
+    setUser((current) =>
+      current &&
+      stored &&
+      current.email === stored.email &&
+      current.role === stored.role
+        ? current
+        : stored,
+    )
   }, [])
 
   const reloadUser = useCallback(async () => {
     if (!getAuthToken()) {
       syncFromStorage()
+      setIsLoading(false)
       return
     }
 
@@ -77,6 +87,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     try {
       const userData = await getCurrentUserProfile()
+      if (userData.email !== getCurrentUser()?.email) return
       setUser(userData)
       setHasToken(true)
     } catch {

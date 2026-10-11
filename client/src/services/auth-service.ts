@@ -28,11 +28,14 @@ export async function registerWithApi(
   email: string,
   password: string,
 ) {
-  return apiRequest<AuthResponse>('/api/auth/register', {
+  const session = await apiRequest<AuthResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ fullName, email, password }),
     skipAuthRefresh: true,
   })
+  // The registration contract issues only an access token. Obtain the same
+  // renewable session as sign-in rather than expiring a new account after 15 minutes.
+  return session.refreshToken ? session : signInWithApi(email, password)
 }
 
 export async function signInWithApi(email: string, password: string) {

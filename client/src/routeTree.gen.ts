@@ -13,9 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
+import { Route as KnowledgeIndexRouteImport } from './routes/knowledge/index'
 import { Route as KnowledgeNewRouteImport } from './routes/knowledge/new'
 import { Route as TicketsIndexRouteImport } from './routes/tickets/index'
 import { Route as TicketsTicketIdRouteImport } from './routes/tickets/$ticketId'
@@ -40,6 +45,26 @@ const KnowledgeRoute = KnowledgeRouteImport.update({
   path: '/knowledge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TicketsRoute = TicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -54,6 +79,11 @@ const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+const KnowledgeIndexRoute = KnowledgeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => KnowledgeRoute,
 } as any)
 const KnowledgeNewRoute = KnowledgeNewRouteImport.update({
   id: '/new',
@@ -80,23 +110,32 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/tickets': typeof TicketsRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/knowledge/new': typeof KnowledgeNewRoute
   '/tickets/$ticketId': typeof TicketsTicketIdRoute
   '/tickets/new': typeof TicketsNewRoute
+  '/knowledge/': typeof KnowledgeIndexRoute
   '/tickets/': typeof TicketsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
-  '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/knowledge/new': typeof KnowledgeNewRoute
   '/tickets/$ticketId': typeof TicketsTicketIdRoute
   '/tickets/new': typeof TicketsNewRoute
+  '/knowledge': typeof KnowledgeIndexRoute
   '/tickets': typeof TicketsIndexRoute
 }
 export interface FileRoutesById {
@@ -105,12 +144,17 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/knowledge': typeof KnowledgeRouteWithChildren
+  '/profile': typeof ProfileRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/tickets': typeof TicketsRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/knowledge/new': typeof KnowledgeNewRoute
   '/tickets/$ticketId': typeof TicketsTicketIdRoute
   '/tickets/new': typeof TicketsNewRoute
+  '/knowledge/': typeof KnowledgeIndexRoute
   '/tickets/': typeof TicketsIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,23 +163,32 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/tickets'
     | '/sign-in'
     | '/sign-up'
     | '/knowledge/new'
     | '/tickets/$ticketId'
     | '/tickets/new'
+    | '/knowledge/'
     | '/tickets/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
-    | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/sign-in'
     | '/sign-up'
     | '/knowledge/new'
     | '/tickets/$ticketId'
     | '/tickets/new'
+    | '/knowledge'
     | '/tickets'
   id:
     | '__root__'
@@ -143,12 +196,17 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/dashboard'
     | '/knowledge'
+    | '/profile'
+    | '/reports'
+    | '/settings'
+    | '/team'
     | '/tickets'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/knowledge/new'
     | '/tickets/$ticketId'
     | '/tickets/new'
+    | '/knowledge/'
     | '/tickets/'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +215,10 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   KnowledgeRoute: typeof KnowledgeRouteWithChildren
+  ProfileRoute: typeof ProfileRoute
+  ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
+  TeamRoute: typeof TeamRoute
   TicketsRoute: typeof TicketsRouteWithChildren
 }
 
@@ -190,6 +252,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tickets': {
       id: '/tickets'
       path: '/tickets'
@@ -210,6 +300,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-up'
       preLoaderRoute: typeof AuthSignUpRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/knowledge/': {
+      id: '/knowledge/'
+      path: '/'
+      fullPath: '/knowledge/'
+      preLoaderRoute: typeof KnowledgeIndexRouteImport
+      parentRoute: typeof KnowledgeRoute
     }
     '/knowledge/new': {
       id: '/knowledge/new'
@@ -258,10 +355,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 
 interface KnowledgeRouteChildren {
   KnowledgeNewRoute: typeof KnowledgeNewRoute
+  KnowledgeIndexRoute: typeof KnowledgeIndexRoute
 }
 
 const KnowledgeRouteChildren: KnowledgeRouteChildren = {
   KnowledgeNewRoute: KnowledgeNewRoute,
+  KnowledgeIndexRoute: KnowledgeIndexRoute,
 }
 
 const KnowledgeRouteWithChildren = KnowledgeRoute._addFileChildren(
@@ -288,6 +387,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRoute: DashboardRoute,
   KnowledgeRoute: KnowledgeRouteWithChildren,
+  ProfileRoute: ProfileRoute,
+  ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
+  TeamRoute: TeamRoute,
   TicketsRoute: TicketsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
