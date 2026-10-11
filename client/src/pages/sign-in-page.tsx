@@ -55,8 +55,11 @@ export function SignInPage() {
         void handleSubmit()
       }}
     >
-      <div>
-        <label className="text-sm font-medium text-foreground" htmlFor="email">
+      <div className="space-y-2">
+        <label
+          className="block text-sm font-medium text-foreground"
+          htmlFor="email"
+        >
           Email
         </label>
 

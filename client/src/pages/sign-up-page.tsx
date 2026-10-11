@@ -58,7 +58,7 @@ export function SignUpPage() {
         void handleSubmit()
       }}
     >
-      <div>
+      <div className="space-y-2">
         <label
           className="text-sm font-medium text-foreground"
           htmlFor="fullName"
@@ -80,8 +80,11 @@ export function SignUpPage() {
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground" htmlFor="email">
+      <div className="space-y-2">
+        <label
+          className="block text-sm font-medium text-foreground"
+          htmlFor="email"
+        >
           Email
         </label>
 

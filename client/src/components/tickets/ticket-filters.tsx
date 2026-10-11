@@ -67,7 +67,7 @@ export function TicketFilters({
             value={query}
             onChange={(event) => onQuery(event.target.value)}
             placeholder="Search tickets, requesters, or categories…"
-            className="rounded-md border-input bg-muted/20 pr-3 pl-9"
+            className="pl-9"
           />
         </div>
         <div className="flex gap-3">

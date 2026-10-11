@@ -65,3 +65,30 @@ No actionable P0/P1/P2 findings remain in the checked states.
 - [ ] Preview-only features need backend integration before they can persist changes or produce reports.
 
 **Follow-up polish:** generated mock content is shorter than some real ticket titles, so those rows intentionally truncate with full titles available on hover and in detail views. The development-only tooling launcher is outside the product design and absent in production.
+
+## Theme, icon, and field refinements — 2026-10-11
+
+Refinement result: passed for the requested visual changes and checked interactions.
+
+- Updated existing dark-theme variables to the selected concept's charcoal surfaces, cream text, and burnt-orange primary. Main background is `#201e1c`; sidebar is `#242220`. No new palette variables or dependencies were added.
+- Replaced older navigation, notification, knowledge, AI-assist, mobile-menu, select, and password icons with existing Hugeicons. Navigation uses a consistent 1.8 stroke width.
+- Shared shadcn Input, Textarea, and SelectTrigger now use filled muted backgrounds, complete borders, 8px corners, interior padding, and visible focus rings. Removed page-specific weaker search-field backgrounds so the same treatment reaches all search fields.
+- Password visibility is inside the field using the existing shadcn Button. Pointer and keyboard toggling were checked. Fixed an intermediate positioning issue where the button's pressed transform displaced the click target.
+
+### Updated rendered evidence
+
+All files below are in the evidence directory listed above.
+
+- `refinement-overview.jpg`: loaded live desktop overview.
+- `refinement-comparison.png`: selected source and refined overview combined in the same image.
+- `refinement-navigation.png` and `refinement-workspace.png`: focused source-to-client comparisons, inspected alongside the full comparison.
+- `refinement-ticket-form-final.jpg`: empty desktop form showing the shared fields, refreshed navigation, and final palette.
+- `refinement-ticket-form-full.jpg`: populated desktop fields and focus state, without submission.
+- `refinement-profile.jpg`: filled profile controls, without persistence.
+- `refinement-mobile-controls.jpg`, `refinement-mobile-form.jpg`, and `refinement-sign-in.jpg`: mobile search, filters, form, and password input.
+
+Desktop CSS viewport was 1440 × 1024. The full overview capture returned 1425 × 1148 pixels. For the combined comparison, its first 1024px were retained without scaling and the 15px scrollbar gutter was padded with the page background. The 1487 × 1058 source was normalized to 1440 × 1024. The additional evidence is inspected at its returned dimensions; no pixel-perfect or device-density match is asserted. Mobile CSS viewport was 390 × 844, with no document overflow in the checked form and filter states.
+
+The required fidelity surfaces were rechecked: existing Inter/EB Garamond typography, established page spacing and responsive layout, revised existing color tokens, existing vector icon assets, and real application content. Filled rounded fields and refreshed icons are intentional user-requested refinements to the concept. Counts and account data reflect the current backend rather than the generated mock.
+
+No new browser console errors or warnings appeared during the final signed-in verification. The authorized TypeScript check passed. Backend mutations, unit tests, and production builds were not run for this styling follow-up. Existing edits in the two test files were preserved.
