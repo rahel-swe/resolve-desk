@@ -1,9 +1,10 @@
 import { cn } from '#/lib/utils'
 import { displayName, initials, roleLabel } from '#/lib/user-utils'
 import type { User } from '#/providers/auth-provider'
+import { Avatar, AvatarFallback } from '#/components/ui/avatar'
 
 export function UserAvatar({ name, className }: { name: string; className?: string }) {
-  return <span aria-hidden="true" className={cn('flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-medium text-foreground', className)}>{initials(name)}</span>
+  return <Avatar aria-hidden="true" size="lg" className={cn('size-10', className)}><AvatarFallback className="bg-primary/25 text-sm font-medium text-foreground">{initials(name)}</AvatarFallback></Avatar>
 }
 
 export function UserIdentity({ user, compact = false }: { user: User | null; compact?: boolean }) {

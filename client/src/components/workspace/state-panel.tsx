@@ -2,22 +2,23 @@ import type { ReactNode } from 'react'
 import { InformationCircleIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '#/components/ui/button'
+import { Alert, AlertDescription } from '#/components/ui/alert'
 
 export function ResourceError({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div role="alert" className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm">
+    <Alert variant="destructive" className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-md border-destructive/30 bg-destructive/5 p-4 after:hidden">
       <p className="text-destructive">{message}</p>
       {onRetry && <Button variant="outline" size="sm" onClick={onRetry}>Try again</Button>}
-    </div>
+    </Alert>
   )
 }
 
 export function PreviewNotice({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-6 flex items-start gap-3 rounded-md bg-muted/60 p-4 text-sm leading-6 text-muted-foreground">
+    <Alert role="note" className="mb-6 flex items-start gap-3 rounded-md border-0 bg-muted/60 p-4 leading-6 after:hidden">
       <HugeiconsIcon icon={InformationCircleIcon} className="mt-0.5 size-5 shrink-0 text-primary" />
-      <p><span className="font-medium text-foreground">Preview. </span>{children}</p>
-    </div>
+      <AlertDescription><span className="font-medium text-foreground">Preview. </span>{children}</AlertDescription>
+    </Alert>
   )
 }
 
