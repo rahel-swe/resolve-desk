@@ -2,20 +2,22 @@ import { Badge } from '#/components/ui/badge'
 import { formatTicketPriority, formatTicketStatus } from '#/lib/ticket-utils'
 import { cn } from '#/lib/utils'
 import type { ApiTicket } from '#/services/ticket-service'
+import { CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
 
 const statusClasses: Record<string, string> = {
-  Open: 'bg-destructive/10 text-destructive ring-1 ring-destructive/20',
-  'In Progress': 'bg-primary/10 text-primary ring-1 ring-primary/20',
-  Waiting: 'bg-secondary text-secondary-foreground ring-1 ring-border',
-  Resolved: 'bg-muted text-foreground ring-1 ring-border',
+  Open: 'bg-chart-1/15 text-chart-1',
+  'In Progress': 'bg-chart-1/15 text-chart-1',
+  Waiting: 'bg-chart-2/15 text-chart-2',
+  Resolved: 'bg-chart-3/15 text-chart-3',
   Closed: 'bg-muted text-muted-foreground ring-1 ring-border',
 }
 
 const priorityClasses: Record<string, string> = {
-  Low: 'bg-muted text-muted-foreground ring-1 ring-border',
-  Medium: 'bg-secondary text-secondary-foreground ring-1 ring-border',
-  High: 'bg-primary/10 text-primary ring-1 ring-primary/20',
-  Critical: 'bg-destructive/10 text-destructive ring-1 ring-destructive/20',
+  Low: 'text-chart-3',
+  Medium: 'text-chart-1',
+  High: 'text-chart-2',
+  Critical: 'text-primary',
 }
 
 export function TicketStatusBadge({
@@ -30,7 +32,7 @@ export function TicketStatusBadge({
   return (
     <Badge
       className={cn(
-        'rounded-md px-2.5 py-1 normal-case tracking-normal',
+        'rounded-full px-2.5 py-1 text-[11px] font-medium normal-case tracking-normal',
         statusClasses[label],
         className,
       )}
@@ -52,11 +54,12 @@ export function TicketPriorityBadge({
   return (
     <Badge
       className={cn(
-        'rounded-md px-2.5 py-1 normal-case tracking-normal',
+        'gap-2 text-[11px] font-medium normal-case tracking-normal',
         priorityClasses[label],
         className,
       )}
     >
+      <HugeiconsIcon icon={CircleIcon} fill="currentColor" className="size-2!" />
       {label}
     </Badge>
   )
