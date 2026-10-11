@@ -90,6 +90,7 @@ export function useTicketWorkspace(ticketId: number) {
   async function afterMutation(message: string) {
     if (!mounted.current) return
     await Promise.all([resource.refresh(), queue.refresh()])
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Either refresh can unmount the hook while awaiting.
     if (mounted.current) setNotice(message)
   }
 
@@ -113,8 +114,10 @@ export function useTicketWorkspace(ticketId: number) {
       }),
     addComment: (message: string) =>
       runAction('comment', async () => {
-        if (message.trim().length < 5)
-          throw new Error('A comment must contain at least 5 characters.')
+        if (message.trim().length < 5 || message.trim().length > 1000)
+          throw new Error(
+            'A comment must contain between 5 and 1,000 characters.',
+          )
         await createTicketComment(ticketId, message.trim())
         await afterMutation('Comment added to the conversation.')
       }),

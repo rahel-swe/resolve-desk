@@ -106,6 +106,7 @@ export function TicketConversation({
               rows={5}
               required
               minLength={5}
+              maxLength={1000}
               disabled={Boolean(workspace.busy)}
             />
             <div className="flex flex-wrap items-center justify-between gap-3">
