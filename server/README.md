@@ -76,7 +76,43 @@ bun run docker:migrate
 bun run docker:up
 ```
 
-## Tests
+## Development seed
+
+From the repository root, supply `DevelopmentSeed__Password` privately, then run:
+
+```powershell
+./scripts/seed-development.ps1
+```
+
+The password must contain at least 16 characters and fit within 72 UTF-8 bytes. There is no default. The helper requires the shell environment variable. Direct invocation can also read .NET user secrets (`DevelopmentSeed:Password`). Do not commit the password. All six sample accounts use it, hashed with BCrypt at work factor 12.
+
+| Email | Role | Seed ticket ownership |
+| --- | --- | --- |
+| seed.admin@example.test | Admin | None |
+| seed.agent@example.test | SupportAgent | Assigned sample tickets |
+| seed.agent-other@example.test | SupportAgent | Assigned sample tickets |
+| seed.customer@example.test | Customer | 40 tickets |
+| seed.customer-other@example.test | Customer | 24 tickets |
+| seed.user@example.test | User | 8 tickets; legacy customer behavior |
+
+The seed adds 72 tickets across all statuses and priorities, assigned and unassigned requests, comments, valid status histories, and one knowledge article. Titles start with `[ResolveDesk seed v1]`. This exceeds the API page size of 50 and the client's visible page size of 10.
+
+The command uses the existing connection settings and user-secrets ID. Apply pending migrations separately first. Normal API startup never seeds. Direct invocation is also supported in the Development environment:
+
+```powershell
+$env:ASPNETCORE_ENVIRONMENT = 'Development'
+dotnet run --project server/ResolveDesk.csproj --configuration Release --no-launch-profile -- --seed-development
+```
+
+The flag is rejected outside Development. The PowerShell helper temporarily selects Development and restores the previous environment afterward. It compiles Release separately from a running Debug server; stop a running Release server before rebuilding its executable.
+
+Repeated runs add only missing marked samples and preserve existing ticket edits, passwords, and roles. An account with a reserved email but a different name, role, or password causes the seed to fail rather than reset or promote it. Keep the same private password for subsequent runs. Existing marked articles owned by another account also cause a failure.
+
+Seed row writes share one transaction. An advisory lock serializes seed runs; table write locks briefly pause other writers while identity sequences are advanced past imported IDs. Sequence advancement can leave harmless ID gaps even if row writes roll back. No existing rows are deleted and no schema changes run automatically. The seed may repair missing author metadata only on its own marked article.
+
+For the live client checks, put the same password in the ignored `client/.env.test.local` as `RESOLVEDESK_TEST_PASSWORD`. See [client test instructions](../client/README.md#client-tests).
+
+## Server tests
 
 ```bash
 dotnet test

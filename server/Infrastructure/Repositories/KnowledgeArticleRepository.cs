@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Infrastructure.Data;
 using ResolveDesk.Domain.Entities;
+using ResolveDesk.Api.Common;
 
 namespace ResolveDesk.Application.Abstractions;
 
@@ -10,6 +11,9 @@ public class KnowledgeArticleRepository(AppDbContext db) : IKnowledgeArticleRepo
 
     public async Task<KnowledgeArticle> CreateAsync(KnowledgeArticle article)
     {
+        // CreatedByUserId is separate from the existing schema's UserId foreign key.
+        article.User = await _db.Users.FindAsync(article.CreatedByUserId)
+            ?? throw new NotFoundException("The article author could not be found.");
         _db.KnowledgeArticles.Add(article);
         await _db.SaveChangesAsync();
 

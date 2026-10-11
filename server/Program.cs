@@ -5,8 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using ResolveDesk.Application;
 using ResolveDesk.Infrastructure;
 using ResolveDesk.Domain.Enums;
+using ResolveDesk.Infrastructure.Data;
 
-var builder = WebApplication.CreateBuilder(args);
+var seedDevelopment = args.Contains("--seed-development", StringComparer.Ordinal);
+var builder = WebApplication.CreateBuilder(args.Where(arg => arg != "--seed-development").ToArray());
+
+if (seedDevelopment && !builder.Environment.IsDevelopment())
+    throw new InvalidOperationException("Development seed is only allowed in the Development environment.");
 
 
 builder.Services.AddProblemDetails(options =>
@@ -75,6 +80,16 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+if (seedDevelopment)
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await DevelopmentSeed.RunAsync(
+        scope.ServiceProvider.GetRequiredService<AppDbContext>(),
+        app.Configuration,
+        app.Logger);
+    return;
+}
 
 app.UseExceptionHandler();
 
