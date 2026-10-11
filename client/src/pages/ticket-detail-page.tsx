@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { TicketConversation } from '#/components/tickets/ticket-conversation'
@@ -13,12 +13,33 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import { ResourceError } from '#/components/workspace/state-panel'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useTicketWorkspace } from '#/hooks/use-ticket-workspace'
+import { toast } from '#/components/ui/toast'
 
 export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
   const authenticated = useRequireAuth()
   const workspace = useTicketWorkspace(ticketId)
   const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    if (!authenticated || !workspace.notice) return
+
+    toast.add({
+      description: workspace.notice,
+    })
+  }, [authenticated, workspace.notice])
+  const errorMessage = workspace.actionError || workspace.error
+
+  useEffect(() => {
+    if (!authenticated || !errorMessage) return
+
+    toast.add({
+      description: errorMessage,
+      type: 'error',
+    })
+  }, [errorMessage])
+
   if (!authenticated) return null
+
   const backAction = (
     <Button
       variant="outline"
@@ -28,8 +49,9 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
       Back to queue
     </Button>
   )
+
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
+    <div className="mx-auto w-full max-w-360 px-5 py-9 sm:px-8 lg:px-10">
       {workspace.data ? (
         <>
           <PageHeading
@@ -45,20 +67,7 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
       ) : (
         <PageHeading title="Ticket workspace" action={backAction} />
       )}
-      {(workspace.error || workspace.actionError) && (
-        <ResourceError
-          message={workspace.actionError || workspace.error}
-          onRetry={workspace.error ? () => void workspace.refresh() : undefined}
-        />
-      )}
-      {workspace.notice && (
-        <p
-          role="status"
-          className="mb-5 rounded-md bg-primary/10 p-4 text-sm text-primary"
-        >
-          {workspace.notice}
-        </p>
-      )}
+
       {workspace.loading && !workspace.data ? (
         <TicketLoadingList />
       ) : (

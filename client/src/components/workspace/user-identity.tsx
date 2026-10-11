@@ -11,8 +11,8 @@ export function UserAvatar({
   className?: string
 }) {
   return (
-    <Avatar aria-hidden="true" size="lg" className={cn('size-10', className)}>
-      <AvatarFallback className="bg-primary/25 text-sm font-medium text-foreground">
+    <Avatar aria-hidden="true" className={cn('size-11', className)}>
+      <AvatarFallback className="bg-popover text-sm font-medium text-foreground">
         {initials(name)}
       </AvatarFallback>
     </Avatar>

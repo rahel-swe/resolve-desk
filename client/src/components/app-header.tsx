@@ -1,20 +1,13 @@
-import { useState } from 'react'
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { Notification02Icon, Search01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { SidebarTrigger } from '#/components/ui/sidebar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '#/components/ui/dropdown-menu'
 import { AccountMenu } from '#/components/workspace/account-menu'
 import { useAuth } from '#/providers/auth-provider'
+import { Search01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import AppTitle from './app-title'
+import NotificationsDropdownMenu from './notifications-dropdown-menu'
 
 const pageLabels: Record<string, string> = {
   dashboard: 'Overview',
@@ -55,9 +48,11 @@ export function AppHeader() {
         </nav>
       </header>
     )
+
   const segments = pathname.split('/').filter(Boolean)
+
   return (
-    <header className="flex min-h-[68px] items-center justify-between gap-4 border-b px-5 sm:px-8">
+    <header className="flex min-h-17 items-center justify-between z-20 border sticky bg-secondary/40 backdrop-blur-sm top-2 rounded-lg m-2 gap-4 px-5 sm:px-8">
       <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger className="md:hidden" />
         <p className="truncate text-sm">
@@ -96,40 +91,7 @@ export function AppHeader() {
             className="h-10 pl-9 text-xs"
           />
         </form>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Notifications"
-              />
-            }
-          >
-            <HugeiconsIcon
-              icon={Notification02Icon}
-              strokeWidth={1.8}
-              className="size-5"
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-72 rounded-lg bg-popover p-4"
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="px-0 text-sm normal-case tracking-normal">
-                Notifications{' '}
-                <span className="ml-2 text-xs font-normal text-muted-foreground">
-                  Preview
-                </span>
-              </DropdownMenuLabel>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Your notifications will appear here when this feature is
-                connected.
-              </p>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <NotificationsDropdownMenu />
         <AccountMenu />
       </div>
     </header>

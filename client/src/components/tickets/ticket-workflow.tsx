@@ -32,7 +32,9 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
   useEffect(() => {
     setSelectedStatus(String(workspace.data?.ticket.status ?? 0))
   }, [workspace.data?.ticket.status])
+
   if (!workspace.data) return null
+
   const { ticket } = workspace.data
   const user = workspace.user
   const isAdmin = user?.role === 'Admin'
@@ -45,6 +47,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
   const canAssignSelf = isAgent && !ticket.assignedAgentEmail && user.id > 0
   const validAgentId =
     Number.isSafeInteger(Number(agentId)) && Number(agentId) > 0
+
   return (
     <section className="space-y-6">
       <h2 className="font-heading text-3xl">Ticket details</h2>
@@ -90,51 +93,53 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
             <label htmlFor="ticket-status" className="text-sm font-medium">
               Status
             </label>
-            <Select
-              value={selectedStatus}
-              onValueChange={(value) => {
-                if (value !== null) setSelectedStatus(value)
-              }}
-            >
-              <SelectTrigger
-                id="ticket-status"
-                className="w-full rounded-md border-input px-3"
+            <div className="flex flex-col md:flex-row lg:flex-col gap-4">
+              <Select
+                value={selectedStatus}
+                onValueChange={(value) => {
+                  if (value !== null) setSelectedStatus(value)
+                }}
+              >
+                <SelectTrigger
+                  id="ticket-status"
+                  className="w-full rounded-md border-input px-3 flex-1"
+                  disabled={
+                    Boolean(workspace.busy) ||
+                    !canUpdateStatus ||
+                    nextStatuses.length === 0
+                  }
+                >
+                  <SelectValue>
+                    {formatTicketStatus(Number(selectedStatus))}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {[ticket.status, ...nextStatuses].map((status) => (
+                    <SelectItem value={String(status)} key={status}>
+                      {formatTicketStatus(status)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="submit"
+                variant="outline"
+                className=""
                 disabled={
                   Boolean(workspace.busy) ||
                   !canUpdateStatus ||
-                  nextStatuses.length === 0
+                  !nextStatuses.includes(Number(selectedStatus))
                 }
               >
-                <SelectValue>
-                  {formatTicketStatus(Number(selectedStatus))}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {[ticket.status, ...nextStatuses].map((status) => (
-                  <SelectItem value={String(status)} key={status}>
-                    {formatTicketStatus(status)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              type="submit"
-              variant="outline"
-              className="w-full"
-              disabled={
-                Boolean(workspace.busy) ||
-                !canUpdateStatus ||
-                !nextStatuses.includes(Number(selectedStatus))
-              }
-            >
-              {workspace.busy === 'status' ? 'Updating…' : 'Update status'}
-            </Button>
-            {!canUpdateStatus && (
-              <p className="text-xs leading-5 text-muted-foreground">
-                Only the assigned agent or an administrator can update this
-                ticket.
-              </p>
-            )}
+                {workspace.busy === 'status' ? 'Updating…' : 'Update status'}
+              </Button>
+              {!canUpdateStatus && (
+                <p className="text-xs leading-5 text-muted-foreground">
+                  Only the assigned agent or an administrator can update this
+                  ticket.
+                </p>
+              )}
+            </div>
           </form>
           {isAdmin && (
             <form
@@ -150,29 +155,32 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
               <label htmlFor="agent-id" className="text-sm font-medium">
                 Assign to an agent
               </label>
-              <Input
-                id="agent-id"
-                type="number"
-                inputMode="numeric"
-                min={1}
-                step={1}
-                value={agentId}
-                onChange={(event) => setAgentId(event.target.value)}
-                placeholder="Agent ID"
-                disabled={Boolean(workspace.busy)}
-              />
+              <div className="flex flex-col md:flex-row lg:flex-col gap-4">
+                <Input
+                  id="agent-id"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  step={1}
+                  value={agentId}
+                  onChange={(event) => setAgentId(event.target.value)}
+                  placeholder="Agent ID"
+                  disabled={Boolean(workspace.busy)}
+                />
+
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className=""
+                  disabled={Boolean(workspace.busy) || !validAgentId}
+                >
+                  {workspace.busy === 'assign' ? 'Assigning…' : 'Assign ticket'}
+                </Button>
+              </div>
               <p className="text-xs leading-5 text-muted-foreground">
                 An agent directory is coming soon. Use an existing agent's ID
                 for now.
               </p>
-              <Button
-                type="submit"
-                variant="outline"
-                className="w-full"
-                disabled={Boolean(workspace.busy) || !validAgentId}
-              >
-                {workspace.busy === 'assign' ? 'Assigning…' : 'Assign ticket'}
-              </Button>
             </form>
           )}
           {canAssignSelf && (

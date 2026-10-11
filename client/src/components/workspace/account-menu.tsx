@@ -29,6 +29,7 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
       await navigate({ to: '/sign-in', replace: true })
     }
   }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -50,7 +51,7 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
       <DropdownMenuContent
         align={expanded ? 'start' : 'end'}
         side={expanded ? 'top' : 'bottom'}
-        className="w-60 rounded-lg bg-popover"
+        className="w-60"
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="truncate normal-case tracking-normal">

@@ -3,11 +3,11 @@ import { server } from '#/test/mocks/server'
 
 import { afterAll, afterEach, beforeAll } from 'vitest'
 
-beforeAll(() => {
+beforeAll(() =>
   server.listen({
     onUnhandledFrame: 'error',
-  })
-})
+  }),
+)
 
 afterEach(() => server.resetHandlers())
 

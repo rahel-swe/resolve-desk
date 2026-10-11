@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
@@ -16,6 +16,7 @@ import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { createTicket } from '#/services/ticket-service'
 import { formatTicketPriority } from '#/lib/ticket-utils'
+import { toast } from '#/components/ui/toast'
 
 export default function NewTicketPage() {
   const authenticated = useRequireAuth()
@@ -28,6 +29,15 @@ export default function NewTicketPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   if (!authenticated) return null
+
+  useEffect(() => {
+    if (!error) return
+
+    toast.add({
+      description: error,
+      type: 'error',
+    })
+  }, [error])
 
   async function handleSubmit() {
     if (submitting) return
@@ -175,7 +185,7 @@ export default function NewTicketPage() {
             </p>
           </div>
         </fieldset>
-        <div className="flex justify-end gap-3 border-t pt-6">
+        <div className="flex justify-end gap-3">
           <Button
             type="button"
             variant="ghost"

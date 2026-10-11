@@ -1,4 +1,4 @@
-import { SparklesIcon } from '@hugeicons/core-free-icons'
+import { ArtificialIntelligence02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '#/components/ui/button'
 import { formatTicketPriority } from '#/lib/ticket-utils'
@@ -15,7 +15,10 @@ export function TicketAiAssist({
   return (
     <section className="mt-7 border-t pt-6">
       <h2 className="flex items-center gap-2 font-heading text-3xl">
-        <HugeiconsIcon icon={SparklesIcon} className="size-5 text-primary" />
+        <HugeiconsIcon
+          icon={ArtificialIntelligence02Icon}
+          className="size-5 text-primary"
+        />
         AI assist
       </h2>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">
@@ -51,7 +54,7 @@ export function TicketAiAssist({
         {responseSuggestion && (
           <div className="space-y-4 rounded-md bg-muted/50 p-4">
             <p className="text-xs font-medium text-primary">Draft for review</p>
-            <p className="whitespace-pre-wrap break-words text-sm leading-6">
+            <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
               {responseSuggestion.suggestedReply}
             </p>
             {responseSuggestion.suggestedSteps.length > 0 && (

@@ -28,23 +28,28 @@ const initialWorkspace: TicketWorkspaceData | null = null
 export function useTicketWorkspace(ticketId: number) {
   const { user } = useAuth()
   const { queue } = useWorkspace()
+
   const [busy, setBusy] = useState('')
   const [actionError, setActionError] = useState('')
   const [notice, setNotice] = useState('')
+
   const [prioritySuggestion, setPrioritySuggestion] = useState<Awaited<
     ReturnType<typeof getTicketPrioritySuggestion>
   > | null>(null)
   const [responseSuggestion, setResponseSuggestion] = useState<Awaited<
     ReturnType<typeof getTicketResponseSuggestion>
   > | null>(null)
+
   const actionLocked = useRef(false)
   const mounted = useRef(true)
+
   useEffect(() => {
     mounted.current = true
     return () => {
       mounted.current = false
     }
   }, [])
+
   const load = useCallback(
     async (signal: AbortSignal): Promise<TicketWorkspaceData | null> => {
       if (!Number.isSafeInteger(ticketId) || ticketId < 1)
@@ -118,14 +123,17 @@ export function useTicketWorkspace(ticketId: number) {
           throw new Error(
             'A comment must contain between 5 and 1,000 characters.',
           )
+
         await createTicketComment(ticketId, message.trim())
         await afterMutation('Comment added to the conversation.')
       }),
+
     suggestPriority: () =>
       runAction('priority-ai', async () => {
         const result = await getTicketPrioritySuggestion(ticketId)
         if (mounted.current) setPrioritySuggestion(result)
       }),
+
     suggestResponse: () =>
       runAction('response-ai', async () => {
         const result = await getTicketResponseSuggestion(ticketId)

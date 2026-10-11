@@ -3,7 +3,8 @@
 import * as React from 'react'
 import { mergeProps } from '@base-ui/react/merge-props'
 import { useRender } from '@base-ui/react/use-render'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva } from 'class-variance-authority'
+import type { VariantProps } from 'class-variance-authority'
 import { cn } from 'cn'
 
 import { useIsMobile } from '#/hooks/use-mobile.ts'
@@ -24,7 +25,7 @@ import {
   TooltipTrigger,
 } from '#/components/ui/tooltip.tsx'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Menu01Icon } from '@hugeicons/core-free-icons'
+import { LayoutAlignRightIcon } from '@hugeicons/core-free-icons'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -264,7 +265,7 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="icon-sm"
+      size="icon-lg"
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event)
@@ -272,7 +273,11 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <HugeiconsIcon icon={Menu01Icon} strokeWidth={1.8} />
+      <HugeiconsIcon
+        icon={LayoutAlignRightIcon}
+        strokeWidth={1.8}
+        className={'size-6.5'}
+      />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

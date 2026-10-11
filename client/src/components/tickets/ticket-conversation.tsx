@@ -54,7 +54,7 @@ export function TicketConversation({
                   {formatDateTime(ticket.createdAt)}
                 </time>
               </div>
-              <p className="whitespace-pre-wrap break-words rounded-lg bg-muted/50 p-5 text-sm leading-7">
+              <p className="whitespace-pre-wrap wrap-break-word rounded-lg bg-muted p-5 text-sm leading-7">
                 {ticket.description}
               </p>
             </div>
@@ -79,7 +79,7 @@ export function TicketConversation({
                         {formatDateTime(comment.createdAt)}
                       </time>
                     </div>
-                    <p className="whitespace-pre-wrap break-words rounded-lg bg-muted/30 p-5 text-sm leading-7">
+                    <p className="whitespace-pre-wrap break-words rounded-lg bg-muted p-5 text-sm leading-7">
                       {comment.message}
                     </p>
                   </div>

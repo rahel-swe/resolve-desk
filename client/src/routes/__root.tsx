@@ -17,6 +17,7 @@ import { WorkspaceProvider } from '#/providers/workspace-provider'
 import { SidebarProvider } from '#/components/ui/sidebar'
 import { TooltipProvider } from '#/components/ui/tooltip'
 import type { CSSProperties } from 'react'
+import { Toaster } from '#/components/ui/toast'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -59,6 +60,7 @@ function RootDocument() {
       </head>
 
       <body className="bg-background text-foreground">
+        <Toaster />
         <AuthProvider>
           <WorkspaceProvider>
             <TooltipProvider>
