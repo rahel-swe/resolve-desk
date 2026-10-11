@@ -33,11 +33,7 @@ export function SignUpPage() {
     try {
       setIsSubmitting(true)
 
-      await register(
-        fullName.trim(),
-        email.trim(),
-        password,
-      )
+      await register(fullName.trim(), email.trim(), password)
 
       await navigate({
         to: '/dashboard',

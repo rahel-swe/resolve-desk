@@ -53,28 +53,35 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
 
-      <body className="dark bg-background text-foreground">
+      <body className="bg-background text-foreground">
         <AuthProvider>
           <WorkspaceProvider>
-          <TooltipProvider>
-          <SidebarProvider style={{ '--sidebar-width': '15.5rem' } as CSSProperties}>
-            <a href="#main-content" className="sr-only fixed top-3 left-3 z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only">Skip to content</a>
-            <DesktopSidebar />
+            <TooltipProvider>
+              <SidebarProvider
+                style={{ '--sidebar-width': '15.5rem' } as CSSProperties}
+              >
+                <a
+                  href="#main-content"
+                  className="sr-only fixed top-3 left-3 z-50 rounded-md bg-primary px-4 py-2 text-primary-foreground focus:not-sr-only"
+                >
+                  Skip to content
+                </a>
+                <DesktopSidebar />
 
-            <div className="flex min-w-0 flex-1 flex-col">
-              <AppHeader />
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <AppHeader />
 
-              <main id="main-content" className="flex-1">
-                <Outlet />
-              </main>
-            </div>
-          </SidebarProvider>
-          </TooltipProvider>
+                  <main id="main-content" className="flex-1">
+                    <Outlet />
+                  </main>
+                </div>
+              </SidebarProvider>
+            </TooltipProvider>
           </WorkspaceProvider>
         </AuthProvider>
 

@@ -19,7 +19,9 @@ function AuthCard({ title, description, children, onSubmit }: AuthCardProps) {
     <form onSubmit={onSubmit} className="w-full max-w-md">
       <Card className="w-full border-0 bg-transparent shadow-none">
         <CardHeader className="mb-2 text-center">
-          <CardTitle className="font-heading text-5xl font-normal text-foreground">{title}</CardTitle>
+          <CardTitle className="font-heading text-5xl font-normal text-foreground">
+            {title}
+          </CardTitle>
 
           <CardDescription>{description}</CardDescription>
         </CardHeader>

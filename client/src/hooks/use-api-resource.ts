@@ -29,7 +29,11 @@ export function useApiResource<T>(
       if (!controller.signal.aborted) setData(result)
     } catch (cause) {
       if (!controller.signal.aborted) {
-        setError(cause instanceof Error ? cause.message : 'Unable to load this workspace.')
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : 'Unable to load this workspace.',
+        )
       }
     } finally {
       if (!controller.signal.aborted) setLoading(false)

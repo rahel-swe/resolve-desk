@@ -59,7 +59,11 @@ export function TicketPriorityBadge({
         className,
       )}
     >
-      <HugeiconsIcon icon={CircleIcon} fill="currentColor" className="size-2!" />
+      <HugeiconsIcon
+        icon={CircleIcon}
+        fill="currentColor"
+        className="size-2!"
+      />
       {label}
     </Badge>
   )

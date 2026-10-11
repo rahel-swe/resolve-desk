@@ -52,12 +52,14 @@ export type ApiKnowledgeArticle = {
 
 export async function getTickets(signal?: AbortSignal) {
   const firstPage = await apiRequest<PageResult<ApiTicket>>(
-    '/api/tickets?page=1&pageSize=50', { signal },
+    '/api/tickets?page=1&pageSize=50',
+    { signal },
   )
   const tickets = [...firstPage.items]
   for (let page = 2; page <= firstPage.totalPages; page += 1) {
     const result = await apiRequest<PageResult<ApiTicket>>(
-      `/api/tickets?page=${page}&pageSize=50`, { signal },
+      `/api/tickets?page=${page}&pageSize=50`,
+      { signal },
     )
     tickets.push(...result.items)
   }
@@ -98,8 +100,13 @@ export async function assignTicket(ticketId: number, assignedAgentId: number) {
   })
 }
 
-export async function getTicketComments(ticketId: number, signal?: AbortSignal) {
-  return apiRequest<ApiTicketComment[]>(`/api/tickets/${ticketId}/comments`, { signal })
+export async function getTicketComments(
+  ticketId: number,
+  signal?: AbortSignal,
+) {
+  return apiRequest<ApiTicketComment[]>(`/api/tickets/${ticketId}/comments`, {
+    signal,
+  })
 }
 
 export async function createTicketComment(ticketId: number, message: string) {
@@ -110,7 +117,9 @@ export async function createTicketComment(ticketId: number, message: string) {
 }
 
 export async function getTicketHistory(ticketId: number, signal?: AbortSignal) {
-  return apiRequest<ApiTicketHistory[]>(`/api/tickets/${ticketId}/history`, { signal })
+  return apiRequest<ApiTicketHistory[]>(`/api/tickets/${ticketId}/history`, {
+    signal,
+  })
 }
 
 export async function createKnowledgeArticle(payload: {
