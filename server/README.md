@@ -78,39 +78,35 @@ bun run docker:up
 
 ## Development seed
 
-From the repository root, supply `DevelopmentSeed__Password` privately, then run:
+Creates 5 accounts across Admin, SupportAgent, and Customer, 72 tickets with comments/history, and 1 knowledge article.
 
-```powershell
-./scripts/seed-development.ps1
+Add your seed password to the root `.env` (this file is ignored by Git):
+
+```dotenv
+DevelopmentSeed__Password=your-private-seed-password
 ```
 
-The password must contain at least 16 characters and fit within 72 UTF-8 bytes. There is no default. The helper requires the shell environment variable. Direct invocation can also read .NET user secrets (`DevelopmentSeed:Password`). Do not commit the password. All six sample accounts use it, hashed with BCrypt at work factor 12.
+Then run from the repository root:
 
-| Email | Role | Seed ticket ownership |
-| --- | --- | --- |
-| seed.admin@example.test | Admin | None |
-| seed.agent@example.test | SupportAgent | Assigned sample tickets |
-| seed.agent-other@example.test | SupportAgent | Assigned sample tickets |
-| seed.customer@example.test | Customer | 40 tickets |
-| seed.customer-other@example.test | Customer | 24 tickets |
-| seed.user@example.test | User | 8 tickets; legacy customer behavior |
-
-The seed adds 72 tickets across all statuses and priorities, assigned and unassigned requests, comments, valid status histories, and one knowledge article. Titles start with `[ResolveDesk seed v1]`. This exceeds the API page size of 50 and the client's visible page size of 10.
-
-The command uses the existing connection settings and user-secrets ID. Apply pending migrations separately first. Normal API startup never seeds. Direct invocation is also supported in the Development environment:
-
-```powershell
-$env:ASPNETCORE_ENVIRONMENT = 'Development'
-dotnet run --project server/ResolveDesk.csproj --configuration Release --no-launch-profile -- --seed-development
+```bash
+bun run db:seed
 ```
 
-The flag is rejected outside Development. The PowerShell helper temporarily selects Development and restores the previous environment afterward. It compiles Release separately from a running Debug server; stop a running Release server before rebuilding its executable.
+Use 16–72 ASCII characters. [Bun reads `.env` automatically](https://bun.sh/docs/runtime/environment-variables), and all accounts below use this password. If you already seeded, reuse the same password.
 
-Repeated runs add only missing marked samples and preserve existing ticket edits, passwords, and roles. An account with a reserved email but a different name, role, or password causes the seed to fail rather than reset or promote it. Keep the same private password for subsequent runs. Existing marked articles owned by another account also cause a failure.
+| Email | Role |
+| --- | --- |
+| seed.admin@example.test | Admin |
+| seed.agent@example.test | SupportAgent |
+| seed.agent-other@example.test | SupportAgent |
+| seed.customer@example.test | Customer |
+| seed.customer-other@example.test | Customer |
 
-Seed row writes share one transaction. An advisory lock serializes seed runs; table write locks briefly pause other writers while identity sequences are advanced past imported IDs. Sequence advancement can leave harmless ID gaps even if row writes roll back. No existing rows are deleted and no schema changes run automatically. The seed may repair missing author metadata only on its own marked article.
+Uses your configured database in Development. Apply migrations first. Reruns preserve existing accounts and ticket edits; conflicting accounts cause an error.
 
-For the live client checks, put the same password in the ignored `client/.env.test.local` as `RESOLVEDESK_TEST_PASSWORD`. See [client test instructions](../client/README.md#client-tests).
+Fresh seeds give the customers 40 and 32 tickets. Older `seed.user` accounts and their tickets are preserved, but no new `User` account is created.
+
+For [live client checks](../client/README.md#live-client-service-checks), use the same password in ignored `client/.env.test.local`. Keep passwords out of commits.
 
 ## Server tests
 

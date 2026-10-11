@@ -8,6 +8,7 @@
     "build": "cd client && bun run build && cd ../server && dotnet build",
     "check": "cd client && bun run check && cd ../server && dotnet test Tests/ResolveDesk.Tests.csproj",
     "db:migrate": "cd server && dotnet ef database update",
+    "db:seed": "bun index.ts seed",
     "docker:migrate": "docker compose run --rm migrate",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down"

@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import type { Readable } from "node:stream";
+import { fileURLToPath } from "node:url";
 
 type DevService = {
   name: string;
@@ -79,9 +80,69 @@ function startService(service: DevService) {
   });
 }
 
-for (const service of devServices) {
-  startService(service);
+function seedDevelopment() {
+  const password = process.env.DevelopmentSeed__Password;
+
+  if (
+    !password?.trim() ||
+    password.length < 8 ||
+    Buffer.byteLength(password, "utf8") > 72
+  ) {
+    console.error(
+      "Set DevelopmentSeed__Password in the root .env (at least 8 characters, at most 72 UTF-8 bytes).",
+    );
+
+    process.exitCode = 1;
+    return;
+  }
+
+  const seed = spawn(
+    "dotnet",
+    [
+      "run",
+      "--project",
+      "server/ResolveDesk.csproj",
+      "--configuration",
+      "Release",
+      "--no-launch-profile",
+      "--",
+      "--seed-development",
+    ],
+    {
+      cwd: fileURLToPath(new URL(".", import.meta.url)),
+      env: {
+        ...process.env,
+        ASPNETCORE_ENVIRONMENT: "Development",
+        DOTNET_ENVIRONMENT: "Development",
+      },
+      stdio: "inherit",
+      shell: false,
+    },
+  );
+
+  seed.on("error", (error) => {
+    console.error(`Could not start the development seed: ${error.message}`);
+    process.exitCode = 1;
+  });
+
+  seed.on("exit", (code) => {
+    process.exitCode = code ?? 1;
+  });
+  process.once("SIGINT", () => seed.kill("SIGINT"));
+  process.once("SIGTERM", () => seed.kill("SIGTERM"));
 }
 
-process.on("SIGINT", () => stopAllServices(0));
-process.on("SIGTERM", () => stopAllServices(0));
+const mode = process.argv[2] ?? "dev";
+
+if (mode === "seed") {
+  seedDevelopment();
+} else if (mode === "dev") {
+  for (const service of devServices) {
+    startService(service);
+  }
+  process.on("SIGINT", () => stopAllServices(0));
+  process.on("SIGTERM", () => stopAllServices(0));
+} else {
+  console.error("Usage: bun index.ts [dev|seed]");
+  process.exitCode = 1;
+}

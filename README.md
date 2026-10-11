@@ -21,6 +21,7 @@ bun run dev
 bun run build
 bun run check
 bun run db:migrate
+bun run db:seed
 bun run docker:migrate
 bun run docker:up
 bun run docker:down

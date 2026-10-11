@@ -65,35 +65,31 @@ bun run docker:run
 
 ## Client tests
 
-Run these commands from `client/` with dependencies already installed:
+From `client/`:
 
 ```bash
 bun run test:run --maxWorkers 1
 bun run test:coverage --maxWorkers 1
 ```
 
-Vitest uses jsdom, React Testing Library, and the existing MSW setup to exercise service contracts, auth sessions, comment interactions, and queue pagination. The default suite excludes live checks and rejects unhandled mock requests. Use the normal Node-based Vitest runner through these scripts; do not add Bun's `--bun` runtime override for jsdom.
+Uses Vitest, React Testing Library, jsdom, and MSW. Run the scripts without the `--bun` runtime override.
 
 ### Live client service checks
 
-First run the [development seed](../server/README.md#development-seed) and start the local API. Store its private password in the ignored `client/.env.test.local`:
+Run the [seed](../server/README.md#development-seed), start the local API, and set the same password in ignored `client/.env.test.local`:
 
 ```dotenv
 RESOLVEDESK_TEST_PASSWORD=<same private password used by the seed>
 VITE_API_BASE_URL=http://localhost:5051
 ```
 
-Never prefix the password with `VITE_`: those values are exposed to the application bundle. The password can also come from the shell environment. It is loaded only by the live test configuration.
-
 ```bash
 bun run test:live
 ```
 
-These checks call the real client service functions against a local API, without MSW or a server test runner. The configuration refuses remote API hosts. It verifies each seeded role, customer ownership, ticket creation, comments, assignment, status history, suggestions, article publication, refresh rotation, registration, and logout.
+Checks the real client services against the local API. Each run adds marked test records and preserves existing data. Keep the password file uncommitted.
 
-Each run adds an isolated ticket, comment, article, and registered customer using `[ResolveDesk smoke <run id>]` or `smoke.<run id>@example.test`. It preserves existing data and performs no cleanup deletion. Keep this workflow on a development database. Seed ticket counts remain deterministic because live fixtures use a different marker.
-
-See [the verification record](service-qa.md) for actual results, fixes, and remaining limits.
+See [test results](service-qa.md).
 
 ## Application stack
 

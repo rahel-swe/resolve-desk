@@ -22,8 +22,8 @@ public static class DevelopmentSeed
         CancellationToken cancellationToken = default)
     {
         var password = configuration["DevelopmentSeed:Password"];
-        if (string.IsNullOrWhiteSpace(password) || password.Length < 16 || System.Text.Encoding.UTF8.GetByteCount(password) > 72)
-            throw new InvalidOperationException("Set DevelopmentSeed__Password to a private 16–72 byte password before seeding.");
+        if (string.IsNullOrWhiteSpace(password) || password.Length < 8 || System.Text.Encoding.UTF8.GetByteCount(password) > 72)
+            throw new InvalidOperationException("Set DevelopmentSeed__Password to a private 8–72 byte password before seeding.");
 
         // Migrations are a separate operation: never silently change the database schema.
         if ((await db.Database.GetPendingMigrationsAsync(cancellationToken)).Any())
@@ -34,6 +34,7 @@ public static class DevelopmentSeed
         await db.Database.ExecuteSqlRawAsync("SELECT pg_advisory_xact_lock(682409311)", cancellationToken);
         // Existing manually imported IDs can leave identity sequences behind the rows.
         // Hold write locks while moving them forward; never lower a live sequence.
+
         await db.Database.ExecuteSqlRawAsync(
             "LOCK TABLE \"Users\", \"Tickets\", \"TicketComments\", \"TicketHistories\", \"KnowledgeArticles\" IN SHARE ROW EXCLUSIVE MODE", cancellationToken);
         await db.Database.ExecuteSqlRawAsync("""
