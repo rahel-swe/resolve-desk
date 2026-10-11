@@ -1,9 +1,12 @@
 import { Navigate, createFileRoute } from '@tanstack/react-router'
+import { useAuth } from '#/providers/auth-provider'
 
 export const Route = createFileRoute('/')({
   component: HomeRedirect,
 })
 
 function HomeRedirect() {
-  return <Navigate to="/sign-in" replace />
+  const { isAuthenticated, isLoading } = useAuth()
+  if (isLoading) return null
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/sign-in'} replace />
 }
