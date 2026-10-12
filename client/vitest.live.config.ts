@@ -11,12 +11,14 @@ const apiBase =
   process.env.VITE_API_BASE_URL ??
   env.VITE_API_BASE_URL ??
   'http://localhost:5051'
+
 if (!['localhost', '127.0.0.1', '[::1]'].includes(new URL(apiBase).hostname))
   throw new Error(
     'Live smoke tests are restricted to a local development backend.',
   )
 const password =
   process.env.RESOLVEDESK_TEST_PASSWORD ?? env.RESOLVEDESK_TEST_PASSWORD
+
 if (!password)
   throw new Error(
     'Set RESOLVEDESK_TEST_PASSWORD in the environment or ignored .env.test.local before running live tests.',

@@ -6,11 +6,13 @@ import {
   registerWithApi,
   signInWithApi,
 } from '#/services/auth-service'
+
 import {
   getAuthToken,
   getRefreshToken,
   saveSession,
 } from '#/services/auth-storage'
+
 import {
   assignTicket,
   createKnowledgeArticle,
@@ -27,6 +29,7 @@ import {
 } from '#/services/ticket-service'
 
 const password = process.env.RESOLVEDESK_TEST_PASSWORD!
+
 const runId = Date.now().toString(36)
 const seedPrefix = '[ResolveDesk seed v1]'
 
@@ -34,6 +37,7 @@ async function login(name: string) {
   if (getAuthToken()) await logoutFromApi()
   const session = await signInWithApi(`seed.${name}@example.test`, password)
   saveSession(session)
+
   return getCurrentUserProfile()
 }
 
@@ -50,6 +54,7 @@ describe('client services against the local seeded backend', () => {
     ['customer-other', 'Customer'],
   ])('signs in %s and reads the matching profile', async (name, role) => {
     const profile = await login(name)
+
     expect(profile).toMatchObject({ email: `seed.${name}@example.test`, role })
     expect(profile.id).toBeGreaterThan(0)
   })
@@ -57,6 +62,7 @@ describe('client services against the local seeded backend', () => {
   it('loads all seed tickets over multiple backend pages without duplicate IDs', async () => {
     await login('admin')
     const tickets = await getTickets()
+
     expect(
       tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)),
     ).toHaveLength(72)
@@ -77,6 +83,7 @@ describe('client services against the local seeded backend', () => {
   ])('shows %s only its own tickets', async (name, expectedCounts) => {
     const profile = await login(name)
     const tickets = await getTickets()
+
     expect(expectedCounts).toContain(
       tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)).length,
     )
@@ -87,6 +94,7 @@ describe('client services against the local seeded backend', () => {
 
   it('creates a ticket, persists a comment, assigns an agent, records status history, and returns suggestions', async () => {
     await login('customer')
+
     const created = await createTicket({
       title: `[ResolveDesk smoke ${runId}] Cannot login`,
       description:
@@ -94,6 +102,7 @@ describe('client services against the local seeded backend', () => {
       category: 'IT Support',
       priority: 2,
     })
+
     expect(created.id).toBeGreaterThan(0)
     expect((await getTicketByIdApi(created.id)).createdByEmail).toBe(
       'seed.customer@example.test',
@@ -166,6 +175,7 @@ describe('client services against the local seeded backend', () => {
       tags: ['smoke', 'client'],
     }
     const article = await createKnowledgeArticle(payload)
+
     expect(article.id).toBeGreaterThan(0)
     expect(await getKnowledgeArticles()).toEqual(
       expect.arrayContaining([

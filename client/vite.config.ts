@@ -12,25 +12,6 @@ import { nitro } from 'nitro/vite'
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [devtools(), nitro(), tailwindcss(), tanstackStart(), viteReact()],
-
-  test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    globals: true,
-    restoreMocks: true,
-
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'lcov'],
-      include: ['src/**/*.{ts,tsx}'],
-      exclude: [
-        'src/**/*.d.ts',
-        'src/**/*.test.{ts,tsx}',
-        'src/test/**',
-        'src/routeTree.gen.ts',
-      ],
-    },
-  },
 })
 
 export default config

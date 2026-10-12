@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 // One lifecycle for read-only resources; aborted and superseded requests cannot
 // replace newer data or leak a previous user's workspace into the next session.
+
 export function useApiResource<T>(
   load: (signal: AbortSignal) => Promise<T>,
   initialData: T,
@@ -16,6 +17,7 @@ export function useApiResource<T>(
     request.current?.abort()
     const controller = new AbortController()
     request.current = controller
+
     if (!sessionKey) {
       setData(initialData)
       setError('')
