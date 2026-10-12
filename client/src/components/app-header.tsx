@@ -52,7 +52,7 @@ export function AppHeader() {
   const segments = pathname.split('/').filter(Boolean)
 
   return (
-    <header className="flex min-h-17 items-center justify-between z-20 border sticky bg-muted/45 backdrop-blur-sm top-2 rounded-lg m-2 gap-4 px-5 sm:px-8">
+    <header className="flex min-h-17 items-center justify-between z-20 border border-t-0 sticky bg-muted/45 backdrop-blur-sm top-0 rounded-b-xl md:rounded-b-2xl gap-4 px-5 sm:px-8 mx-2 ">
       <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger className="md:hidden" />
         <p className="truncate text-sm">

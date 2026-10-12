@@ -55,12 +55,15 @@ export async function getTickets(signal?: AbortSignal) {
     '/api/tickets?page=1&pageSize=50',
     { signal },
   )
+
   const tickets = [...firstPage.items]
+
   for (let page = 2; page <= firstPage.totalPages; page += 1) {
     const result = await apiRequest<PageResult<ApiTicket>>(
       `/api/tickets?page=${page}&pageSize=50`,
       { signal },
     )
+
     tickets.push(...result.items)
   }
   return tickets

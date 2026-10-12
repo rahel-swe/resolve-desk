@@ -30,7 +30,7 @@ export default function SidebarNav() {
                 pathname === item.to || pathname.startsWith(`${item.to}/`)
               }
               onClick={() => setOpenMobile(false)}
-              className="h-12 gap-3 border-l-2 border-transparent px-4 text-sm text-muted-foreground data-active:border-primary data-active:bg-sidebar-accent/65 data-active:text-foreground [&_svg]:size-5 data-active:[&_svg]:text-primary"
+              className="h-12 gap-3 px-4 text-sm text-muted-foreground data-active:border-s-2 data-active:border-primary data-active:bg-sidebar-accent/65 data-active:text-foreground [&_svg]:size-5 data-active:[&_svg]:text-primary"
             >
               <HugeiconsIcon icon={item.icon} strokeWidth={1.8} />
 

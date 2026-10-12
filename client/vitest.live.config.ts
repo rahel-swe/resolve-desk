@@ -7,6 +7,7 @@ const env: Record<string, string | undefined> = loadEnv(
   process.cwd(),
   '',
 )
+
 const apiBase =
   process.env.VITE_API_BASE_URL ??
   env.VITE_API_BASE_URL ??
@@ -16,6 +17,7 @@ if (!['localhost', '127.0.0.1', '[::1]'].includes(new URL(apiBase).hostname))
   throw new Error(
     'Live smoke tests are restricted to a local development backend.',
   )
+
 const password =
   process.env.RESOLVEDESK_TEST_PASSWORD ?? env.RESOLVEDESK_TEST_PASSWORD
 

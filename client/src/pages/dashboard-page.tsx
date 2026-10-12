@@ -17,7 +17,9 @@ export default function DashboardPage() {
   const authenticated = useRequireAuth()
   const { user } = useAuth()
   const { queue } = useWorkspace()
+
   if (!authenticated) return null
+
   const now = new Date()
   const greeting =
     now.getHours() < 12
@@ -25,6 +27,7 @@ export default function DashboardPage() {
       : now.getHours() < 18
         ? 'Good afternoon'
         : 'Good evening'
+
   const attention = queue.data
     .filter((ticket) => ticket.status < 3 && !ticket.assignedAgentEmail)
     .sort(
@@ -33,6 +36,7 @@ export default function DashboardPage() {
         Date.parse(b.createdAt) - Date.parse(a.createdAt),
     )
     .slice(0, 5)
+
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading

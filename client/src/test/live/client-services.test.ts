@@ -35,6 +35,7 @@ const seedPrefix = '[ResolveDesk seed v1]'
 
 async function login(name: string) {
   if (getAuthToken()) await logoutFromApi()
+
   const session = await signInWithApi(`seed.${name}@example.test`, password)
   saveSession(session)
 
@@ -46,6 +47,7 @@ afterEach(async () => {
 })
 
 describe('client services against the local seeded backend', () => {
+  // These are seeded users
   it.each([
     ['admin', 'Admin'],
     ['agent', 'SupportAgent'],
@@ -56,20 +58,25 @@ describe('client services against the local seeded backend', () => {
     const profile = await login(name)
 
     expect(profile).toMatchObject({ email: `seed.${name}@example.test`, role })
+
     expect(profile.id).toBeGreaterThan(0)
   })
 
   it('loads all seed tickets over multiple backend pages without duplicate IDs', async () => {
     await login('admin')
+
     const tickets = await getTickets()
 
     expect(
       tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)),
     ).toHaveLength(72)
+
     expect(new Set(tickets.map((ticket) => ticket.id)).size).toBe(
       tickets.length,
     )
+
     expect(tickets.length).toBeGreaterThan(50)
+
     for (let index = 1; index < tickets.length; index++)
       expect(Date.parse(tickets[index - 1].createdAt)).toBeGreaterThanOrEqual(
         Date.parse(tickets[index].createdAt),
@@ -87,6 +94,7 @@ describe('client services against the local seeded backend', () => {
     expect(expectedCounts).toContain(
       tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)).length,
     )
+
     expect(
       tickets.every((ticket) => ticket.createdByEmail === profile.email),
     ).toBe(true)
@@ -104,20 +112,24 @@ describe('client services against the local seeded backend', () => {
     })
 
     expect(created.id).toBeGreaterThan(0)
+
     expect((await getTicketByIdApi(created.id)).createdByEmail).toBe(
       'seed.customer@example.test',
     )
 
     const message = `Client comment persistence check ${runId}.`
+
     await createTicketComment(created.id, message)
     expect(await getTicketComments(created.id)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ message, ticketId: created.id }),
       ]),
     )
+
     await expect(createTicketComment(created.id, 'tiny')).rejects.toThrow()
 
     await login('customer-other')
+
     await expect(getTicketByIdApi(created.id)).rejects.toThrow()
     await expect(getTicketComments(created.id)).rejects.toThrow()
     await expect(
