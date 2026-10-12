@@ -70,13 +70,15 @@ export default function DashboardPage() {
             <h2 className="font-heading text-3xl sm:text-4xl">
               Needs your attention
             </h2>
-            <Link
-              to="/tickets"
-              className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-            >
-              All tickets
-              <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
-            </Link>
+            <Button variant={'outline'}>
+              <Link
+                to="/tickets"
+                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+              >
+                All tickets
+                <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
+              </Link>
+            </Button>
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
             Unassigned requests
