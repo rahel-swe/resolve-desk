@@ -1,82 +1,43 @@
 # ResolveDesk Client
 
-React/TanStack Start frontend for ResolveDesk.
+React + TanStack Start, styled with Tailwind CSS and shadcn components. The dashboard highlights unassigned active requests; the ticket queue leads into conversations and ticket actions.
 
-From the repo root, `bun run dev` starts both the client and server.
+## Run locally
 
-## Run Locally
+Commands below run from `client/`. You need Bun and the API at `http://localhost:5051`.
 
 ```bash
 bun install
-bun run dev
-```
-
-Open `http://localhost:3000`.
-
-The dev server listens on `0.0.0.0` so it also works inside Docker.
-
-## Environment
-
-Copy the example:
-
-```bash
 cp .env.example .env
-```
-
-```bash
-VITE_API_BASE_URL=http://localhost:5051
-```
-
-`VITE_` variables are visible in the browser. Do not put secrets in them.
-
-## Docker
-
-Build the image:
-
-```bash
-bun run docker:build
-```
-
-Run the image:
-
-```bash
-bun run docker:run
-```
-
-Run with live source code mounted:
-
-```bash
-docker run -d -p 5007:3000 -v "${PWD}:/app" -v /app/node_modules resolvedesk-app-client
-```
-
-Open `http://localhost:5007`.
-
-## Scripts
-
-```bash
 bun run dev
+```
+
+Open `http://localhost:3000`. From the repo root, `bun run dev` starts both client and API.
+
+Set `VITE_API_BASE_URL` in `.env` to change the API address. Vite settings reach the browser, so keep secrets out of `VITE_` variables.
+
+## Everyday commands
+
+```bash
 bun run build
 bun run lint
-bun run format
-bun run check
-bun run docker:build
-bun run docker:run
+bun run check # Check formatting
+bun run format # Rewrite formatting and apply lint fixes
 ```
 
-## Client tests
-
-From `client/`:
+## Tests
 
 ```bash
+bun run test # Watch mode
 bun run test:run --maxWorkers 1
 bun run test:coverage --maxWorkers 1
 ```
 
-Uses Vitest, React Testing Library, jsdom, and MSW. Run the scripts without the `--bun` runtime override.
+Vitest, React Testing Library, jsdom, and MSW cover components and API services. `vitest.config.ts` uses mocked requests and excludes live tests. Run these scripts without the `--bun` override.
 
 ### Live client service checks
 
-Run the [seed](../server/README.md#development-seed), start the local API, and set the same password in ignored `client/.env.test.local`:
+[Seed the database](../server/README.md#development-seed), start the local API, and add this to ignored `client/.env.test.local`:
 
 ```dotenv
 RESOLVEDESK_TEST_PASSWORD=<same private password used by the seed>
@@ -87,13 +48,10 @@ VITE_API_BASE_URL=http://localhost:5051
 bun run test:live
 ```
 
-Checks the real client services against the local API. Each run adds marked test records and preserves existing data. Keep the password file uncommitted.
+Uses `vitest.live.config.ts` to check real authentication, token refresh, ticket workflows, and knowledge articles. Only local API addresses are allowed. Each run adds marked records and a test account; use a development database.
 
-See [test results](service-qa.md).
+## Docker
 
-## Application stack
+From `client/`, run `bun run docker:build`, then `bun run docker:run`. Open `http://localhost:3000`.
 
-- React
-- TanStack Start and Router
-- Tailwind CSS
-- Bun
+For the full stack, use the [root Docker commands](../README.md#run-with-docker).

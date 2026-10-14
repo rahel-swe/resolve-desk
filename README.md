@@ -1,129 +1,59 @@
 # ResolveDesk
 
-ResolveDesk is an AI-assisted support desk for learning and building practical full-stack engineering skills.
+A support desk that turns incoming requests into a clear queue: customers raise tickets, agents resolve them, and admins manage assignments and knowledge articles.
 
-Customers create tickets, support agents manage the queue, and admins control assignments and knowledge articles. AI can help draft replies, but people stay in control.
+Built with React, TanStack Start, ASP.NET Core 10, EF Core, and PostgreSQL.
 
-## Project Layout
+## Start locally
 
-```text
-client/  React/TanStack frontend
-server/  ASP.NET Core backend
-```
-
-## Commands
-
-Run these from the repo root.
+You need Bun, the .NET 10 SDK, and a running PostgreSQL database. Run from the repo root:
 
 ```bash
 bun run setup
-bun run dev
-bun run build
-bun run check
-bun run db:migrate
-bun run db:seed
-bun run docker:migrate
-bun run docker:up
-bun run docker:down
 ```
 
-## Environment
+Setup copies `server/appsettings.example.json` to ignored `server/appsettings.json`. **After setup, edit `appsettings.json` with your real PostgreSQL connection string and JWT signing key.** See [server configuration](server/README.md#configuration) for manual copying and field names.
 
-Root `.env` is for Docker Compose. It should stay small:
-
-```text
-DATABASE_CONNECTION_STRING  one PostgreSQL connection string for the API
-RESOLVEDESK_JWT_KEY         local JWT signing key
-CLIENT_API_BASE_URL         browser API URL
-```
+Setup also attempts migrations. If that step fails with the example settings, fill in your real values, then continue:
 
 ```bash
-cp .env.example .env
-```
-
-Client `.env` is for Vite when running the client directly:
-
-```bash
-cp client/.env.example client/.env
-```
-
-Server secrets should be set with .NET user secrets, machine environment variables, Docker Compose variables, or deployment secrets. `server/.env.example` is only a reference for ASP.NET Core environment variable names.
-
-Keep real secrets out of committed files.
-
-## Development
-
-Run the full app:
-
-```bash
+bun run db:update
 bun run dev
 ```
 
-This starts the API with `dotnet watch` on `http://localhost:5051` and the client on `http://localhost:3000`.
+Open the [client](http://localhost:3000). The API runs at `http://localhost:5051`.
 
-Run only the client:
+`setup` installs dependencies and overwrites `client/.env` and `server/appsettings.json` with their examples. Back up local edits before rerunning it.
 
-```bash
-cd client
-bun install
-bun run dev
-```
+## Everyday commands
 
-Open `http://localhost:3000`.
-
-For client-only Docker commands, use `client/package.json`.
-
-## Docker Compose
-
-The root `compose.yml` runs these named containers:
-
-```text
-resolvedesk-app-db      PostgreSQL
-resolvedesk-app-server  ASP.NET Core API
-resolvedesk-app-client  React/TanStack frontend
-```
-
-First copy the root env example:
+Run from the repo root:
 
 ```bash
-cp .env.example .env
+bun run setup:client # Install client dependencies and copy its .env example
+bun run setup:server # Restore .NET tools/packages, copy config, update database
+bun run db:update # Apply database migrations
+bun run db:seed # Add development sample data; see server docs
+bun run build # Build client and server
+bun run check # Check client formatting and run server tests
 ```
 
-For Compose, the database connection string uses the Docker service name `db`:
+Client tests run separately; see the [client guide](client/README.md#tests).
 
-```text
-Host=db;Port=5432;Database=resolvedesk;Username=rahel;Password=resolvedesk-local-password
-```
+## Run with Docker
 
-Then run the database migration:
+Copy `.env.example` to `.env` and set your local JWT key. Keep `Host=db` in the database connection string; the browser API URL stays `http://localhost:5051`.
 
 ```bash
 bun run docker:migrate
-```
-
-Start the full stack:
-
-```bash
 bun run docker:up
 ```
 
-Open:
+Compose runs `db`, `server`, and `client`, using the same browser URLs as local development. Run `bun run docker:down` to stop them; database data stays in its named volume.
 
-```text
-client  http://localhost:3000
-server  http://localhost:5051
-```
+## Find your way
 
-## Server
+- [Client](client/README.md): dashboard, ticket queue, conversations, and tests.
+- [Server](server/README.md): configuration, migrations, seed accounts, and backend structure.
 
-The backend is in `server/` and uses ASP.NET Core, EF Core, PostgreSQL, JWT authentication, tickets, comments, and knowledge articles.
-
-See `server/README.md` for local setup, database commands, tests, and structure.
-
-## Engineering Focus
-
-- Clear HTTP contracts
-- Resource authorization
-- Reliable data changes
-- Practical Docker usage
-- Human-approved AI workflows
+Local API settings live in ignored `server/appsettings.json`; its committed example is the template. Root `.env` supplies Compose values and the optional seed password. Client `.env` supplies public Vite settings.

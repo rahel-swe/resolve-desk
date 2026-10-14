@@ -1,140 +1,87 @@
 # ResolveDesk Server
 
-ASP.NET Core backend for ResolveDesk.
+ASP.NET Core 10 API with EF Core, PostgreSQL, JWT authentication, and refresh tokens. Handles tickets, comments, assignments, status history, and knowledge articles.
 
-## Run Locally
-
-```bash
-dotnet restore
-dotnet watch run --launch-profile http
-```
-
-The API runs at `http://localhost:5051` and restarts when server files change.
+Commands below run from the repo root.
 
 ## Configuration
 
-For direct ASP.NET Core runs, use .NET user secrets or machine environment variables.
-
-Required server values:
+`bun run setup` and `bun run setup:server` copy `server/appsettings.example.json` to `server/appsettings.json`. To copy it manually:
 
 ```bash
-ASPNETCORE_ENVIRONMENT=Development
-ASPNETCORE_URLS=http://localhost:5051
-ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=resolvedesk;Username=rahel;Password=change-this-local-postgres-password
-Jwt__Key=replace-with-a-long-local-development-secret-at-least-32-characters
-Jwt__Issuer=ResolveDesk
-Jwt__Audience=ResolveDeskClient
+cp server/appsettings.example.json server/appsettings.json
 ```
 
-ASP.NET Core maps double underscores to configuration sections:
+**After setup, edit `server/appsettings.json` with your real local values:**
 
-```text
-ConnectionStrings:DefaultConnection
-Jwt:Key
-Jwt:Issuer
-Jwt:Audience
+- `ConnectionStrings.DefaultConnection`: your PostgreSQL connection string, using `Host=localhost` for a local database.
+- `Jwt.Key`: your private signing key, at least 32 characters.
+
+Keep `Jwt.Issuer` as `ResolveDesk` and `Jwt.Audience` as `ResolveDeskClient`. `appsettings.json` is ignored by Git; commit only the example with placeholder values. The server no longer uses a `.env.example` file.
+
+Existing .NET user secrets or environment variables can override these settings.
+
+## Run locally
+
+```bash
+bun run setup:server
 ```
 
-For Docker Compose, set the root `.env` file. Compose passes those values into the server container as environment variables.
+Restores packages/tools, overwrites `server/appsettings.json` with the example, and attempts migrations. Edit the copied file as described above. If setup stops at the database step, correct the settings and continue below; rerunning setup would overwrite your edits.
 
-In Compose the same setting is kept as one value:
-
-```text
-DATABASE_CONNECTION_STRING=Host=db;Port=5432;Database=resolvedesk;Username=rahel;Password=resolvedesk-local-password
+```bash
+bun run db:update
+dotnet watch --project server/ResolveDesk.csproj run --launch-profile http
 ```
 
-Keep real secrets out of committed files.
+The API listens at `http://localhost:5051`. Use `bun run dev` to start the client too.
 
 ## Database
 
-This project uses PostgreSQL with EF Core migrations.
+Apply existing migrations:
 
 ```bash
-dotnet tool restore
-dotnet ef database update
+bun run db:update
 ```
 
-From the repo root:
+After changing the EF model, create a migration, review it, then apply it:
 
 ```bash
-bun run db:migrate
+dotnet ef migrations add NameOfMigration --project server
+bun run db:update
 ```
 
-## Docker
-
-Build the server image from the repo root:
-
-```bash
-docker build -t resolvedesk-app-server ./server
-```
-
-Run the full Docker stack from the repo root:
-
-```bash
-cp .env.example .env
-bun run docker:migrate
-bun run docker:up
-```
+For Docker, follow the [root guide](../README.md#run-with-docker). Compose passes server settings from root `.env`; its database host is `db`.
 
 ## Development seed
 
-Creates 5 accounts across Admin, SupportAgent, and Customer, 72 tickets with comments/history, and 1 knowledge article.
-
-Add your seed password to the root `.env` (this file is ignored by Git):
+Apply migrations first. Add a private password to ignored root `.env`:
 
 ```dotenv
-DevelopmentSeed__Password=your-private-seed-password
+DevelopmentSeed__Password=<your-private-seed-password>
 ```
 
-Then run from the repository root:
+Use at least 8 characters and at most 72 UTF-8 bytes, then run:
 
 ```bash
 bun run db:seed
 ```
 
-Use 16–72 ASCII characters. [Bun reads `.env` automatically](https://bun.sh/docs/runtime/environment-variables), and all accounts below use this password. If you already seeded, reuse the same password.
+Creates 6 accounts, 72 tickets with comments/history, and 1 knowledge article in your configured development database. All seed accounts use the same password:
 
-| Email | Role |
-| --- | --- |
-| seed.admin@example.test | Admin |
-| seed.agent@example.test | SupportAgent |
-| seed.agent-other@example.test | SupportAgent |
-| seed.customer@example.test | Customer |
-| seed.customer-other@example.test | Customer |
+- Admin: `seed.admin@example.test`
+- SupportAgent: `seed.agent@example.test`, `seed.agent-other@example.test`
+- Customer: `seed.customer@example.test`, `seed.customer-other@example.test`
+- User: `seed.user@example.test`
 
-Uses your configured database in Development. Apply migrations first. Reruns preserve existing accounts and ticket edits; conflicting accounts cause an error.
+Fresh seeds assign 40 tickets to the first customer, 24 to the second, and 8 to User. Reruns preserve existing accounts and ticket edits; reuse the same password. Conflicting accounts stop the seed.
 
-Fresh seeds give the customers 40 and 32 tickets. Older `seed.user` accounts and their tickets are preserved, but no new `User` account is created.
+Use the same password for [live client checks](../client/README.md#live-client-service-checks).
 
-For [live client checks](../client/README.md#live-client-service-checks), use the same password in ignored `client/.env.test.local`. Keep passwords out of commits.
-
-## Server tests
+## Tests and structure
 
 ```bash
-dotnet test
+dotnet test server/Tests/ResolveDesk.Tests.csproj
 ```
 
-From the repo root:
-
-```bash
-bun run check
-```
-
-## Structure
-
-```text
-Api/             Controllers and HTTP helpers
-Application/     DTOs, services, rules, and use cases
-Domain/          Entities and enums
-Infrastructure/  EF Core, repositories, and database setup
-Middleware/      Central error handling
-Tests/           Unit tests
-```
-
-## Focus
-
-- JWT authentication
-- Ticket ownership and permissions
-- Status rules and history
-- Knowledge article management
-- Human-approved AI suggestions
+Requests flow through `Api/` controllers, `Application/` services, and `Infrastructure/` repositories into PostgreSQL. `Domain/` holds entities/enums, `Middleware/` handles errors, and `Tests/` holds unit tests.

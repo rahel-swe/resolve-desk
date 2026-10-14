@@ -27,10 +27,12 @@ vi.mock('#/providers/auth-provider', () => ({
 async function renderQueue(count = 72) {
   const items = Array.from({ length: count }, (_, index) => ticket(index + 1))
   const backendPages: number[] = []
+
   server.use(
     http.get(`${API_BASE_URL}/api/tickets`, ({ request }) => {
       const page = Number(new URL(request.url).searchParams.get('page'))
       backendPages.push(page)
+
       return HttpResponse.json(
         envelope({
           items: items.slice((page - 1) * 50, page * 50),
@@ -41,10 +43,12 @@ async function renderQueue(count = 72) {
         }),
       )
     }),
+
     http.get(`${API_BASE_URL}/api/knowledge`, () =>
       HttpResponse.json(envelope([])),
     ),
   )
+
   const root = createRootRoute({
     component: () => (
       <WorkspaceProvider>
@@ -52,6 +56,7 @@ async function renderQueue(count = 72) {
       </WorkspaceProvider>
     ),
   })
+
   const route = createRoute({
     getParentRoute: () => root,
     path: '/tickets/',

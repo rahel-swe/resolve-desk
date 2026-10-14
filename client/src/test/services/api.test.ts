@@ -32,6 +32,7 @@ describe('shared API transport', () => {
         () => new HttpResponse(null, { status: 204 }),
       ),
     )
+
     expect(await apiRequest('/transport', { method: 'POST' })).toBeUndefined()
   })
 
@@ -124,11 +125,14 @@ describe('shared API transport', () => {
       apiRequest('/transport/b'),
       apiRequest('/transport/c'),
     ])
+
     await expect
       .poll(() => calls.filter((call) => call.endsWith(session.token)).length)
       .toBe(3)
+
     await expect.poll(() => refreshCalls).toBeGreaterThanOrEqual(1)
     releaseRefresh()
+
     expect(await pending).toEqual([{ ok: true }, { ok: true }, { ok: true }])
     expect(refreshCalls).toBe(1)
     expect(calls).toHaveLength(6)

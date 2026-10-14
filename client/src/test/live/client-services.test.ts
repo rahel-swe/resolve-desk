@@ -140,7 +140,9 @@ describe('client services against the local seeded backend', () => {
     ).rejects.toThrow()
 
     const agent = await login('agent')
+
     await expect(updateTicketStatus(created.id, 1)).rejects.toThrow()
+
     expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
       agent.email,
     )
@@ -155,9 +157,12 @@ describe('client services against the local seeded backend', () => {
       ]),
     )
     const priority = await getTicketPrioritySuggestion(created.id)
+
     expect(priority.suggestedPriority).toBe(2)
     expect(priority.rationale.length).toBeGreaterThan(0)
+
     const response = await getTicketResponseSuggestion(created.id)
+
     expect(response.suggestedReply.length).toBeGreaterThan(0)
     expect(response.suggestedSteps.length).toBeGreaterThan(0)
     expect(response.escalationRecommendation.length).toBeGreaterThan(0)
@@ -167,11 +172,14 @@ describe('client services against the local seeded backend', () => {
     await expect(assignTicket(created.id, agent.id)).rejects.toThrow()
 
     await login('admin')
+
     expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
       agent.email,
     )
     expect((await updateTicketStatus(created.id, 3)).status).toBe(3)
+
     const comments = await getTicketComments(created.id)
+
     expect(
       comments.filter((comment) => comment.message === message),
     ).toHaveLength(1)
@@ -180,6 +188,7 @@ describe('client services against the local seeded backend', () => {
 
   it('creates and reads an administrator article and surfaces a forbidden agent write', async () => {
     await login('admin')
+
     const payload = {
       title: `[ResolveDesk smoke ${runId}] Guide`,
       content: 'An isolated guide created through the real client service.',
@@ -189,14 +198,19 @@ describe('client services against the local seeded backend', () => {
     const article = await createKnowledgeArticle(payload)
 
     expect(article.id).toBeGreaterThan(0)
+
     expect(await getKnowledgeArticles()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: article.id, ...payload }),
       ]),
     )
+
     await login('agent')
+
     const before = getAuthToken()
+
     await expect(createKnowledgeArticle(payload)).rejects.toThrow('403')
+
     expect(getAuthToken()).toBe(before)
     expect(
       (await getKnowledgeArticles()).some((item) => item.id === article.id),
@@ -206,12 +220,14 @@ describe('client services against the local seeded backend', () => {
   it('rotates an expired client access token and retries the requested service', async () => {
     const profile = await login('admin')
     const refreshToken = getRefreshToken()!
+
     saveSession({
       token: 'expired-smoke-access',
       refreshToken,
       email: profile.email,
       role: profile.role,
     })
+
     expect((await getCurrentUserProfile()).id).toBe(profile.id)
     expect(getRefreshToken()).not.toBe(refreshToken)
     expect(getAuthToken()).not.toBe('expired-smoke-access')
@@ -220,12 +236,18 @@ describe('client services against the local seeded backend', () => {
   it('registers a customer with a renewable session and revokes it on logout', async () => {
     const email = `smoke.${runId}@example.test`
     const session = await registerWithApi('Smoke Customer', email, password)
+
     expect(session.role).toBe('Customer')
     expect(session.refreshToken.length).toBeGreaterThan(0)
+
     saveSession(session)
+
     expect((await getCurrentUserProfile()).email).toBe(email)
+
     await logoutFromApi()
+
     expect(getAuthToken()).toBeNull()
+
     await expect(
       apiRequest('/api/auth/refresh', {
         method: 'POST',
