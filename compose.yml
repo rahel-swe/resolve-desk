@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - resolvedesk_app_pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U rahel -d resolvedesk"]
       interval: 10s
@@ -38,6 +38,7 @@ services:
       Jwt__Key: ${RESOLVEDESK_JWT_KEY:?Set RESOLVEDESK_JWT_KEY in .env}
       Jwt__Issuer: ResolveDesk
       Jwt__Audience: ResolveDeskClient
+      DevelopmentSeed__Password: ${DevelopmentSeed__Password:?Set DevelopmentSeed__Password in .env}
     ports:
       - "5051:5051"
 
@@ -57,6 +58,7 @@ services:
 
   migrate:
     image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: migrate
     working_dir: /src
     depends_on:
       db:
@@ -69,9 +71,9 @@ services:
       Jwt__Audience: ResolveDeskClient
     volumes:
       - ./server:/src
-      - resolvedesk_nuget_cache:/root/.nuget/packages
+      - nuget_cache:/root/.nuget/packages
     command: sh -c "dotnet tool restore && dotnet restore ResolveDesk.csproj && dotnet ef database update --project ResolveDesk.csproj"
 
 volumes:
-  resolvedesk_app_pgdata:
-  resolvedesk_nuget_cache:
+  db_data:
+  nuget_cache:
