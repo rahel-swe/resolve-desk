@@ -22,6 +22,7 @@ public static class DevelopmentSeed
         CancellationToken cancellationToken = default)
     {
         var password = configuration["DevelopmentSeed:Password"];
+
         if (string.IsNullOrWhiteSpace(password) || password.Length < 8 || System.Text.Encoding.UTF8.GetByteCount(password) > 72)
             throw new InvalidOperationException("Set DevelopmentSeed__Password to a private 8–72 byte password before seeding.");
 
@@ -30,13 +31,16 @@ public static class DevelopmentSeed
             throw new InvalidOperationException("Apply pending migrations before running the development seed.");
 
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+
         // Serialize concurrent runs; all writes are committed together or rolled back together.
         await db.Database.ExecuteSqlRawAsync("SELECT pg_advisory_xact_lock(682409311)", cancellationToken);
+
         // Existing manually imported IDs can leave identity sequences behind the rows.
         // Hold write locks while moving them forward; never lower a live sequence.
 
         await db.Database.ExecuteSqlRawAsync(
             "LOCK TABLE \"Users\", \"Tickets\", \"TicketComments\", \"TicketHistories\", \"KnowledgeArticles\" IN SHARE ROW EXCLUSIVE MODE", cancellationToken);
+
         await db.Database.ExecuteSqlRawAsync("""
             SELECT setval(pg_get_serial_sequence('"Users"', 'Id'), GREATEST(COALESCE((SELECT MAX("Id") FROM "Users"), 0) + 1, nextval(pg_get_serial_sequence('"Users"', 'Id'))), false);
             SELECT setval(pg_get_serial_sequence('"Tickets"', 'Id'), GREATEST(COALESCE((SELECT MAX("Id") FROM "Tickets"), 0) + 1, nextval(pg_get_serial_sequence('"Tickets"', 'Id'))), false);
@@ -47,6 +51,7 @@ public static class DevelopmentSeed
 
         var users = new Dictionary<string, User>(StringComparer.Ordinal);
         var createdUsers = 0;
+
         foreach (var account in Accounts)
         {
             var existing = await db.Users.Where(user => user.Email.ToLower() == account.Email).ToListAsync(cancellationToken);

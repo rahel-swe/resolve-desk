@@ -24,6 +24,6 @@ ENV ASPNETCORE_URLS=http://+:5051
 
 EXPOSE 5051
 
-ENTRYPOINT ["sh", "-c", "if [ \"$ASPNETCORE_ENVIRONMENT\" = Development ]; then dotnet ResolveDesk.dll --seed-development || exit $?; fi; exec dotnet ResolveDesk.dll" ]
+CMD ["sh", "-c", "if [ \"$ASPNETCORE_ENVIRONMENT\" = Development ]; then dotnet ResolveDesk.dll --seed-development || exit $?; fi; exec dotnet ResolveDesk.dll"]
 
 
