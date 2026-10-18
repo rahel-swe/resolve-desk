@@ -13,22 +13,20 @@ import {
 import { PageHeading } from '#/components/workspace/page-heading'
 import { ResourceError } from '#/components/workspace/state-panel'
 import { useRequireAuth } from '#/hooks/use-require-auth'
-import { useWorkspace } from '#/providers/workspace-provider'
-import { createTicket } from '#/services/ticket-service'
+import { useCreateTicketMutation } from '#/queries/ticket-mutations'
 import { formatTicketPriority } from '#/lib/ticket-utils'
 import { toast } from '#/components/ui/toast'
 
 export default function NewTicketPage() {
   const authenticated = useRequireAuth()
   const navigate = useNavigate()
-  const { queue } = useWorkspace()
+  const createTicketMutation = useCreateTicketMutation()
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('General')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('1')
-  const [submitting, setSubmitting] = useState(false)
+  const submitting = createTicketMutation.isPending
   const [error, setError] = useState('')
-  if (!authenticated) return null
 
   useEffect(() => {
     if (!error) return
@@ -38,6 +36,8 @@ export default function NewTicketPage() {
       type: 'error',
     })
   }, [error])
+
+  if (!authenticated) return null
 
   async function handleSubmit() {
     if (submitting) return
@@ -52,15 +52,13 @@ export default function NewTicketPage() {
       )
       return
     }
-    setSubmitting(true)
     try {
-      const ticket = await createTicket({
+      const ticket = await createTicketMutation.mutateAsync({
         title: title.trim(),
         category: category.trim(),
         description: description.trim(),
         priority: Number(priority),
       })
-      await queue.refresh()
       await navigate({
         to: '/tickets/$ticketId',
         params: { ticketId: String(ticket.id) },
@@ -71,8 +69,6 @@ export default function NewTicketPage() {
           ? cause.message
           : 'Unable to create the ticket. Please try again.',
       )
-    } finally {
-      setSubmitting(false)
     }
   }
 
