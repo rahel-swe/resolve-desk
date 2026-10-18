@@ -7,21 +7,23 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import { EmptyState, ResourceError } from '#/components/workspace/state-panel'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
-import { useWorkspace } from '#/providers/workspace-provider'
-import { createKnowledgeArticle } from '#/services/ticket-service'
+import { useKnowledgeArticaleMutation } from '#/queries/knowledge-mutation'
 
 export default function NewKnowledgePage() {
   const authenticated = useRequireAuth()
   const { user } = useAuth()
-  const { library } = useWorkspace()
+  const { mutate: createKnowledgeArticle, isPending: isSubmitting } =
+    useKnowledgeArticaleMutation()
+
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('General')
   const [content, setContent] = useState('')
   const [tagsInput, setTagsInput] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
   if (!authenticated) return null
+
   if (user?.role !== 'Admin')
     return (
       <EmptyState
@@ -39,22 +41,23 @@ export default function NewKnowledgePage() {
       />
     )
 
-  async function handleSubmit() {
-    if (submitting) return
-    setError('')
+  function handleSubmit() {
+    if (isSubmitting) return
+
+    setErrorMessage('')
     if (
       title.trim().length < 3 ||
       category.trim().length < 2 ||
       content.trim().length < 10
     ) {
-      setError(
+      setErrorMessage(
         'Use at least 3 characters for the title, 2 for the category, and 10 for the article.',
       )
       return
     }
-    setSubmitting(true)
-    try {
-      await createKnowledgeArticle({
+
+    createKnowledgeArticle(
+      {
         title: title.trim(),
         category: category.trim(),
         content: content.trim(),
@@ -66,18 +69,19 @@ export default function NewKnowledgePage() {
               .filter(Boolean),
           ),
         ],
-      })
-      await library.refresh()
-      await navigate({ to: '/knowledge', search: { q: title.trim() } })
-    } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : 'Unable to publish the article. Please try again.',
-      )
-    } finally {
-      setSubmitting(false)
-    }
+      },
+      {
+        async onSuccess() {
+          await navigate({ to: '/knowledge', search: { q: title.trim() } })
+        },
+
+        onError(error) {
+          setErrorMessage(
+            error.message || 'Unable to publish the article. Please try again.',
+          )
+        },
+      },
+    )
   }
 
   return (
@@ -102,8 +106,8 @@ export default function NewKnowledgePage() {
           void handleSubmit()
         }}
       >
-        {error && <ResourceError message={error} />}
-        <fieldset className="space-y-6" disabled={submitting}>
+        {errorMessage && <ResourceError message={errorMessage} />}
+        <fieldset className="space-y-6" disabled={isSubmitting}>
           <div className="space-y-2">
             <label htmlFor="article-title" className="text-sm font-medium">
               Title
@@ -173,14 +177,14 @@ export default function NewKnowledgePage() {
           <Button
             type="button"
             variant="ghost"
-            disabled={submitting}
+            disabled={isSubmitting}
             nativeButton={false}
             render={<Link to="/knowledge" />}
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={submitting}>
-            {submitting ? 'Publishing…' : 'Publish article'}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Publishing…' : 'Publish article'}
           </Button>
         </div>
       </form>

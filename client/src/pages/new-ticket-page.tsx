@@ -26,50 +26,55 @@ export default function NewTicketPage() {
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('1')
   const submitting = createTicketMutation.isPending
-  const [error, setError] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    if (!error) return
+    if (!errorMessage) return
 
     toast.add({
-      description: error,
+      description: errorMessage,
       type: 'error',
     })
-  }, [error])
+  }, [errorMessage])
 
   if (!authenticated) return null
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (submitting) return
-    setError('')
+    setErrorMessage('')
+
     if (
       title.trim().length < 5 ||
       description.trim().length < 10 ||
       category.trim().length < 2
     ) {
-      setError(
+      setErrorMessage(
         'Use at least 5 characters for the title, 10 for the description, and 2 for the category.',
       )
+
       return
     }
-    try {
-      const ticket = await createTicketMutation.mutateAsync({
+
+    createTicketMutation.mutate(
+      {
         title: title.trim(),
         category: category.trim(),
         description: description.trim(),
         priority: Number(priority),
-      })
-      await navigate({
-        to: '/tickets/$ticketId',
-        params: { ticketId: String(ticket.id) },
-      })
-    } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : 'Unable to create the ticket. Please try again.',
-      )
-    }
+      },
+      {
+        onSuccess: (ticket) => {
+          navigate({
+            to: '/tickets/$ticketId',
+            params: { ticketId: String(ticket.id) },
+          })
+        },
+
+        onError: (error) => {
+          setErrorMessage(error.message)
+        },
+      },
+    )
   }
 
   return (
@@ -94,7 +99,7 @@ export default function NewTicketPage() {
           void handleSubmit()
         }}
       >
-        {error && <ResourceError message={error} />}
+        {errorMessage && <ResourceError message={errorMessage} />}
         <fieldset disabled={submitting} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="new-ticket-title" className="text-sm font-medium">
