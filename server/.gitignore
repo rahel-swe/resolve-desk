@@ -94,3 +94,5 @@ Thumbs.db
 !.env.example
 node_modules/
 appsettings.json
+
+AGENT.md
