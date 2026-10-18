@@ -7,6 +7,7 @@ import { API_BASE_URL } from '#/lib/api'
 import { TicketConversation } from '#/components/tickets/ticket-conversation'
 import { useTicketWorkspace } from '#/hooks/use-ticket-workspace'
 import { WorkspaceProvider } from '#/providers/workspace-provider'
+import { QueryProvider } from '#/providers/query-provider'
 import { saveSession } from '#/services/auth-storage'
 import { server } from '#/test/mocks/server'
 import { envelope, session, ticket } from '#/test/fixtures'
@@ -87,9 +88,11 @@ function setupConversation(status = 200) {
     }),
   )
   render(
-    <WorkspaceProvider>
-      <ConversationHarness />
-    </WorkspaceProvider>,
+    <QueryProvider>
+      <WorkspaceProvider>
+        <ConversationHarness />
+      </WorkspaceProvider>
+    </QueryProvider>,
   )
   return { posts: () => posts, user: userEvent.setup() }
 }

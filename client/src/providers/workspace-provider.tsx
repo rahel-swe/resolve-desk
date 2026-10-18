@@ -1,9 +1,13 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 import { useApiResource } from '#/hooks/use-api-resource'
 import { useAuth } from '#/providers/auth-provider'
-import { getKnowledgeArticles, getTickets } from '#/services/ticket-service'
+import { getKnowledgeArticles } from '#/services/ticket-service'
 import type { ApiKnowledgeArticle, ApiTicket } from '#/services/ticket-service'
+import { ticketListOptions } from '#/queries/ticket-queries'
+import { ticketKeys } from '#/queries/keys/ticket-keys'
+import { knowledgeKeys } from '#/queries/keys/knowledge-keys'
 
 const emptyTickets: ApiTicket[] = []
 const emptyArticles: ApiKnowledgeArticle[] = []
@@ -21,8 +25,35 @@ const WorkspaceContext = createContext<Workspace | null>(null)
 
 export function WorkspaceProvider({ children }: PropsWithChildren) {
   const { user, isAuthenticated } = useAuth()
-  const sessionKey = isAuthenticated && user ? user.email : null
-  const queue = useApiResource(getTickets, emptyTickets, sessionKey)
+  const sessionKey =
+    isAuthenticated && user ? `${user.email}:${user.role}` : null
+  const queryClient = useQueryClient()
+  const previousSession = useRef(sessionKey)
+  const ticketQuery = useQuery(ticketListOptions(sessionKey))
+
+  useEffect(() => {
+    if (previousSession.current === sessionKey) return
+
+    // Remove the old account's data on sign-out, account switch, or role change.
+    queryClient.removeQueries({
+      queryKey: ticketKeys.list(previousSession.current),
+      exact: true,
+    })
+    queryClient.removeQueries({
+      queryKey: knowledgeKeys.list(previousSession.current),
+      exact: true,
+    })
+    previousSession.current = sessionKey
+  }, [queryClient, sessionKey])
+
+  const queue: Resource<ApiTicket> = {
+    data: ticketQuery.data ?? emptyTickets,
+    loading: ticketQuery.isLoading,
+    error: ticketQuery.error?.message ?? '',
+    refresh: async () => {
+      if (sessionKey) await ticketQuery.refetch()
+    },
+  }
   const library = useApiResource(
     getKnowledgeArticles,
     emptyArticles,

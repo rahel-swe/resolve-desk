@@ -12,6 +12,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
 import { API_BASE_URL } from '#/lib/api'
 import { WorkspaceProvider } from '#/providers/workspace-provider'
+import { QueryProvider } from '#/providers/query-provider'
 import TicketsPage from '#/pages/tickets-page'
 import { server } from '#/test/mocks/server'
 import { envelope, session, ticket } from '#/test/fixtures'
@@ -51,9 +52,11 @@ async function renderQueue(count = 72) {
 
   const root = createRootRoute({
     component: () => (
-      <WorkspaceProvider>
-        <Outlet />
-      </WorkspaceProvider>
+      <QueryProvider>
+        <WorkspaceProvider>
+          <Outlet />
+        </WorkspaceProvider>
+      </QueryProvider>
     ),
   })
 
