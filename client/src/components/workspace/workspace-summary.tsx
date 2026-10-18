@@ -20,6 +20,7 @@ export function WorkspaceSummary() {
   const assigned = queue.data.filter(
     (ticket) => ticket.assignedAgentEmail === user?.email && ticket.status < 3,
   )
+
   const recent = [...queue.data]
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 3)
@@ -28,6 +29,7 @@ export function WorkspaceSummary() {
       article.title.toLowerCase().includes(query.toLowerCase()),
     )
     .slice(0, 2)
+
   return (
     <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
       <h2 className="mb-5 font-heading text-3xl">My workspace</h2>

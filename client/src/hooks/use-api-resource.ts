@@ -16,6 +16,7 @@ export function useApiResource<T>(
   const refresh = useCallback(async () => {
     request.current?.abort()
     const controller = new AbortController()
+
     request.current = controller
 
     if (!sessionKey) {

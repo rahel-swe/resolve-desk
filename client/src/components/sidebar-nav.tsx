@@ -14,6 +14,7 @@ export default function SidebarNav() {
   const { pathname } = useLocation()
   const { setOpenMobile } = useSidebar()
   const { queue } = useWorkspace()
+
   const openCount = queue.data.filter((ticket) => ticket.status === 0).length
 
   return (
@@ -35,11 +36,13 @@ export default function SidebarNav() {
               <HugeiconsIcon icon={item.icon} strokeWidth={1.8} />
 
               <span>{item.label}</span>
+
               {item.preview && (
                 <span className="ml-auto rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">
                   Preview
                 </span>
               )}
+
               {item.to === '/tickets' &&
                 !queue.loading &&
                 !queue.error &&
