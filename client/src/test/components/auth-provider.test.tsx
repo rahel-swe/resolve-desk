@@ -1,7 +1,7 @@
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
-import { API_BASE_URL } from '#/lib/api'
+import { API_BASE_URL } from '#/lib/http-client'
 import { AuthProvider, useAuth } from '#/providers/auth-provider'
 import { clearSession, saveSession } from '#/services/auth-storage'
 import { server } from '#/test/mocks/server'

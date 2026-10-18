@@ -5,6 +5,9 @@ import {
   saveSession,
 } from '#/services/auth-storage'
 import type { StoredSession } from '#/services/auth-storage'
+import { httpClient } from '#/lib/http-client'
+import { AxiosHeaders } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 
 export type ApiResponse<T> = {
   isSuccess: boolean
@@ -19,7 +22,7 @@ type ProblemDetails = {
   traceId?: string
 }
 
-type ApiRequestOptions = RequestInit & {
+type ApiRequestOptions = Omit<AxiosRequestConfig<unknown>, 'url'> & {
   skipAuthRefresh?: boolean
 }
 
@@ -31,39 +34,6 @@ function isApiEnvelope<T>(payload: unknown): payload is ApiResponse<T> {
     'message' in payload &&
     'data' in payload
   )
-}
-
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5051'
-
-function buildHeaders(init: RequestInit = {}) {
-  const headers = new Headers(init.headers)
-  const token = getAuthToken()
-
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
-
-  if (
-    !headers.has('Content-Type') &&
-    init.body &&
-    typeof init.body === 'string'
-  ) {
-    headers.set('Content-Type', 'application/json')
-  }
-
-  return headers
-}
-
-async function parseResponsePayload(response: Response) {
-  if (response.status === 204) return undefined
-
-  const contentType = response.headers.get('content-type') ?? ''
-
-  return contentType.includes('application/json') ||
-    contentType.includes('+json')
-    ? await response.json()
-    : await response.text()
 }
 
 function getErrorMessage(payload: unknown, status: number) {
@@ -92,11 +62,11 @@ async function requestRefreshedToken() {
 
   if (!refreshToken) return null
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-  })
+  const response = await httpClient.post<unknown>(
+    '/api/auth/refresh',
+    { refreshToken },
+    { validateStatus: () => true },
+  )
 
   if (getRefreshToken() !== refreshToken)
     throw new DOMException(
@@ -104,9 +74,10 @@ async function requestRefreshedToken() {
       'AbortError',
     )
 
-  if (!response.ok) return null
+  if (response.status < 200 || response.status >= 300) return null
 
-  const payload = await response.json()
+  const payload = response.data
+
   if (isApiEnvelope<unknown>(payload) && !payload.isSuccess) return null
   const session = isApiEnvelope<StoredSession | null>(payload)
     ? payload.data
@@ -137,26 +108,29 @@ function refreshAccessToken() {
     pendingRefresh = requestRefreshedToken().finally(() => {
       pendingRefresh = null
     })
+
   return pendingRefresh
 }
 
 export async function apiRequestEnvelope<T>(
   path: string,
-  init: ApiRequestOptions = {},
+  options: ApiRequestOptions = {},
 ): Promise<ApiResponse<T>> {
-  const { skipAuthRefresh, ...requestInit } = init
-  const headers = buildHeaders(requestInit)
+  const { skipAuthRefresh, ...requestConfig } = options
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...requestInit,
-    headers,
+  const response = await httpClient.request<unknown>({
+    ...requestConfig,
+    url: path,
+    validateStatus: () => true,
   })
 
   if (response.status === 401 && !skipAuthRefresh) {
     const currentToken = getAuthToken()
+    const sentAuthorization = response.config.headers.get('Authorization')
+
     // A slower 401 can arrive after another request already rotated the token.
     const newToken =
-      currentToken && headers.get('Authorization') !== `Bearer ${currentToken}`
+      currentToken && sentAuthorization !== `Bearer ${currentToken}`
         ? currentToken
         : await refreshAccessToken()
 
@@ -167,22 +141,20 @@ export async function apiRequestEnvelope<T>(
       throw new Error('Session expired. Please sign in again.')
     }
 
-    const retryHeaders = new Headers(requestInit.headers)
-    retryHeaders.set('Authorization', `Bearer ${newToken}`)
+    const retryHeaders = new AxiosHeaders(response.config.headers)
+    retryHeaders.setAuthorization(`Bearer ${newToken}`)
 
     return apiRequestEnvelope<T>(path, {
-      ...requestInit,
+      ...requestConfig,
       headers: retryHeaders,
       skipAuthRefresh: true,
     })
   }
 
-  const payload = await parseResponsePayload(response)
+  const payload = response.status === 204 ? undefined : response.data
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      clearSession()
-    }
+  if (response.status < 200 || response.status >= 300) {
+    if (response.status === 401) clearSession()
 
     throw new Error(getErrorMessage(payload, response.status))
   }
@@ -204,9 +176,9 @@ export async function apiRequestEnvelope<T>(
 
 export async function apiRequest<T>(
   path: string,
-  init: ApiRequestOptions = {},
+  options: ApiRequestOptions = {},
 ): Promise<T> {
-  const response = await apiRequestEnvelope<T>(path, init)
+  const response = await apiRequestEnvelope<T>(path, options)
 
   return response.data
 }

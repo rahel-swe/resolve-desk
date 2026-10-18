@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/react'
 import { server } from '#/test/mocks/server'
 import { http, HttpResponse } from 'msw/http'
-import { API_BASE_URL } from '#/lib/api'
+import { API_BASE_URL } from '#/lib/http-client'
 import { signInWithApi } from '#/services/auth-service'
 
 function PasswordFieldHarness() {

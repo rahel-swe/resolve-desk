@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
-import { API_BASE_URL } from '#/lib/api'
+import { API_BASE_URL } from '#/lib/http-client'
 import { saveSession } from '#/services/auth-storage'
 import * as tickets from '#/services/ticket-service'
 import { server } from '#/test/mocks/server'

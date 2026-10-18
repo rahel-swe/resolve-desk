@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
-import { API_BASE_URL, apiRequest } from '#/lib/api'
+import { API_BASE_URL } from '#/lib/http-client'
 import {
   clearSession,
   getAuthToken,
@@ -9,6 +9,7 @@ import {
 } from '#/services/auth-storage'
 import { server } from '#/test/mocks/server'
 import { envelope, session } from '#/test/fixtures'
+import { apiRequest } from '#/lib/api'
 
 describe('shared API transport', () => {
   it.each(['envelope', 'raw'])(

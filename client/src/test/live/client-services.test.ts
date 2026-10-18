@@ -251,7 +251,7 @@ describe('client services against the local seeded backend', () => {
     await expect(
       apiRequest('/api/auth/refresh', {
         method: 'POST',
-        body: JSON.stringify({ refreshToken: session.refreshToken }),
+        data: { refreshToken: session.refreshToken },
         skipAuthRefresh: true,
       }),
     ).rejects.toThrow(/401|Unauthorized/)

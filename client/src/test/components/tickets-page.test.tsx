@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
-import { API_BASE_URL } from '#/lib/api'
+import { API_BASE_URL } from '#/lib/http-client'
 import { WorkspaceProvider } from '#/providers/workspace-provider'
 import { QueryProvider } from '#/providers/query-provider'
 import TicketsPage from '#/pages/tickets-page'

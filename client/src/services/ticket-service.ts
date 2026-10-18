@@ -85,21 +85,21 @@ export async function createTicket(payload: {
 }) {
   return apiRequest<ApiTicket>('/api/tickets', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    data: payload,
   })
 }
 
 export async function updateTicketStatus(ticketId: number, status: number) {
   return apiRequest<ApiTicket>(`/api/tickets/${ticketId}`, {
     method: 'PATCH',
-    body: JSON.stringify({ status }),
+    data: { status },
   })
 }
 
 export async function assignTicket(ticketId: number, assignedAgentId: number) {
   return apiRequest<ApiTicket>(`/api/tickets/${ticketId}/assignment`, {
     method: 'PATCH',
-    body: JSON.stringify({ assignedAgentId }),
+    data: { assignedAgentId },
   })
 }
 
@@ -115,7 +115,7 @@ export async function getTicketComments(
 export async function createTicketComment(ticketId: number, message: string) {
   return apiRequest<void>(`/api/tickets/${ticketId}/comments`, {
     method: 'POST',
-    body: JSON.stringify({ message }),
+    data: { message },
   })
 }
 
@@ -133,7 +133,7 @@ export async function createKnowledgeArticle(payload: {
 }) {
   return apiRequest<ApiKnowledgeArticle>('/api/knowledge', {
     method: 'POST',
-    body: JSON.stringify(payload),
+    data: payload,
   })
 }
 

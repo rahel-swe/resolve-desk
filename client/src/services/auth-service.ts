@@ -30,7 +30,7 @@ export async function registerWithApi(
 ) {
   const session = await apiRequest<AuthResponse>('/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ fullName, email, password }),
+    data: { fullName, email, password },
     skipAuthRefresh: true,
   })
   // The registration contract issues only an access token. Obtain the same
@@ -41,7 +41,7 @@ export async function registerWithApi(
 export async function signInWithApi(email: string, password: string) {
   return apiRequest<AuthResponse>('/api/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    data: { email, password },
     skipAuthRefresh: true,
   })
 }
@@ -71,7 +71,7 @@ export async function logoutFromApi() {
   try {
     await apiRequest('/api/auth/logout', {
       method: 'POST',
-      body: JSON.stringify({ refreshToken }),
+      data: { refreshToken },
       skipAuthRefresh: true,
     })
   } finally {
