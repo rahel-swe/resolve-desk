@@ -57,10 +57,18 @@ export const useUpdateTicketStatusMutation = (
 
   return useMutation({
     mutationFn: (status: number) => updateTicketStatus(ticketId, status),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
+    onSuccess: () => {
+      ;(queryClient.invalidateQueries({
         queryKey: ticketKeys.ticketDetails(sessionKey, ticketId),
       }),
+        queryClient.invalidateQueries({
+          queryKey: ticketKeys.list(sessionKey),
+        }))
+
+      queryClient.invalidateQueries({
+        queryKey: ticketKeys.history(sessionKey, ticketId),
+      })
+    },
   })
 }
 
