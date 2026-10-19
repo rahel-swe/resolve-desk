@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useApiResource } from '#/hooks/use-api-resource'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
 import {
@@ -17,128 +16,79 @@ import type {
   ApiTicketComment,
   ApiTicketHistory,
 } from '#/services/ticket-service'
+import { useQuery } from '@tanstack/react-query'
+import {
+  ticketCommentsOptions,
+  ticketDetailsOptions,
+  ticketHistoryOptions,
+  ticketListOptions,
+} from '#/queries/ticket-queries'
+import { useTicketActions } from './use-ticket-actions'
 
 type TicketWorkspaceData = {
   ticket: ApiTicket
   comments: ApiTicketComment[]
   history: ApiTicketHistory[]
 }
-const initialWorkspace: TicketWorkspaceData | null = null
+
+export type ResourceType = {
+  data: TicketWorkspaceData | null
+  loading: boolean
+  error?: string
+  refresh: () => Promise<void>
+}
 
 export function useTicketWorkspace(ticketId: number) {
   const { user } = useAuth()
-  const { queue } = useWorkspace()
 
-  const [busy, setBusy] = useState('')
-  const [actionError, setActionError] = useState('')
-  const [notice, setNotice] = useState('')
+  const ticketDetailsQuery = useQuery(
+    ticketDetailsOptions(user!.email, ticketId),
+  )
+  const ticketCommentsQuery = useQuery(
+    ticketCommentsOptions(user!.email, ticketId),
+  )
+  const ticketHistoryQuery = useQuery(
+    ticketHistoryOptions(user!.email, ticketId),
+  )
 
-  const [prioritySuggestion, setPrioritySuggestion] = useState<Awaited<
-    ReturnType<typeof getTicketPrioritySuggestion>
-  > | null>(null)
-  const [responseSuggestion, setResponseSuggestion] = useState<Awaited<
-    ReturnType<typeof getTicketResponseSuggestion>
-  > | null>(null)
+  const ticketActions = useTicketActions(ticketId)
 
-  const actionLocked = useRef(false)
-  const mounted = useRef(true)
+  const data: TicketWorkspaceData | null =
+    ticketDetailsQuery.data !== undefined &&
+    ticketCommentsQuery.data !== undefined &&
+    ticketHistoryQuery.data !== undefined
+      ? {
+          ticket: ticketDetailsQuery.data,
+          comments: ticketCommentsQuery.data,
+          history: ticketHistoryQuery.data,
+        }
+      : null
 
-  useEffect(() => {
-    mounted.current = true
-    return () => {
-      mounted.current = false
-    }
-  }, [])
+  const resource: ResourceType = {
+    data,
+    loading:
+      ticketDetailsQuery.isLoading ||
+      ticketCommentsQuery.isLoading ||
+      ticketHistoryQuery.isLoading,
+    error:
+      ticketDetailsQuery.error?.message ||
+      ticketCommentsQuery.error?.message ||
+      ticketHistoryQuery.error?.message,
+    refresh: async () => {
+      if (!user || !Number.isSafeInteger(ticketId) || ticketId < 1) return
 
-  const load = useCallback(
-    async (signal: AbortSignal): Promise<TicketWorkspaceData | null> => {
-      if (!Number.isSafeInteger(ticketId) || ticketId < 1)
-        throw new Error('This ticket address is not valid.')
-      const [ticket, comments, history] = await Promise.all([
-        getTicketByIdApi(ticketId, signal),
-        getTicketComments(ticketId, signal),
-        getTicketHistory(ticketId, signal),
+      await Promise.all([
+        ticketDetailsQuery.refetch(),
+        ticketCommentsQuery.refetch(),
+        ticketHistoryQuery.refetch(),
       ])
-      return { ticket, comments, history }
     },
-    [ticketId],
-  )
-  const resource = useApiResource(
-    load,
-    initialWorkspace,
-    user ? `${user.email}/${ticketId}` : null,
-  )
-
-  async function runAction(name: string, action: () => Promise<void>) {
-    if (actionLocked.current) return false
-    actionLocked.current = true
-    setBusy(name)
-    setActionError('')
-    setNotice('')
-    try {
-      await action()
-      return true
-    } catch (cause) {
-      if (mounted.current)
-        setActionError(
-          cause instanceof Error
-            ? cause.message
-            : 'The action could not be completed.',
-        )
-      return false
-    } finally {
-      actionLocked.current = false
-      if (mounted.current) setBusy('')
-    }
-  }
-
-  async function afterMutation(message: string) {
-    if (!mounted.current) return
-    await Promise.all([resource.refresh(), queue.refresh()])
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Either refresh can unmount the hook while awaiting.
-    if (mounted.current) setNotice(message)
   }
 
   return {
-    ...resource,
     user,
-    busy,
-    actionError,
-    notice,
-    prioritySuggestion,
-    responseSuggestion,
-    updateStatus: (status: number) =>
-      runAction('status', async () => {
-        await updateTicketStatus(ticketId, status)
-        await afterMutation('Ticket status updated.')
-      }),
-    assign: (agentId: number) =>
-      runAction('assign', async () => {
-        await assignTicket(ticketId, agentId)
-        await afterMutation('Ticket assignment updated.')
-      }),
-    addComment: (message: string) =>
-      runAction('comment', async () => {
-        if (message.trim().length < 5 || message.trim().length > 1000)
-          throw new Error(
-            'A comment must contain between 5 and 1,000 characters.',
-          )
-
-        await createTicketComment(ticketId, message.trim())
-        await afterMutation('Comment added to the conversation.')
-      }),
-
-    suggestPriority: () =>
-      runAction('priority-ai', async () => {
-        const result = await getTicketPrioritySuggestion(ticketId)
-        if (mounted.current) setPrioritySuggestion(result)
-      }),
-
-    suggestResponse: () =>
-      runAction('response-ai', async () => {
-        const result = await getTicketResponseSuggestion(ticketId)
-        if (mounted.current) setResponseSuggestion(result)
-      }),
+    ...resource,
+    ...ticketActions,
   }
 }
 

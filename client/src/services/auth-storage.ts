@@ -17,25 +17,31 @@ export const SESSION_CHANGED_EVENT = 'resolvedesk:session-changed'
 
 function notifySessionChanged() {
   if (typeof window === 'undefined') return
+
   window.dispatchEvent(new Event(SESSION_CHANGED_EVENT))
 }
 
 export function getAuthToken() {
   if (typeof window === 'undefined') return null
+
   return window.localStorage.getItem(TOKEN_KEY)
 }
 
 export function getRefreshToken() {
   if (typeof window === 'undefined') return null
+
   return window.localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
 export function getCurrentUser() {
   if (typeof window === 'undefined') return null
+
   const raw = window.localStorage.getItem(USER_KEY)
   if (!raw) return null
+
   try {
     const user: unknown = JSON.parse(raw)
+
     if (
       typeof user === 'object' &&
       user !== null &&

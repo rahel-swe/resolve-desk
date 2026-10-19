@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { PageHeading } from '#/components/workspace/page-heading'
-import { ResourceError } from '#/components/workspace/state-panel'
+import { ResourceError } from '#/components/workspace/state-panel-components'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useCreateTicketMutation } from '#/queries/ticket-mutations'
 import { formatTicketPriority } from '#/lib/ticket-utils'

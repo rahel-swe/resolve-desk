@@ -11,7 +11,10 @@ import { TicketTable } from '#/components/tickets/ticket-table'
 import { TicketFilters } from '#/components/tickets/ticket-filters'
 import { QueueMetrics } from '#/components/tickets/queue-metrics'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
-import { EmptyState, ResourceError } from '#/components/workspace/state-panel'
+import {
+  EmptyState,
+  ResourceError,
+} from '#/components/workspace/state-panel-components'
 import { PageHeading } from '#/components/workspace/page-heading'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'

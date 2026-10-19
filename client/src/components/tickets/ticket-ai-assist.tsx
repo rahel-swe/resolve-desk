@@ -11,7 +11,6 @@ export function TicketAiAssist({
   workspace: TicketWorkspace
   onUseDraft: (value: string) => void
 }) {
-  const { prioritySuggestion, responseSuggestion } = workspace
   return (
     <section className="mt-7 border-t pt-6">
       <h2 className="flex items-center gap-2 font-heading text-3xl">
@@ -33,13 +32,16 @@ export function TicketAiAssist({
         >
           {workspace.busy === 'priority-ai' ? 'Thinking…' : 'Suggest priority'}
         </Button>
-        {prioritySuggestion && (
+
+        {workspace.prioritySuggestion && (
           <div className="rounded-md bg-muted/50 p-4 text-sm">
             <p className="font-medium">
-              {formatTicketPriority(prioritySuggestion.suggestedPriority)}
+              {formatTicketPriority(
+                workspace.prioritySuggestion.suggestedPriority,
+              )}
             </p>
             <p className="mt-2 text-xs leading-6 text-muted-foreground">
-              {prioritySuggestion.rationale}
+              {workspace.prioritySuggestion.rationale}
             </p>
           </div>
         )}
@@ -51,29 +53,33 @@ export function TicketAiAssist({
         >
           {workspace.busy === 'response-ai' ? 'Drafting…' : 'Draft a response'}
         </Button>
-        {responseSuggestion && (
+        {workspace.responseSuggestion && (
           <div className="space-y-4 rounded-md bg-muted/50 p-4">
             <p className="text-xs font-medium text-primary">Draft for review</p>
             <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
-              {responseSuggestion.suggestedReply}
+              {workspace.responseSuggestion.suggestedReply}
             </p>
-            {responseSuggestion.suggestedSteps.length > 0 && (
+            {workspace.responseSuggestion.suggestedSteps.length > 0 && (
               <ul className="list-disc space-y-2 pl-4 text-xs leading-5 text-muted-foreground">
-                {responseSuggestion.suggestedSteps.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
+                {workspace.responseSuggestion.suggestedSteps.map(
+                  (step, index) => (
+                    <li key={index}>{step}</li>
+                  ),
+                )}
               </ul>
             )}
-            {responseSuggestion.escalationRecommendation && (
+            {workspace.responseSuggestion.escalationRecommendation && (
               <p className="text-xs leading-5 text-muted-foreground">
-                {responseSuggestion.escalationRecommendation}
+                {workspace.responseSuggestion.escalationRecommendation}
               </p>
             )}
             <Button
               variant="outline"
               className="w-full"
               disabled={Boolean(workspace.busy)}
-              onClick={() => onUseDraft(responseSuggestion.suggestedReply)}
+              onClick={() =>
+                onUseDraft(workspace.responseSuggestion!.suggestedReply)
+              }
             >
               Use draft
             </Button>

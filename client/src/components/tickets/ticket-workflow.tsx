@@ -26,6 +26,7 @@ const statusTransitions: Record<number, number[]> = {
 
 export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
   const [agentId, setAgentId] = useState('')
+
   const [selectedStatus, setSelectedStatus] = useState(
     String(workspace.data?.ticket.status ?? 0),
   )
@@ -54,7 +55,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
       <dl className="space-y-4 text-sm">
         <div className="flex justify-between gap-4">
           <dt className="text-muted-foreground">Category</dt>
-          <dd className="max-w-[65%] break-words text-right">
+          <dd className="max-w-[65%] wrap-break-word text-right">
             {ticket.category}
           </dd>
         </div>

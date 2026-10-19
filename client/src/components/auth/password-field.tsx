@@ -1,6 +1,6 @@
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
-import { useShowPassword } from '#/hooks/useShowPassword'
+import { useShowPassword } from '#/hooks/use-show-password'
 import { EyeOffIcon, EyeIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 

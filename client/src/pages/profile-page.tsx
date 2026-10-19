@@ -7,7 +7,7 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import {
   PreviewNotice,
   ResourceError,
-} from '#/components/workspace/state-panel'
+} from '#/components/workspace/state-panel-components'
 import { UserIdentity } from '#/components/workspace/user-identity'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { displayName, roleLabel } from '#/lib/user-utils'

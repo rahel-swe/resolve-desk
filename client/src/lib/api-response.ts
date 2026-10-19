@@ -42,19 +42,16 @@ export function getErrorMessage(payload: unknown, status: number) {
   return `Request failed with status ${status}`
 }
 
-export function readApiResponse<T>(response: AxiosResponse<unknown>): T {
+export function readApiResponse<T>(response: AxiosResponse): T {
   const { status, data } = response
 
-  if (status < 200 || status >= 300) {
+  if (status < 200 || status >= 300)
     throw new Error(getErrorMessage(data, status))
-  }
 
   if (status === 204) return undefined as T
 
   if (isApiEnvelope<T>(data)) {
-    if (!data.isSuccess) {
-      throw new Error(data.message || 'Request failed.')
-    }
+    if (!data.isSuccess) throw new Error(data.message || 'Request failed.')
 
     return data.data
   }

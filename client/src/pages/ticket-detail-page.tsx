@@ -10,7 +10,6 @@ import {
 } from '#/components/tickets/ticket-badges'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
 import { PageHeading } from '#/components/workspace/page-heading'
-import { ResourceError } from '#/components/workspace/state-panel'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useTicketWorkspace } from '#/hooks/use-ticket-workspace'
 import { toast } from '#/components/ui/toast'
@@ -18,6 +17,7 @@ import { toast } from '#/components/ui/toast'
 export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
   const authenticated = useRequireAuth()
   const workspace = useTicketWorkspace(ticketId)
+
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -80,6 +80,7 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
             />
             <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
               <TicketWorkflow workspace={workspace} />
+
               <TicketAiAssist
                 workspace={workspace}
                 onUseDraft={(draft) => {

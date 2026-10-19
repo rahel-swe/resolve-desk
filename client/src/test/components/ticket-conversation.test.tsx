@@ -20,8 +20,10 @@ vi.mock('#/providers/auth-provider', () => ({
 }))
 
 function ConversationHarness() {
-  const workspace = useTicketWorkspace(1)
+  const ticketId = 1
+  const workspace = useTicketWorkspace(ticketId)
   const [message, setMessage] = useState('')
+
   return (
     <>
       {workspace.notice && <p role="status">{workspace.notice}</p>}

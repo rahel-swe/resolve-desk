@@ -4,7 +4,10 @@ import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { Textarea } from '#/components/ui/textarea'
 import { PageHeading } from '#/components/workspace/page-heading'
-import { EmptyState, ResourceError } from '#/components/workspace/state-panel'
+import {
+  EmptyState,
+  ResourceError,
+} from '#/components/workspace/state-panel-components'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
 import { useKnowledgeArticaleMutation } from '#/queries/knowledge-mutation'

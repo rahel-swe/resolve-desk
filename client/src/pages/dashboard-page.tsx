@@ -6,7 +6,10 @@ import { QueueMetrics } from '#/components/tickets/queue-metrics'
 import { TicketTable } from '#/components/tickets/ticket-table'
 import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
 import { PageHeading } from '#/components/workspace/page-heading'
-import { EmptyState, ResourceError } from '#/components/workspace/state-panel'
+import {
+  EmptyState,
+  ResourceError,
+} from '#/components/workspace/state-panel-components'
 import { WorkspaceSummary } from '#/components/workspace/workspace-summary'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { displayName } from '#/lib/user-utils'

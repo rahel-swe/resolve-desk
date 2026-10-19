@@ -18,7 +18,7 @@ import { envelope, session } from '#/test/fixtures'
 
 describe('authentication service', () => {
   it.each(['Admin', 'SupportAgent', 'Customer', 'User'])(
-    'accepts the %s login contract without mutating storage',
+    'accepts the %s login contract without Mutationg storage',
     async (role) => {
       server.use(
         http.post(`${API_BASE_URL}/api/auth/login`, async ({ request }) => {

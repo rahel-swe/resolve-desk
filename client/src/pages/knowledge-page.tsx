@@ -19,7 +19,10 @@ import {
 import { Skeleton } from '#/components/ui/skeleton'
 import { ArticlePreview } from '#/components/knowledge/article-preview'
 import { PageHeading } from '#/components/workspace/page-heading'
-import { EmptyState, ResourceError } from '#/components/workspace/state-panel'
+import {
+  EmptyState,
+  ResourceError,
+} from '#/components/workspace/state-panel-components'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
