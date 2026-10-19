@@ -9,7 +9,7 @@ import {
 } from '#/services/auth-storage'
 import { server } from '#/test/mocks/server'
 import { envelope, session } from '#/test/fixtures'
-import { apiRequest } from '#/lib/api'
+import { apiRequest } from '#/lib/api-request'
 
 describe('shared API transport', () => {
   it.each(['envelope', 'raw'])(

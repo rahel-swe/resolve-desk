@@ -131,6 +131,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const register = useCallback(
     async (fullName: string, email: string, password: string) => {
       const session = await registerWithApi(fullName, email, password)
+
       saveSession(session)
       setUser({
         id: 0,
@@ -138,6 +139,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         role: session.role as User['role'],
       })
       setHasToken(true)
+
       void reloadUser()
 
       return session

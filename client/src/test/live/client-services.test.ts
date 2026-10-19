@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { apiRequest } from '#/lib/api'
+import { apiRequest } from '#/lib/api-request'
 import {
   getCurrentUserProfile,
   logoutFromApi,

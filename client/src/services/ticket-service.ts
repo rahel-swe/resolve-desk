@@ -1,4 +1,4 @@
-import { apiRequest } from '#/lib/api'
+import { apiRequest } from '#/lib/api-request'
 
 export type ApiTicket = {
   id: number
