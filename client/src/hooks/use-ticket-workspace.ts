@@ -39,16 +39,19 @@ export type ResourceType = {
 }
 
 export function useTicketWorkspace(ticketId: number) {
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
+
+  const sessionKey =
+    isAuthenticated && user ? `${user.email}:${user.role}` : null
 
   const ticketDetailsQuery = useQuery(
-    ticketDetailsOptions(user!.email, ticketId),
+    ticketDetailsOptions(sessionKey, ticketId),
   )
   const ticketCommentsQuery = useQuery(
-    ticketCommentsOptions(user!.email, ticketId),
+    ticketCommentsOptions(sessionKey, ticketId),
   )
   const ticketHistoryQuery = useQuery(
-    ticketHistoryOptions(user!.email, ticketId),
+    ticketHistoryOptions(sessionKey, ticketId),
   )
 
   const ticketActions = useTicketActions(ticketId)

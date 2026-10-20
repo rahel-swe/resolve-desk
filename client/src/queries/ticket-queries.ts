@@ -31,6 +31,7 @@ export const ticketCommentsOptions = (
   queryOptions({
     queryKey: ticketKeys.comments(sessionKey, ticketId),
     queryFn: ({ signal }) => getTicketComments(ticketId, signal),
+    enabled: sessionKey !== null && Number.isSafeInteger(ticketId),
   })
 
 export const ticketHistoryOptions = (
@@ -40,4 +41,5 @@ export const ticketHistoryOptions = (
   queryOptions({
     queryKey: ticketKeys.history(sessionKey, ticketId),
     queryFn: ({ signal }) => getTicketHistory(ticketId, signal),
+    enabled: sessionKey !== null && Number.isSafeInteger(ticketId),
   })

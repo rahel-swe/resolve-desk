@@ -13,23 +13,23 @@ import type {
 import { useRef, useState } from 'react'
 
 export const useTicketActions = (ticketId: number) => {
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
 
-  const assignTicket = useAssignTicketMutation(user!.email, ticketId)
-  const updateTicketStatus = useUpdateTicketStatusMutation(
-    user!.email,
-    ticketId,
-  )
+  const sessionKey =
+    isAuthenticated && user ? `${user.email}:${user.role}` : null
+
+  const assignTicket = useAssignTicketMutation(sessionKey, ticketId)
+  const updateTicketStatus = useUpdateTicketStatusMutation(sessionKey, ticketId)
   const ticketPrioritySuggestion = useTicketPrioritySuggestionMutation(
-    user!.email,
+    sessionKey,
     ticketId,
   )
   const ticketResponseSuggestion = useTicketResponseSuggestionMutation(
-    user!.email,
+    sessionKey,
     ticketId,
   )
   const createTicketComment = useCreateTicketCommentMutation(
-    user!.email,
+    sessionKey,
     ticketId,
   )
 
