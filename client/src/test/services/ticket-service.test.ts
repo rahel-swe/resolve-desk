@@ -13,6 +13,7 @@ describe('ticket service HTTP contracts', () => {
     category: 'IT Support',
     priority: 2,
   }
+
   const comment = {
     id: 7,
     ticketId: 1,
@@ -20,6 +21,7 @@ describe('ticket service HTTP contracts', () => {
     message: 'Investigating now.',
     createdAt: '2026-10-01T12:00:00Z',
   }
+
   const history = {
     id: 1,
     ticketId: 1,
@@ -29,6 +31,7 @@ describe('ticket service HTTP contracts', () => {
     newStatus: 1,
     createdAt: comment.createdAt,
   }
+
   const cases = [
     {
       name: 'ticket detail',
@@ -176,12 +179,15 @@ describe('ticket service HTTP contracts', () => {
   it('collects every backend page beyond the 50-item limit', async () => {
     const all = Array.from({ length: 123 }, (_, index) => ticket(index + 1))
     const pages: number[] = []
+
     server.use(
       http.get(`${API_BASE_URL}/api/tickets`, ({ request }) => {
         const params = new URL(request.url).searchParams
         const page = Number(params.get('page'))
+
         expect(params.get('pageSize')).toBe('50')
         pages.push(page)
+
         return HttpResponse.json(
           envelope({
             items: all.slice((page - 1) * 50, page * 50),
@@ -242,11 +248,13 @@ describe('ticket service HTTP contracts', () => {
   it('cancels list and detail reads through AbortSignal', async () => {
     const controller = new AbortController()
     controller.abort()
+
     await expect(tickets.getTickets(controller.signal)).rejects.toMatchObject({
-      name: 'AbortError',
+      name: 'CanceledError',
     })
+
     await expect(
       tickets.getTicketByIdApi(1, controller.signal),
-    ).rejects.toMatchObject({ name: 'AbortError' })
+    ).rejects.toMatchObject({ name: 'CanceledError' })
   })
 })

@@ -76,8 +76,11 @@ async function renderQueue(count = 72) {
     routeTree: root.addChildren([route]),
     history: createMemoryHistory({ initialEntries: ['/tickets/'] }),
   })
+
   render(<RouterProvider router={router} />)
+
   await router.load()
+
   if (count) await screen.findByRole('table')
   return { user: userEvent.setup(), items, backendPages }
 }
