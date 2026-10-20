@@ -1,28 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '#/providers/auth-provider'
-import { useWorkspace } from '#/providers/workspace-provider'
 import {
-  assignTicket,
-  createTicketComment,
-  getTicketByIdApi,
-  getTicketComments,
-  getTicketHistory,
-  getTicketPrioritySuggestion,
-  getTicketResponseSuggestion,
-  updateTicketStatus,
-} from '#/services/ticket-service'
+  ticketCommentsOptions,
+  ticketDetailsOptions,
+  ticketHistoryOptions,
+} from '#/queries/ticket-queries'
 import type {
   ApiTicket,
   ApiTicketComment,
   ApiTicketHistory,
 } from '#/services/ticket-service'
 import { useQuery } from '@tanstack/react-query'
-import {
-  ticketCommentsOptions,
-  ticketDetailsOptions,
-  ticketHistoryOptions,
-  ticketListOptions,
-} from '#/queries/ticket-queries'
 import { useTicketActions } from './use-ticket-actions'
 
 type TicketWorkspaceData = {
