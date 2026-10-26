@@ -108,7 +108,7 @@ describe('client services against the local seeded backend', () => {
       description:
         'Please investigate this isolated client smoke test login issue.',
       category: 'IT Support',
-      priority: 2,
+      priority: 'High',
     })
 
     expect(created.id).toBeGreaterThan(0)
@@ -141,24 +141,26 @@ describe('client services against the local seeded backend', () => {
 
     const agent = await login('agent')
 
-    await expect(updateTicketStatus(created.id, 1)).rejects.toThrow()
+    await expect(updateTicketStatus(created.id, 'InProgress')).rejects.toThrow()
 
     expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
       agent.email,
     )
-    expect((await updateTicketStatus(created.id, 1)).status).toBe(1)
+    expect((await updateTicketStatus(created.id, 'InProgress')).status).toBe(
+      'InProgress',
+    )
     expect(await getTicketHistory(created.id)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          oldStatus: 0,
-          newStatus: 1,
+          oldStatus: 'Open',
+          newStatus: 'InProgress',
           actorUserId: agent.id,
         }),
       ]),
     )
     const priority = await getTicketPrioritySuggestion(created.id)
 
-    expect(priority.suggestedPriority).toBe(2)
+    expect(priority.suggestedPriority).toBe('High')
     expect(priority.rationale.length).toBeGreaterThan(0)
 
     const response = await getTicketResponseSuggestion(created.id)
@@ -168,7 +170,7 @@ describe('client services against the local seeded backend', () => {
     expect(response.escalationRecommendation.length).toBeGreaterThan(0)
 
     await login('agent-other')
-    await expect(updateTicketStatus(created.id, 3)).rejects.toThrow()
+    await expect(updateTicketStatus(created.id, 'Resolved')).rejects.toThrow()
     await expect(assignTicket(created.id, agent.id)).rejects.toThrow()
 
     await login('admin')
@@ -176,7 +178,9 @@ describe('client services against the local seeded backend', () => {
     expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
       agent.email,
     )
-    expect((await updateTicketStatus(created.id, 3)).status).toBe(3)
+    expect((await updateTicketStatus(created.id, 'Resolved')).status).toBe(
+      'Resolved',
+    )
 
     const comments = await getTicketComments(created.id)
 

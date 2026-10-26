@@ -16,6 +16,7 @@ import { QueryProvider } from '#/providers/query-provider'
 import TicketsPage from '#/pages/tickets-page'
 import { server } from '#/test/mocks/server'
 import { envelope, session, ticket } from '#/test/fixtures'
+import type { TicketStatus } from '#/types/ticket-enums'
 
 vi.mock('#/providers/auth-provider', () => ({
   useAuth: () => ({
@@ -25,8 +26,21 @@ vi.mock('#/providers/auth-provider', () => ({
   }),
 }))
 
+const statuses: TicketStatus[] = [
+  'Open',
+  'InProgress',
+  'WaitingForCustomer',
+  'Resolved',
+  'Closed',
+]
+
 async function renderQueue(count = 72) {
-  const items = Array.from({ length: count }, (_, index) => ticket(index + 1))
+  const items = Array.from({ length: count }, (_, index) =>
+    ticket(index + 1, {
+      priority: 'High',
+      status: statuses[index % statuses.length],
+    }),
+  )
   const backendPages: number[] = []
 
   server.use(
@@ -133,12 +147,15 @@ describe('queue pagination and filtering through the client provider', () => {
         screen.getByText('Showing 1–10 of 24 tickets'),
       ).toBeInTheDocument(),
     )
+
     expect(
       requestLinks().every(
         (link) => Number(link.textContent.match(/\d+/)?.[0]) % 3 === 0,
       ),
     ).toBe(true)
+
     await user.click(screen.getByRole('tab', { name: 'Assigned to me' }))
+
     await waitFor(() =>
       expect(
         screen.getByText(
@@ -146,8 +163,10 @@ describe('queue pagination and filtering through the client provider', () => {
         ),
       ).toBeInTheDocument(),
     )
+
     await user.click(screen.getByRole('combobox', { name: 'Filter by status' }))
     await user.click(await screen.findByRole('option', { name: /^Open$/ }))
+
     await waitFor(() =>
       expect(screen.getByText('Page 1 of 1')).toBeInTheDocument(),
     )

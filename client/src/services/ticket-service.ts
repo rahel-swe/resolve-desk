@@ -1,5 +1,6 @@
 import { apiRequest } from '#/lib/api-request'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
+import type { TicketPayload } from '#/types/ticket-service-types'
 
 export type ApiTicket = {
   id: number
@@ -78,12 +79,7 @@ export async function getKnowledgeArticles(signal?: AbortSignal) {
   return apiRequest<ApiKnowledgeArticle[]>('/api/knowledge', { signal })
 }
 
-export async function createTicket(payload: {
-  title: string
-  description: string
-  category: string
-  priority: TicketPriority
-}) {
+export async function createTicket(payload: TicketPayload) {
   return apiRequest<ApiTicket>('/api/tickets', {
     method: 'POST',
     data: payload,

@@ -2,16 +2,31 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw/http'
 import { API_BASE_URL } from '#/lib/http-client'
 import { saveSession } from '#/services/auth-storage'
-import * as tickets from '#/services/ticket-service'
 import { server } from '#/test/mocks/server'
 import { article, envelope, session, ticket } from '#/test/fixtures'
+import {
+  getTicketByIdApi,
+  getKnowledgeArticles,
+  createTicket,
+  updateTicketStatus,
+  assignTicket,
+  getTicketComments,
+  getTicketHistory,
+  createKnowledgeArticle,
+  getTicketPrioritySuggestion,
+  getTicketResponseSuggestion,
+  createTicketComment,
+  getTickets,
+} from '#/services/ticket-service'
+import type { ApiTicketHistory } from '#/services/ticket-service'
+import type { TicketPayload } from '#/types/ticket-service-types'
 
 describe('ticket service HTTP contracts', () => {
-  const payload = {
+  const payload: TicketPayload = {
     title: 'Cannot login',
     description: 'Please help with this login issue.',
     category: 'IT Support',
-    priority: 2,
+    priority: 'High',
   }
 
   const comment = {
@@ -22,13 +37,13 @@ describe('ticket service HTTP contracts', () => {
     createdAt: '2026-10-01T12:00:00Z',
   }
 
-  const history = {
+  const history: ApiTicketHistory = {
     id: 1,
     ticketId: 1,
     actorUserId: 2,
     actorEmail: session.email,
-    oldStatus: 0,
-    newStatus: 1,
+    oldStatus: 'Open',
+    newStatus: 'InProgress',
     createdAt: comment.createdAt,
   }
 
@@ -39,7 +54,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets/1',
       body: undefined,
       data: ticket(1),
-      call: () => tickets.getTicketByIdApi(1),
+      call: () => getTicketByIdApi(1),
     },
     {
       name: 'knowledge list',
@@ -47,7 +62,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/knowledge',
       body: undefined,
       data: [article],
-      call: () => tickets.getKnowledgeArticles(),
+      call: () => getKnowledgeArticles(),
     },
     {
       name: 'create ticket',
@@ -55,15 +70,15 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets',
       body: payload,
       data: ticket(1, payload),
-      call: () => tickets.createTicket(payload),
+      call: () => createTicket(payload),
     },
     {
       name: 'status update',
       method: 'patch',
       path: '/api/tickets/1',
-      body: { status: 1 },
-      data: ticket(1, { status: 1 }),
-      call: () => tickets.updateTicketStatus(1, 1),
+      body: { status: 'InProgress' },
+      data: ticket(1, { status: 'InProgress' }),
+      call: () => updateTicketStatus(1, 'InProgress'),
     },
     {
       name: 'assignment',
@@ -71,7 +86,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets/1/assignment',
       body: { assignedAgentId: 2 },
       data: ticket(1),
-      call: () => tickets.assignTicket(1, 2),
+      call: () => assignTicket(1, 2),
     },
     {
       name: 'comments',
@@ -79,7 +94,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets/1/comments',
       body: undefined,
       data: [comment],
-      call: () => tickets.getTicketComments(1),
+      call: () => getTicketComments(1),
     },
     {
       name: 'history',
@@ -87,7 +102,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets/1/history',
       body: undefined,
       data: [history],
-      call: () => tickets.getTicketHistory(1),
+      call: () => getTicketHistory(1),
     },
     {
       name: 'create article',
@@ -101,7 +116,7 @@ describe('ticket service HTTP contracts', () => {
       },
       data: article,
       call: () =>
-        tickets.createKnowledgeArticle({
+        createKnowledgeArticle({
           title: article.title,
           content: article.content,
           category: article.category,
@@ -114,7 +129,7 @@ describe('ticket service HTTP contracts', () => {
       path: '/api/tickets/1/priority-suggestion',
       body: undefined,
       data: { suggestedPriority: 2, rationale: 'Login issue.' },
-      call: () => tickets.getTicketPrioritySuggestion(1),
+      call: () => getTicketPrioritySuggestion(1),
     },
     {
       name: 'response suggestion',
@@ -126,7 +141,7 @@ describe('ticket service HTTP contracts', () => {
         suggestedSteps: ['Check credentials.'],
         escalationRecommendation: 'Normal triage.',
       },
-      call: () => tickets.getTicketResponseSuggestion(1),
+      call: () => getTicketResponseSuggestion(1),
     },
   ] as const
 
@@ -172,8 +187,8 @@ describe('ticket service HTTP contracts', () => {
         HttpResponse.json(envelope(saved ? [comment] : [])),
       ),
     )
-    await tickets.createTicketComment(1, comment.message)
-    expect(await tickets.getTicketComments(1)).toEqual([comment])
+    await createTicketComment(1, comment.message)
+    expect(await getTicketComments(1)).toEqual([comment])
   })
 
   it('collects every backend page beyond the 50-item limit', async () => {
@@ -199,7 +214,7 @@ describe('ticket service HTTP contracts', () => {
         )
       }),
     )
-    expect(await tickets.getTickets()).toEqual(all)
+    expect(await getTickets()).toEqual(all)
     expect(pages).toEqual([1, 2, 3])
   })
 
@@ -222,7 +237,7 @@ describe('ticket service HTTP contracts', () => {
             )
       }),
     )
-    await expect(tickets.getTickets()).rejects.toThrow('Please retry later.')
+    await expect(getTickets()).rejects.toThrow('Please retry later.')
   })
 
   it('handles an empty queue without requesting another page', async () => {
@@ -241,7 +256,7 @@ describe('ticket service HTTP contracts', () => {
         )
       }),
     )
-    expect(await tickets.getTickets()).toEqual([])
+    expect(await getTickets()).toEqual([])
     expect(calls).toBe(1)
   })
 
@@ -249,12 +264,12 @@ describe('ticket service HTTP contracts', () => {
     const controller = new AbortController()
     controller.abort()
 
-    await expect(tickets.getTickets(controller.signal)).rejects.toMatchObject({
+    await expect(getTickets(controller.signal)).rejects.toMatchObject({
       name: 'CanceledError',
     })
 
-    await expect(
-      tickets.getTicketByIdApi(1, controller.signal),
-    ).rejects.toMatchObject({ name: 'CanceledError' })
+    await expect(getTicketByIdApi(1, controller.signal)).rejects.toMatchObject({
+      name: 'CanceledError',
+    })
   })
 })

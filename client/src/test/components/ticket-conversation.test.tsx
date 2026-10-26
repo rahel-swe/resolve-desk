@@ -51,7 +51,7 @@ function setupConversation(status = 200) {
     http.get(`${API_BASE_URL}/api/tickets`, () =>
       HttpResponse.json(
         envelope({
-          items: [ticket(1)],
+          items: [ticket(1, { priority: 'High', status: 'Resolved' })],
           page: 1,
           pageSize: 50,
           totalCount: 1,
@@ -63,7 +63,9 @@ function setupConversation(status = 200) {
       HttpResponse.json(envelope([])),
     ),
     http.get(`${API_BASE_URL}/api/tickets/1`, () =>
-      HttpResponse.json(envelope(ticket(1))),
+      HttpResponse.json(
+        envelope(ticket(1, { priority: 'High', status: 'Resolved' })),
+      ),
     ),
     http.get(`${API_BASE_URL}/api/tickets/1/history`, () =>
       HttpResponse.json(envelope([])),
