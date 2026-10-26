@@ -2,10 +2,10 @@ namespace ResolveDesk.Domain.Enums;
 
 public enum UserRole
 {
-    Admin,
-    SupportAgent,
-    Customer,
-    User
+    Admin = 0,
+    SupportAgent = 1,
+    Customer = 2,
+    User = 3
 
 }
 

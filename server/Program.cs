@@ -6,6 +6,7 @@ using ResolveDesk.Application;
 using ResolveDesk.Infrastructure;
 using ResolveDesk.Domain.Enums;
 using ResolveDesk.Infrastructure.Data;
+using System.Text.Json.Serialization;
 
 var seedDevelopment = args.Contains("--seed-development", StringComparer.Ordinal);
 var builder = WebApplication.CreateBuilder(args.Where(arg => arg != "--seed-development").ToArray());
@@ -42,6 +43,15 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter()
+        );
+    });
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
