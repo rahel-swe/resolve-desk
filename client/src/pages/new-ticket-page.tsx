@@ -14,8 +14,9 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import { ResourceError } from '#/components/workspace/state-panel-components'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useCreateTicketMutation } from '#/queries/ticket-mutations'
-import { formatTicketPriority } from '#/lib/ticket-utils'
 import { toast } from '#/components/ui/toast'
+import { formatTicketPriority } from '#/lib/ticket-utils'
+import type { TicketPriority } from '#/types/ticket-enums'
 
 export default function NewTicketPage() {
   const authenticated = useRequireAuth()
@@ -24,7 +25,7 @@ export default function NewTicketPage() {
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('General')
   const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState('1')
+  const [priority, setPriority] = useState<TicketPriority>('Medium')
   const submitting = createTicketMutation.isPending
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -60,7 +61,7 @@ export default function NewTicketPage() {
         title: title.trim(),
         category: category.trim(),
         description: description.trim(),
-        priority: Number(priority),
+        priority: priority,
       },
       {
         onSuccess: (ticket) => {
@@ -150,9 +151,7 @@ export default function NewTicketPage() {
                 }}
               >
                 <SelectTrigger id="new-ticket-priority" className="w-full">
-                  <SelectValue>
-                    {formatTicketPriority(Number(priority))}
-                  </SelectValue>
+                  <SelectValue>{formatTicketPriority(priority)}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {['Low', 'Medium', 'High', 'Critical'].map((label, index) => (

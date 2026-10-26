@@ -27,12 +27,15 @@ export default function DashboardPage() {
   const { greeting, currentDate } = greetingUtils()
 
   const attention = queue.data
-    .filter((ticket) => ticket.status < 3 && !ticket.assignedAgentEmail)
-    .sort(
-      (a, b) =>
-        b.priority - a.priority ||
-        Date.parse(b.createdAt) - Date.parse(a.createdAt),
-    )
+    .filter((ticket) => {
+      const result =
+        ticket.status === 'Open' ||
+        ticket.status === 'InProgress' ||
+        ticket.status === 'WaitingForCustomer'
+
+      return result && !ticket.assignedAgentEmail
+    })
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 5)
 
   return (

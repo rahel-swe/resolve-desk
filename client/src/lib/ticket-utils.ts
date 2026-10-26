@@ -1,34 +1,4 @@
-export function formatTicketStatus(value: number) {
-  switch (value) {
-    case 0:
-      return 'Open'
-    case 1:
-      return 'In Progress'
-    case 2:
-      return 'Waiting'
-    case 3:
-      return 'Resolved'
-    case 4:
-      return 'Closed'
-    default:
-      return 'Open'
-  }
-}
-
-export function formatTicketPriority(value: number) {
-  switch (value) {
-    case 0:
-      return 'Low'
-    case 1:
-      return 'Medium'
-    case 2:
-      return 'High'
-    case 3:
-      return 'Critical'
-    default:
-      return 'Medium'
-  }
-}
+import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 
 export function formatDateTime(value: string) {
   const date = new Date(value)
@@ -45,6 +15,38 @@ export function formatDateTime(value: string) {
   }).format(date)
 }
 
+export function formatTicketStatus(value: TicketStatus) {
+  switch (value) {
+    case 'Open':
+      return 'Open'
+    case 'InProgress':
+      return 'In Progress'
+    case 'WaitingForCustomer':
+      return 'Waiting'
+    case 'Resolved':
+      return 'Resolved'
+    case 'Closed':
+      return 'Closed'
+    default:
+      return 'Open'
+  }
+}
+
+export function formatTicketPriority(value: TicketPriority) {
+  switch (value) {
+    case 'Low':
+      return 'Low'
+    case 'Medium':
+      return 'Medium'
+    case 'High':
+      return 'High'
+    case 'Critical':
+      return 'Critical'
+    default:
+      return 'Medium'
+  }
+}
+
 export function formatRelativeTime(value: string) {
   const timestamp = new Date(value).getTime()
   if (!Number.isFinite(timestamp)) return 'Unknown date'
@@ -59,23 +61,24 @@ export function formatRelativeTime(value: string) {
   }).format(timestamp)
 }
 
-export function ticketCounts(tickets: { status: number }[]) {
+export function ticketCounts(tickets: { status: TicketStatus }[]) {
   return [
     {
       label: 'Open',
-      value: tickets.filter((ticket) => ticket.status === 0).length,
+      value: tickets.filter((ticket) => ticket.status === 'Open').length,
     },
     {
       label: 'In progress',
-      value: tickets.filter((ticket) => ticket.status === 1).length,
+      value: tickets.filter((ticket) => ticket.status === 'InProgress').length,
     },
     {
       label: 'Waiting',
-      value: tickets.filter((ticket) => ticket.status === 2).length,
+      value: tickets.filter((ticket) => ticket.status === 'WaitingForCustomer')
+        .length,
     },
     {
       label: 'Resolved',
-      value: tickets.filter((ticket) => ticket.status >= 3).length,
+      value: tickets.filter((ticket) => ticket.status === 'Resolved').length,
     },
   ]
 }

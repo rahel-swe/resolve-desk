@@ -10,6 +10,7 @@ import type {
   getTicketPrioritySuggestion,
   getTicketResponseSuggestion,
 } from '#/services/ticket-service'
+import type { TicketStatus } from '#/types/ticket-enums'
 import { useRef, useState } from 'react'
 
 export const useTicketActions = (ticketId: number) => {
@@ -76,7 +77,7 @@ export const useTicketActions = (ticketId: number) => {
     notice,
     prioritySuggestion,
     responseSuggestion,
-    updateStatus: (status: number) =>
+    updateStatus: (status: TicketStatus) =>
       runAction('status', async () => {
         await updateTicketStatus.mutateAsync(status, {
           onSuccess() {

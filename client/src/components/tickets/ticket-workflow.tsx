@@ -14,37 +14,42 @@ import {
   formatTicketStatus,
 } from '#/lib/ticket-utils'
 import type { TicketWorkspace } from '#/hooks/use-ticket-workspace'
+import type { TicketStatus } from '#/types/ticket-enums'
 
 // Keep available actions aligned with the server's ticket state machine.
-const statusTransitions: Record<number, number[]> = {
-  0: [1],
-  1: [2, 3],
-  2: [1],
-  3: [4, 1],
-  4: [],
+const statusTransitions: Record<TicketStatus, TicketStatus[]> = {
+  Open: ['InProgress'],
+  InProgress: ['WaitingForCustomer', 'Resolved'],
+  WaitingForCustomer: ['InProgress'],
+  Resolved: ['Closed', 'InProgress'],
+  Closed: [],
 }
 
 export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
   const [agentId, setAgentId] = useState('')
 
-  const [selectedStatus, setSelectedStatus] = useState(
-    String(workspace.data?.ticket.status ?? 0),
+  const [selectedStatus, setSelectedStatus] = useState<TicketStatus>(
+    workspace.data?.ticket.status ?? 'Open',
   )
+
   useEffect(() => {
-    setSelectedStatus(String(workspace.data?.ticket.status ?? 0))
+    setSelectedStatus(workspace.data?.ticket.status ?? 'Open')
   }, [workspace.data?.ticket.status])
 
   if (!workspace.data) return null
 
   const { ticket } = workspace.data
+
   const user = workspace.user
   const isAdmin = user?.role === 'Admin'
   const isAgent = user?.role === 'SupportAgent'
+
   const canUpdateStatus =
     isAdmin ||
     (isAgent &&
       ticket.assignedAgentEmail?.toLowerCase() === user.email.toLowerCase())
-  const nextStatuses = statusTransitions[ticket.status] ?? []
+
+  const nextStatuses = statusTransitions[ticket.status]
   const canAssignSelf = isAgent && !ticket.assignedAgentEmail && user.id > 0
   const validAgentId =
     Number.isSafeInteger(Number(agentId)) && Number(agentId) > 0
@@ -86,9 +91,9 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
               event.preventDefault()
               if (
                 canUpdateStatus &&
-                nextStatuses.includes(Number(selectedStatus))
+                nextStatuses.find((s) => s === selectedStatus)
               )
-                void workspace.updateStatus(Number(selectedStatus))
+                void workspace.updateStatus(selectedStatus)
             }}
           >
             <label htmlFor="ticket-status" className="text-sm font-medium">
@@ -111,7 +116,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
                   }
                 >
                   <SelectValue>
-                    {formatTicketStatus(Number(selectedStatus))}
+                    {formatTicketStatus(selectedStatus)}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -129,7 +134,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
                 disabled={
                   Boolean(workspace.busy) ||
                   !canUpdateStatus ||
-                  !nextStatuses.includes(Number(selectedStatus))
+                  !nextStatuses.find((s) => s === selectedStatus)
                 }
               >
                 {workspace.busy === 'status' ? 'Updating…' : 'Update status'}

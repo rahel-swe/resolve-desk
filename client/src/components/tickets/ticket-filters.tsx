@@ -10,16 +10,20 @@ import {
 } from '#/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { formatTicketPriority, formatTicketStatus } from '#/lib/ticket-utils'
+import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
+
+export type TicketFilterStatus = TicketStatus | 'all'
+export type TicketFilterPriority = TicketPriority | 'all'
 
 type TicketFiltersProps = {
   query: string
   scope: string
-  status: string
-  priority: string
+  status: TicketFilterStatus
+  priority: TicketFilterPriority
   onQuery: (value: string) => void
   onScope: (value: string) => void
-  onStatus: (value: string) => void
-  onPriority: (value: string) => void
+  onStatus: (value: TicketFilterStatus) => void
+  onPriority: (value: TicketFilterPriority) => void
 }
 
 export function TicketFilters({
@@ -80,9 +84,7 @@ export function TicketFilters({
               className="w-40 rounded-md border-input px-3"
             >
               <SelectValue>
-                {status === 'all'
-                  ? 'All statuses'
-                  : formatTicketStatus(Number(status))}
+                {status === 'all' ? 'All statuses' : formatTicketStatus(status)}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -107,7 +109,7 @@ export function TicketFilters({
               <SelectValue>
                 {priority === 'all'
                   ? 'All priorities'
-                  : formatTicketPriority(Number(priority))}
+                  : formatTicketPriority(priority)}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>

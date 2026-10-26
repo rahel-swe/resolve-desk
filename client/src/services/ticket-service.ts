@@ -1,12 +1,13 @@
 import { apiRequest } from '#/lib/api-request'
+import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 
 export type ApiTicket = {
   id: number
   title: string
   description: string
   category: string
-  priority: number
-  status: number
+  priority: TicketPriority
+  status: TicketStatus
   createdAt: string
   createdByEmail: string
   assignedAgentEmail?: string | null
@@ -25,8 +26,8 @@ export type ApiTicketHistory = {
   ticketId: number
   actorUserId: number
   actorEmail: string
-  oldStatus: number
-  newStatus: number
+  oldStatus: TicketStatus
+  newStatus: TicketStatus
   createdAt: string
 }
 
@@ -81,7 +82,7 @@ export async function createTicket(payload: {
   title: string
   description: string
   category: string
-  priority: number
+  priority: TicketPriority
 }) {
   return apiRequest<ApiTicket>('/api/tickets', {
     method: 'POST',
@@ -89,7 +90,10 @@ export async function createTicket(payload: {
   })
 }
 
-export async function updateTicketStatus(ticketId: number, status: number) {
+export async function updateTicketStatus(
+  ticketId: number,
+  status: TicketStatus,
+) {
   return apiRequest<ApiTicket>(`/api/tickets/${ticketId}`, {
     method: 'PATCH',
     data: { status },
@@ -138,7 +142,7 @@ export async function createKnowledgeArticle(payload: {
 }
 
 export async function getTicketPrioritySuggestion(ticketId: number) {
-  return apiRequest<{ suggestedPriority: number; rationale: string }>(
+  return apiRequest<{ suggestedPriority: TicketPriority; rationale: string }>(
     `/api/tickets/${ticketId}/priority-suggestion`,
     { method: 'POST' },
   )

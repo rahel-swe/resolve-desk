@@ -20,6 +20,7 @@ import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { Route } from '#/routes/tickets/index'
+import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 
 const pageSize = 10
 export default function TicketsPage() {
@@ -28,9 +29,12 @@ export default function TicketsPage() {
   const { queue } = useWorkspace()
   const { q, scope } = Route.useSearch()
   const navigate = useNavigate({ from: '/tickets/' })
-  const [status, setStatus] = useState('all')
-  const [priority, setPriority] = useState('all')
+
+  const [status, setStatus] = useState<TicketStatus | 'all'>('all')
+  const [priority, setPriority] = useState<TicketPriority | 'all'>('all')
+
   const [page, setPage] = useState(1)
+
   const visible = useMemo(
     () =>
       queue.data
@@ -41,10 +45,11 @@ export default function TicketsPage() {
             (scope === 'mine'
               ? ticket.assignedAgentEmail === user?.email
               : !ticket.assignedAgentEmail)
+
           return (
             matchesScope &&
-            (status === 'all' || ticket.status === Number(status)) &&
-            (priority === 'all' || ticket.priority === Number(priority)) &&
+            (status === 'all' || ticket.status === status) &&
+            (priority === 'all' || ticket.priority === priority) &&
             (!query ||
               [
                 ticket.title,

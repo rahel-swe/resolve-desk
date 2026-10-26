@@ -8,6 +8,7 @@ import {
   getTicketResponseSuggestion,
   updateTicketStatus,
 } from '#/services/ticket-service'
+import type { TicketStatus } from '#/types/ticket-enums'
 
 export function useCreateTicketMutation() {
   const queryClient = useQueryClient()
@@ -56,7 +57,7 @@ export const useUpdateTicketStatusMutation = (
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (status: number) => updateTicketStatus(ticketId, status),
+    mutationFn: (status: TicketStatus) => updateTicketStatus(ticketId, status),
     onSuccess: () => {
       ;(queryClient.invalidateQueries({
         queryKey: ticketKeys.ticketDetails(sessionKey, ticketId),
