@@ -15,6 +15,7 @@ import { useRequireAuth } from '#/hooks/use-require-auth'
 import { displayName } from '#/lib/user-utils'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
+import { greetingUtils } from '#/lib/greeting-utils'
 
 export default function DashboardPage() {
   const authenticated = useRequireAuth()
@@ -23,13 +24,7 @@ export default function DashboardPage() {
 
   if (!authenticated) return null
 
-  const now = new Date()
-  const greeting =
-    now.getHours() < 12
-      ? 'Good morning'
-      : now.getHours() < 18
-        ? 'Good afternoon'
-        : 'Good evening'
+  const { greeting, currentDate } = greetingUtils()
 
   const attention = queue.data
     .filter((ticket) => ticket.status < 3 && !ticket.assignedAgentEmail)
@@ -54,7 +49,7 @@ export default function DashboardPage() {
           month: 'long',
           day: 'numeric',
           year: 'numeric',
-        }).format(now)}
+        }).format(currentDate)}
         action={
           <Button nativeButton={false} render={<Link to="/tickets/new" />}>
             <HugeiconsIcon icon={PlusSignIcon} />

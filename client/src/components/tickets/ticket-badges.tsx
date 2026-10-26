@@ -32,7 +32,7 @@ export function TicketStatusBadge({
   return (
     <Badge
       className={cn(
-        'rounded-full px-2.5 py-1 text-[11px] font-medium normal-case tracking-normal',
+        'px-2.5 py-1 text-[11px] font-medium normal-case tracking-normal',
         statusClasses[label],
         className,
       )}

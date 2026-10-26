@@ -59,13 +59,16 @@ export default function TicketsPage() {
         .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
     [queue.data, q, scope, status, priority, user?.email],
   )
+
   if (!authenticated) return null
+
   const totalPages = Math.max(1, Math.ceil(visible.length / pageSize))
   const currentPage = Math.min(page, totalPages)
   const pageTickets = visible.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   )
+
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading

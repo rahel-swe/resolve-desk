@@ -23,8 +23,11 @@ export function TeamPage() {
   const authenticated = useRequireAuth()
   const { user } = useAuth()
   const [query, setQuery] = useState('')
+
   if (!authenticated) return null
+
   const matches = user?.email.toLowerCase().includes(query.trim().toLowerCase())
+
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
@@ -36,6 +39,7 @@ export function TeamPage() {
         Team management is coming soon. Only your signed-in account is shown
         here; a workspace directory and invitations are not connected yet.
       </PreviewNotice>
+
       <Input
         aria-label="Search team members"
         value={query}
@@ -43,6 +47,7 @@ export function TeamPage() {
         placeholder="Search by email…"
         className="mb-6 max-w-sm"
       />
+
       {matches ? (
         <Table>
           <TableHeader>
