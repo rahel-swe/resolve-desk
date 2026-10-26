@@ -15,7 +15,9 @@ export default function SidebarNav() {
   const { setOpenMobile } = useSidebar()
   const { queue } = useWorkspace()
 
-  const openCount = queue.data.filter((ticket) => ticket.status === 0).length
+  const openCount = queue.data.filter(
+    (ticket) => ticket.status === 'Open',
+  ).length
 
   return (
     <nav aria-label="Workspace navigation">
