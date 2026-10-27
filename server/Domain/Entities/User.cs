@@ -14,5 +14,7 @@ public class User
 
     public UserRole Role { get; set; } = UserRole.Customer;
 
+    public string Bio { get; set; } = string.Empty;
+
     public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
 }

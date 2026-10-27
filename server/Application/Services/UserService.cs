@@ -3,6 +3,7 @@ using ResolveDesk.Api.Common;
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Domain.Entities;
 using ResolveDesk.Application.Abstractions;
+using ResolveDesk.Application.Common;
 
 namespace ResolveDesk.Application.Services;
 
@@ -11,8 +12,6 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
 
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IAuthService _authService = authService;
-
-
 
     public async Task<TokenResponseDto> RegisterUserAsync(RegisterDto request)
     {
@@ -41,4 +40,26 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
             Role = user.Role.ToString()
         };
     }
+
+    public async Task<ServiceResult<GetCurrentUserResponseDto>> GetCurrentUser(CurrentUser caller, CancellationToken cancellationToken)
+    {
+
+        var user = await _userRepository.GetByIdAsync(caller.Id, cancellationToken);
+
+        if (user == null)
+            throw new NotFoundException($"Not found user with this id: {caller.Id}");
+
+        var userResponseDto = new GetCurrentUserResponseDto
+        {
+            Id = user.Id,
+            Bio = user?.Bio ?? "",
+            Email = user.Email,
+            FullName = user.FullName,
+            Role = user.Role
+        };
+
+        return new ServiceResult<GetCurrentUserResponseDto>(userResponseDto);
+    }
+
+
 }

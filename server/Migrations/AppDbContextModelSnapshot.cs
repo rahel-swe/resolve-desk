@@ -23,7 +23,7 @@ namespace ResolveDesk.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ResolveDesk.Models.KnowledgeArticle", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.KnowledgeArticle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace ResolveDesk.Migrations
                     b.ToTable("KnowledgeArticles");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.RefreshToken", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +94,7 @@ namespace ResolveDesk.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.Ticket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,7 +141,7 @@ namespace ResolveDesk.Migrations
                     b.ToTable("Tickets");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.TicketComment", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.TicketComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -171,7 +171,7 @@ namespace ResolveDesk.Migrations
                     b.ToTable("TicketComments");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.TicketHistory", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.TicketHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,13 +203,17 @@ namespace ResolveDesk.Migrations
                     b.ToTable("TicketHistories");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.User", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bio")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -232,9 +236,9 @@ namespace ResolveDesk.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.KnowledgeArticle", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.KnowledgeArticle", b =>
                 {
-                    b.HasOne("ResolveDesk.Models.User", "User")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -243,9 +247,9 @@ namespace ResolveDesk.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.RefreshToken", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("ResolveDesk.Models.User", "User")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -254,13 +258,13 @@ namespace ResolveDesk.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.Ticket", b =>
                 {
-                    b.HasOne("ResolveDesk.Models.User", "AssignedAgent")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "AssignedAgent")
                         .WithMany()
                         .HasForeignKey("AssignedAgentId");
 
-                    b.HasOne("ResolveDesk.Models.User", "User")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -271,15 +275,15 @@ namespace ResolveDesk.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.TicketComment", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.TicketComment", b =>
                 {
-                    b.HasOne("ResolveDesk.Models.Ticket", "Ticket")
+                    b.HasOne("ResolveDesk.Domain.Entities.Ticket", "Ticket")
                         .WithMany("Comments")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ResolveDesk.Models.User", "User")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -290,15 +294,15 @@ namespace ResolveDesk.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.TicketHistory", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.TicketHistory", b =>
                 {
-                    b.HasOne("ResolveDesk.Models.User", "ActorUser")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "ActorUser")
                         .WithMany()
                         .HasForeignKey("ActorUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ResolveDesk.Models.Ticket", "Ticket")
+                    b.HasOne("ResolveDesk.Domain.Entities.Ticket", "Ticket")
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -309,12 +313,12 @@ namespace ResolveDesk.Migrations
                     b.Navigation("Ticket");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.Ticket", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.Ticket", b =>
                 {
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("ResolveDesk.Models.User", b =>
+            modelBuilder.Entity("ResolveDesk.Domain.Entities.User", b =>
                 {
                     b.Navigation("RefreshTokens");
                 });
