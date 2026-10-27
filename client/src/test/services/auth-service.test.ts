@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw/http'
 import { API_BASE_URL } from '#/lib/http-client'
 import {
   getAuthToken,
-  getCurrentUser,
+  getStoredUserSnapshot,
   getRefreshToken,
   saveSession,
 } from '#/services/auth-storage'
@@ -103,7 +103,7 @@ describe('authentication service', () => {
       else await expect(logoutFromApi()).rejects.toThrow('Unavailable')
       expect(getAuthToken()).toBeNull()
       expect(getRefreshToken()).toBeNull()
-      expect(getCurrentUser()).toBeNull()
+      expect(getStoredUserSnapshot()).toBeNull()
     },
   )
 

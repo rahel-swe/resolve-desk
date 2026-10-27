@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   clearSession,
   getAuthToken,
-  getCurrentUser,
+  getStoredUserSnapshot,
   getRefreshToken,
   saveSession,
   SESSION_CHANGED_EVENT,
@@ -18,14 +18,14 @@ describe('session storage', () => {
       saveSession(session)
       expect(getAuthToken()).toBe(session.token)
       expect(getRefreshToken()).toBe(session.refreshToken)
-      expect(getCurrentUser()).toEqual({
+      expect(getStoredUserSnapshot()).toEqual({
         email: session.email,
         role: session.role,
       })
       clearSession()
       expect(getAuthToken()).toBeNull()
       expect(getRefreshToken()).toBeNull()
-      expect(getCurrentUser()).toBeNull()
+      expect(getStoredUserSnapshot()).toBeNull()
       expect(listener).toHaveBeenCalledTimes(2)
     } finally {
       window.removeEventListener(SESSION_CHANGED_EVENT, listener)
@@ -40,7 +40,7 @@ describe('session storage', () => {
     '{"email":"user@example.test","role":"Owner"}',
   ])('recovers from malformed stored identity %s', (value) => {
     window.localStorage.setItem(USER_KEY, value)
-    expect(getCurrentUser()).toBeNull()
+    expect(getStoredUserSnapshot()).toBeNull()
     expect(window.localStorage.getItem(USER_KEY)).toBeNull()
   })
 })

@@ -9,7 +9,7 @@ import type { AuthResponse } from '#/services/auth-service'
 import {
   SESSION_CHANGED_EVENT,
   getAuthToken,
-  getCurrentUser,
+  getStoredUserSnapshot,
   saveSession,
 } from '#/services/auth-storage'
 import {
@@ -45,18 +45,6 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-function getStoredUserSnapshot(): User | null {
-  const storedUser = getCurrentUser()
-
-  if (!storedUser) return null
-
-  return {
-    id: 0,
-    email: storedUser.email,
-    role: storedUser.role as User['role'],
-  }
-}
-
 export function AuthProvider({ children }: PropsWithChildren) {
   // Start with the same snapshot during SSR and hydration, then restore the session.
   const [isLoading, setIsLoading] = useState(true)
@@ -66,13 +54,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const syncFromStorage = useCallback(() => {
     setHasToken(Boolean(getAuthToken()))
     const stored = getStoredUserSnapshot()
+
     setUser((current) =>
       current &&
       stored &&
       current.email === stored.email &&
       current.role === stored.role
         ? current
-        : stored,
+        : (stored as User),
     )
   }, [])
 
@@ -87,7 +76,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     try {
       const userData = await getCurrentUserProfile()
-      if (userData.email !== getCurrentUser()?.email) return
+
+      if (userData.email !== getStoredUserSnapshot()?.email) return
       setUser(userData)
       setHasToken(true)
     } catch {
@@ -115,6 +105,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     async (email: string, password: string) => {
       const session = await signInWithApi(email, password)
       saveSession(session)
+
       setUser({
         id: 0,
         email: session.email,

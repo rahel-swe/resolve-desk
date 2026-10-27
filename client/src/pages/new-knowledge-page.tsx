@@ -179,7 +179,7 @@ export default function NewKnowledgePage() {
         <div className="flex justify-end gap-3 border-t pt-6">
           <Button
             type="button"
-            variant="ghost"
+            variant="secondary"
             disabled={isSubmitting}
             nativeButton={false}
             render={<Link to="/knowledge" />}

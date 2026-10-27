@@ -2,7 +2,7 @@ import { apiRequest } from '#/lib/api-request'
 import {
   clearSession,
   getAuthToken,
-  getCurrentUser,
+  getStoredUserSnapshot,
   getRefreshToken,
   saveSession,
 } from '#/services/auth-storage'
@@ -18,7 +18,7 @@ export type AuthResponse = {
 export {
   clearSession,
   getAuthToken,
-  getCurrentUser,
+  getStoredUserSnapshot,
   getRefreshToken,
   saveSession,
 }

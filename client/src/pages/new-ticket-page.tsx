@@ -188,7 +188,7 @@ export default function NewTicketPage() {
         <div className="flex justify-end gap-3">
           <Button
             type="button"
-            variant="ghost"
+            variant="secondary"
             disabled={submitting}
             nativeButton={false}
             render={<Link to="/tickets" />}

@@ -33,10 +33,11 @@ export function getRefreshToken() {
   return window.localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
-export function getCurrentUser() {
+export function getStoredUserSnapshot() {
   if (typeof window === 'undefined') return null
 
   const raw = window.localStorage.getItem(USER_KEY)
+
   if (!raw) return null
 
   try {

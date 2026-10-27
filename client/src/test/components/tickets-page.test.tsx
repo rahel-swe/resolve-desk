@@ -130,6 +130,7 @@ describe('queue pagination and filtering through the client provider', () => {
   it('resets pagination on search/scope/status changes and recovers from zero results', async () => {
     const { user, items } = await renderQueue()
     await user.click(screen.getByRole('button', { name: 'Next page' }))
+
     await user.type(
       screen.getByRole('textbox', { name: 'Search ticket queue' }),
       'Sample request 001',
