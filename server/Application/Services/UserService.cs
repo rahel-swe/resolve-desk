@@ -13,6 +13,24 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IAuthService _authService = authService;
 
+    private static string? NormalizeOptionalText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+
+        return value.Trim();
+    }
+    private static GetCurrentUserResponseDto MapProfile(User user)
+    {
+        return new GetCurrentUserResponseDto
+        {
+            Id = user.Id,
+            Bio = user?.Bio ?? "",
+            Email = user!.Email,
+            FullName = user.FullName,
+            Role = user.Role
+        };
+    }
+
     public async Task<TokenResponseDto> RegisterUserAsync(RegisterDto request)
     {
         var user = await _userRepository.GetByEmailAsync(request.Email);
@@ -49,17 +67,25 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         if (user == null)
             throw new NotFoundException($"Not found user with this id: {caller.Id}");
 
-        var userResponseDto = new GetCurrentUserResponseDto
-        {
-            Id = user.Id,
-            Bio = user?.Bio ?? "",
-            Email = user.Email,
-            FullName = user.FullName,
-            Role = user.Role
-        };
+        var response = MapProfile(user);
 
-        return new ServiceResult<GetCurrentUserResponseDto>(userResponseDto);
+        return new ServiceResult<GetCurrentUserResponseDto>(response);
     }
+    public async Task<ServiceResult<GetCurrentUserResponseDto>> UpdateCurrentUserProfile(UpdateUserProfileDto request, CurrentUser caller, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByIdAsync(caller.Id, cancellationToken);
 
+        if (user == null) throw new NotFoundException("User not found.");
+
+
+        user.FullName = request.FullName.Trim();
+        user.Bio = NormalizeOptionalText(request.Bio);
+
+        await _userRepository.SaveChangesAsync(cancellationToken);
+
+        var response = MapProfile(user);
+
+        return new ServiceResult<GetCurrentUserResponseDto>(response);
+    }
 
 }

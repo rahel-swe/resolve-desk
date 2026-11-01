@@ -24,4 +24,9 @@ public class UserRepository(AppDbContext db) : IUserRepository
     {
         return await _db.Users.FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
     }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        await _db.SaveChangesAsync();
+    }
 }

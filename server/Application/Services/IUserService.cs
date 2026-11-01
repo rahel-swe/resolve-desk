@@ -8,4 +8,7 @@ public interface IUserService
 {
     public Task<TokenResponseDto> RegisterUserAsync(RegisterDto request);
     public Task<ServiceResult<GetCurrentUserResponseDto>> GetCurrentUser(CurrentUser caller, CancellationToken cancellationToken);
+    public Task<ServiceResult<GetCurrentUserResponseDto>> UpdateCurrentUserProfile(UpdateUserProfileDto request, CurrentUser caller, CancellationToken cancellationToken);
+
+
 }

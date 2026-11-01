@@ -23,4 +23,14 @@ public class UserController(IUserService userService) : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpPatch("me")]
+    public async Task<ActionResult<ServiceResult<GetCurrentUserResponseDto>>> UpdateCurrentUserProfile(UpdateUserProfileDto request, CancellationToken cancellationToken)
+    {
+        if (!User.TryGetCurrentUser(out var caller)) return Unauthorized();
+
+        var result = await _userService.UpdateCurrentUserProfile(request, caller, cancellationToken);
+
+        return Ok(result);
+    }
 }
