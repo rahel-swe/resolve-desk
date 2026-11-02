@@ -13,9 +13,7 @@ export default function ProfilePage() {
   const { user, signOut, isSigningOutPending } = useAuth()
   const isAuthenticated = useRequireAuth()
 
-  const profileQuery = useProfileQuery(
-    user?.id || null,
-  )
+  const profileQuery = useProfileQuery(user?.id || null)
   const { isLoading: profileLoading, data: profileData } = profileQuery
 
   if (!isAuthenticated) return null
@@ -28,7 +26,7 @@ export default function ProfilePage() {
         action={
           <Link
             to="/settings"
-            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted"
+            className="rounded-md bg-secondary px-4 py-2 text-sm hover:bg-muted"
           >
             Account settings
           </Link>

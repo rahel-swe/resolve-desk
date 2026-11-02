@@ -70,7 +70,7 @@ body {
   --muted-foreground: #b1aba5;
   --accent: #35312e;
   --accent-foreground: var(--foreground);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(64.491% 0.20551 24.133);
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 16%);
   --ring: var(--primary);

@@ -1,89 +1,96 @@
-import { useState } from 'react'
-import { Textarea } from '../ui/textarea'
-import { PreviewNotice } from '../workspace/state-panel-components'
-import { Input } from '../ui/input'
+import { useUpdateMyProfile } from '#/queries/profile-queries'
+import { updateUserProfileSchema } from '#/schemas/user-schemas'
+import type { UpdateUserProfileInput, UserProfile } from '#/types/user-types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { Button } from '../ui/button'
-import type { UserProfile } from '#/types/user-types'
+import { Input } from '../ui/input'
+import { Textarea } from '../ui/textarea'
+import { toast } from '../ui/toast'
+import { Field, FieldGroup, FieldLabel, FieldError } from '../ui/field'
 
 function ProfileDetailsForm({ profile }: { profile: UserProfile }) {
-  const [fullName, setFullName] = useState(profile.fullName)
-  const [bio, setBio] = useState('')
-  const [notice, setNotice] = useState('')
+  const { mutate, isPending: isUpdatingProfile } = useUpdateMyProfile(
+    profile.id,
+  )
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+    watch,
+  } = useForm<UpdateUserProfileInput>({
+    resolver: zodResolver(updateUserProfileSchema),
+    defaultValues: {
+      fullName: profile.fullName,
+      bio: profile.bio,
+    },
+  })
+
+  const onSubmit = (data: UpdateUserProfileInput) => {
+    mutate(data, {
+      onSuccess() {
+        toast.add({
+          description: 'Profile data updated, successfully.',
+          type: 'success',
+        })
+      },
+    })
+  }
+
   return (
     <section className="max-w-2xl">
       <h2 className="mb-4 font-heading text-3xl">Personal details</h2>
-      <PreviewNotice>
-        Profile editing is coming soon. You can try this form; changes stay on
-        this page and do not update your account.
-      </PreviewNotice>
-      <form
-        className="space-y-6"
-        onSubmit={(event) => {
-          event.preventDefault()
-          //   onError('')
-          if (!fullName.trim()) {
-            // onError('Enter a display name.')
-            return
-          }
-          setNotice(
-            'Preview updated for this visit. Your account details have not changed.',
-          )
-        }}
-      >
-        <div className="space-y-2">
-          <label htmlFor="profile-name" className="text-sm font-medium">
-            Display name
-          </label>
-          <Input
-            id="profile-name"
-            value={fullName}
-            maxLength={80}
-            onChange={(event) => {
-              setFullName(event.target.value)
-              setNotice('')
-            }}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="profile-bio" className="text-sm font-medium">
-            About you
-          </label>
-          <Textarea
-            id="profile-bio"
-            value={bio}
-            maxLength={500}
-            onChange={(event) => {
-              setBio(event.target.value)
-              setNotice('')
-            }}
-            placeholder="A few words about your work…"
-            rows={4}
-          />
-          <p className="text-xs text-muted-foreground">
-            {bio.length}/500 characters
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 border-t pt-5">
-          <Button type="submit">Save preview</Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              setFullName(profile.fullName)
-              setBio('')
-              setNotice('')
-              //   onError('')
-            }}
-          >
-            Reset
-          </Button>
-        </div>
-        {notice && (
-          <p role="status" className="text-sm text-primary">
-            {notice}
-          </p>
-        )}
+
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="profile-name">Display name</FieldLabel>
+            <Input
+              id="profile-name"
+              {...register('fullName')}
+              aria-invalid={Boolean(errors.fullName?.message)}
+              maxLength={80}
+              required
+            />
+            {errors.fullName?.message && (
+              <FieldError errors={[{ message: errors.fullName.message }]} />
+            )}
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="profile-bio">About you</FieldLabel>
+            <Textarea
+              id="profile-bio"
+              maxLength={500}
+              {...register('bio')}
+              placeholder="A few words about your work…"
+              rows={4}
+            />
+            {errors.bio?.message && (
+              <FieldError errors={[{ message: errors.bio.message }]} />
+            )}
+            <p className="text-xs text-muted-foreground">
+              {watch('bio')?.length}/500 characters
+            </p>
+          </Field>
+          <div className="flex flex-wrap items-center gap-3 border-t pt-5">
+            <Button
+              type="submit"
+              disabled={isSubmitting || isUpdatingProfile || !isDirty}
+            >
+              Save preview
+            </Button>
+            <Button
+              type="submit"
+              variant="outline"
+              disabled={isUpdatingProfile || isSubmitting || !isDirty}
+              onClick={() => reset()}
+            >
+              Reset
+            </Button>
+          </div>
+        </FieldGroup>
       </form>
     </section>
   )
