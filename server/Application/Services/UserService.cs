@@ -24,8 +24,8 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         return new GetCurrentUserResponseDto
         {
             Id = user.Id,
-            Bio = user?.Bio ?? "",
-            Email = user!.Email,
+            Bio = user.Bio,
+            Email = user.Email,
             FullName = user.FullName,
             Role = user.Role
         };
@@ -53,6 +53,7 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
 
         return new TokenResponseDto
         {
+            UserId = user.Id,
             Token = token,
             Email = user.Email,
             Role = user.Role.ToString()

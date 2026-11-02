@@ -3,6 +3,7 @@ namespace ResolveDesk.Application.Dtos;
 
 public class TokenResponseDto
 {
+    public int UserId { get; set; }
     public string Token { get; set; } = string.Empty;
 
     public string Email { get; set; } = string.Empty;

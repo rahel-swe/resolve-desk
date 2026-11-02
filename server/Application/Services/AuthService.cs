@@ -55,6 +55,7 @@ public class AuthService(
 
         return new TokenResponseDto
         {
+            UserId = user.Id,
             Token = accessToken,
             RefreshToken = refreshToken,
             Email = user.Email,
@@ -97,6 +98,7 @@ public class AuthService(
 
         return new TokenResponseDto
         {
+            UserId = user.Id,
             Token = newAccessToken,
             RefreshToken = newRefreshToken,
             Email = user.Email,
