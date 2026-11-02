@@ -8,7 +8,7 @@ import {
   saveSession,
 } from '#/services/auth-storage'
 import {
-  getCurrentUserProfile,
+  getCurrentAuthenticatedUser,
   logoutFromApi,
   registerWithApi,
   signInWithApi,
@@ -77,7 +77,7 @@ describe('authentication service', () => {
         )
       }),
     )
-    expect(await getCurrentUserProfile()).toEqual({
+    expect(await getCurrentAuthenticatedUser()).toEqual({
       id: 42,
       email: session.email,
       role: session.role,

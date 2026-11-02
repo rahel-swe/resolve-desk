@@ -34,6 +34,8 @@ async function requestRefreshedToken() {
 
   if (
     !session?.token ||
+    !Number.isSafeInteger(session.userId) ||
+    session.userId <= 0 ||
     !session.refreshToken ||
     !session.email ||
     !session.role

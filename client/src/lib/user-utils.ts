@@ -1,4 +1,4 @@
-import type { User } from '#/providers/auth-provider'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 export function displayName(email?: string | null) {
   const name = email
@@ -20,7 +20,7 @@ export function initials(name: string) {
     .toUpperCase()
 }
 
-export function roleLabel(role?: User['role']) {
+export function roleLabel(role?: AuthenticatedUser['role']) {
   return role === 'SupportAgent'
     ? 'Support agent'
     : role === 'Admin'

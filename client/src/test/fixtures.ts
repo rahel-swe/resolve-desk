@@ -2,6 +2,7 @@ import type { ApiTicket, ApiKnowledgeArticle } from '#/services/ticket-service'
 import type { StoredSession } from '#/services/auth-storage'
 
 export const session: StoredSession = {
+  userId: 1,
   token: 'test-access-token',
   refreshToken: 'test-refresh-token',
   email: 'seed.admin@example.test',

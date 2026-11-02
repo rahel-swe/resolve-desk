@@ -12,14 +12,32 @@ import { UserIdentity } from '#/components/workspace/user-identity'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { formatRelativeTime } from '#/lib/ticket-utils'
+import { useProfileQuery } from '#/queries/profile-queries'
+import { useRequireAuth } from '#/hooks/use-require-auth'
+import type { TicketStatus } from '#/types/ticket-enums'
+
+const activeStatuses = new Set<TicketStatus>([
+  'Open',
+  'InProgress',
+  'WaitingForCustomer',
+])
 
 export function WorkspaceSummary() {
   const { user } = useAuth()
+  const isAuthenticated = useRequireAuth()
   const { queue, library } = useWorkspace()
   const [query, setQuery] = useState('')
   const assigned = queue.data.filter(
-    (ticket) => ticket.assignedAgentEmail === user?.email && ticket.status < 3,
+    (ticket) =>
+      ticket.assignedAgentEmail === user?.email &&
+      activeStatuses.has(ticket.status),
   )
+
+  const { isLoading: profileLoading, data: profileData } = useProfileQuery(
+    user?.id || null,
+  )
+
+  if (!isAuthenticated) return null
 
   const recent = [...queue.data]
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
@@ -34,7 +52,9 @@ export function WorkspaceSummary() {
     <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
       <h2 className="mb-5 font-heading text-3xl">My workspace</h2>
       <Link to="/profile" className="block rounded-md hover:bg-muted/30">
-        <UserIdentity user={user} />
+        {!profileLoading && profileData && (
+          <UserIdentity userProfile={profileData} />
+        )}
       </Link>
       <Link
         to="/tickets"

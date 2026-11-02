@@ -1,5 +1,6 @@
+import { profileKeys } from '#/queries/keys/profile-keys'
 import {
-  getCurrentUserProfile,
+  getCurrentAuthenticatedUser,
   getRefreshToken,
   logoutFromApi,
   registerWithApi,
@@ -12,6 +13,9 @@ import {
   getStoredUserSnapshot,
   saveSession,
 } from '#/services/auth-storage'
+import type { AuthenticatedUser } from '#/types/user-types'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import {
   createContext,
   useCallback,
@@ -22,14 +26,8 @@ import {
 } from 'react'
 import type { PropsWithChildren } from 'react'
 
-export type User = {
-  id: number
-  email: string
-  role: 'Admin' | 'SupportAgent' | 'Customer' | 'User'
-}
-
 type AuthContextValue = {
-  user: User | null
+  user: AuthenticatedUser | null
   isAuthenticated: boolean
   isLoading: boolean
   signIn: (email: string, password: string) => Promise<AuthResponse>
@@ -41,6 +39,7 @@ type AuthContextValue = {
   signOut: () => Promise<void>
   refresh: () => string | null
   reloadUser: () => Promise<void>
+  isSigningOutPending: boolean
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -48,8 +47,12 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: PropsWithChildren) {
   // Start with the same snapshot during SSR and hydration, then restore the session.
   const [isLoading, setIsLoading] = useState(true)
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<AuthenticatedUser | null>(null)
   const [hasToken, setHasToken] = useState(false)
+  const [isSigningOutPending, setIsSigningOutPending] = useState(false)
+  const queryClient = useQueryClient()
+
+  const navigate = useNavigate()
 
   const syncFromStorage = useCallback(() => {
     setHasToken(Boolean(getAuthToken()))
@@ -58,10 +61,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setUser((current) =>
       current &&
       stored &&
+      current.id === stored.id &&
       current.email === stored.email &&
       current.role === stored.role
         ? current
-        : (stored as User),
+        : stored,
     )
   }, [])
 
@@ -75,9 +79,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setIsLoading(true)
 
     try {
-      const userData = await getCurrentUserProfile()
+      const userData = await getCurrentAuthenticatedUser()
 
-      if (userData.email !== getStoredUserSnapshot()?.email) return
+      const stored = getStoredUserSnapshot()
+      if (!getAuthToken() || (stored && userData.email !== stored.email)) return
       setUser(userData)
       setHasToken(true)
     } catch {
@@ -107,9 +112,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       saveSession(session)
 
       setUser({
-        id: 0,
+        id: session.userId,
         email: session.email,
-        role: session.role as User['role'],
+        role: session.role as AuthenticatedUser['role'],
       })
       setHasToken(true)
       void reloadUser()
@@ -125,9 +130,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
       saveSession(session)
       setUser({
-        id: 0,
+        id: session.userId,
         email: session.email,
-        role: session.role as User['role'],
+        role: session.role as AuthenticatedUser['role'],
       })
       setHasToken(true)
 
@@ -139,23 +144,44 @@ export function AuthProvider({ children }: PropsWithChildren) {
   )
 
   const signOut = useCallback(async () => {
-    await logoutFromApi()
-    setUser(null)
-    setHasToken(false)
-  }, [])
+    setIsSigningOutPending(true)
+    try {
+      await logoutFromApi()
+    } catch {
+      // logoutFromApi clears the local session even if the server is unavailable.
+    } finally {
+      queryClient.removeQueries({
+        queryKey: profileKeys.all,
+      })
+      setUser(null)
+      setHasToken(false)
+      setIsSigningOutPending(false)
+    }
+    await navigate({ to: '/sign-in', replace: true })
+  }, [navigate, queryClient])
 
   const value = useMemo<AuthContextValue>(
     () => ({
       signIn,
       register,
       signOut,
+      isSigningOutPending,
       isLoading,
       refresh: getRefreshToken,
       isAuthenticated: hasToken,
       user,
       reloadUser,
     }),
-    [hasToken, isLoading, reloadUser, register, signIn, signOut, user],
+    [
+      hasToken,
+      isLoading,
+      reloadUser,
+      register,
+      signIn,
+      signOut,
+      user,
+      isSigningOutPending,
+    ],
   )
 
   return <AuthContext value={value}>{children}</AuthContext>

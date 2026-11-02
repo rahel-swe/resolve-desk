@@ -1,38 +1,24 @@
-import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import ProfileDetailsForm from '#/components/profile/profile-details-form'
 import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Textarea } from '#/components/ui/textarea'
 import { PageHeading } from '#/components/workspace/page-heading'
-import {
-  PreviewNotice,
-  ResourceError,
-} from '#/components/workspace/state-panel-components'
+import { ResourceError } from '#/components/workspace/state-panel-components'
 import { UserIdentity } from '#/components/workspace/user-identity'
 import { useRequireAuth } from '#/hooks/use-require-auth'
-import { displayName, roleLabel } from '#/lib/user-utils'
+import { roleLabel } from '#/lib/user-utils'
 import { useAuth } from '#/providers/auth-provider'
+import { useProfileQuery } from '#/queries/profile-queries'
+import { Link } from '@tanstack/react-router'
 
 export default function ProfilePage() {
-  const authenticated = useRequireAuth()
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
-  const [signingOut, setSigningOut] = useState(false)
-  const [error, setError] = useState('')
-  if (!authenticated) return null
+  const { user, signOut, isSigningOutPending } = useAuth()
+  const isAuthenticated = useRequireAuth()
 
-  async function handleSignOut() {
-    setSigningOut(true)
-    try {
-      await signOut()
-      await navigate({ to: '/sign-in', replace: true })
-    } catch {
-      // The auth service clears the local session even if logout is unavailable.
-      await navigate({ to: '/sign-in', replace: true })
-    } finally {
-      setSigningOut(false)
-    }
-  }
+  const profileQuery = useProfileQuery(
+    user?.id || null,
+  )
+  const { isLoading: profileLoading, data: profileData } = profileQuery
+
+  if (!isAuthenticated) return null
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-9 sm:px-8 lg:px-10">
@@ -48,11 +34,19 @@ export default function ProfilePage() {
           </Link>
         }
       />
-      {error && <ResourceError message={error} />}
+
+      {profileQuery.isError && (
+        <ResourceError
+          message="Your profile could not be loaded."
+          onRetry={() => void profileQuery.refetch()}
+        />
+      )}
       <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
         <aside>
           <div className="border-b pb-6">
-            <UserIdentity user={user} />
+            {!profileLoading && profileData && (
+              <UserIdentity userProfile={profileData} />
+            )}
           </div>
           <dl className="mt-6 space-y-5 text-sm">
             <div>
@@ -65,110 +59,18 @@ export default function ProfilePage() {
             </div>
           </dl>
           <Button
-            variant="outline"
+            variant="destructive"
             className="mt-8"
-            disabled={signingOut}
-            onClick={() => void handleSignOut()}
+            disabled={isSigningOutPending}
+            onClick={async () => await signOut()}
           >
-            {signingOut ? 'Signing out…' : 'Sign out'}
+            {isSigningOutPending ? 'Signing out…' : 'Sign out'}
           </Button>
         </aside>
-        <ProfileDetailsForm
-          key={user?.email}
-          name={displayName(user?.email)}
-          onError={setError}
-        />
+        {!profileLoading && profileData && (
+          <ProfileDetailsForm profile={profileData} />
+        )}
       </div>
     </div>
-  )
-}
-
-function ProfileDetailsForm({
-  name,
-  onError,
-}: {
-  name: string
-  onError: (message: string) => void
-}) {
-  const [fullName, setFullName] = useState(name)
-  const [bio, setBio] = useState('')
-  const [notice, setNotice] = useState('')
-  return (
-    <section className="max-w-2xl">
-      <h2 className="mb-4 font-heading text-3xl">Personal details</h2>
-      <PreviewNotice>
-        Profile editing is coming soon. You can try this form; changes stay on
-        this page and do not update your account.
-      </PreviewNotice>
-      <form
-        className="space-y-6"
-        onSubmit={(event) => {
-          event.preventDefault()
-          onError('')
-          if (!fullName.trim()) {
-            onError('Enter a display name.')
-            return
-          }
-          setNotice(
-            'Preview updated for this visit. Your account details have not changed.',
-          )
-        }}
-      >
-        <div className="space-y-2">
-          <label htmlFor="profile-name" className="text-sm font-medium">
-            Display name
-          </label>
-          <Input
-            id="profile-name"
-            value={fullName}
-            maxLength={80}
-            onChange={(event) => {
-              setFullName(event.target.value)
-              setNotice('')
-            }}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="profile-bio" className="text-sm font-medium">
-            About you
-          </label>
-          <Textarea
-            id="profile-bio"
-            value={bio}
-            maxLength={500}
-            onChange={(event) => {
-              setBio(event.target.value)
-              setNotice('')
-            }}
-            placeholder="A few words about your work…"
-            rows={4}
-          />
-          <p className="text-xs text-muted-foreground">
-            {bio.length}/500 characters
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 border-t pt-5">
-          <Button type="submit">Save preview</Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              setFullName(name)
-              setBio('')
-              setNotice('')
-              onError('')
-            }}
-          >
-            Reset
-          </Button>
-        </div>
-        {notice && (
-          <p role="status" className="text-sm text-primary">
-            {notice}
-          </p>
-        )}
-      </form>
-    </section>
   )
 }

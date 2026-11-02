@@ -1,14 +1,7 @@
-export type StoredUser = {
-  email: string
-  role: string
-}
+import type { AuthenticatedUser } from '#/types/user-types'
+import type { AuthResponse } from './auth-service'
 
-export type StoredSession = {
-  token: string
-  refreshToken: string
-  email: string
-  role: string
-}
+export type StoredSession = AuthResponse
 
 export const TOKEN_KEY = 'resolvedesk.token'
 export const USER_KEY = 'resolvedesk.user'
@@ -46,13 +39,17 @@ export function getStoredUserSnapshot() {
     if (
       typeof user === 'object' &&
       user !== null &&
+      'id' in user &&
+      typeof user.id === 'number' &&
+      Number.isSafeInteger(user.id) &&
+      user.id > 0 &&
       'email' in user &&
       typeof user.email === 'string' &&
       'role' in user &&
       typeof user.role === 'string' &&
       ['Admin', 'SupportAgent', 'Customer', 'User'].includes(user.role)
     )
-      return user as StoredUser
+      return user as AuthenticatedUser
   } catch {
     // Invalid or stale browser storage must not crash session restoration.
   }
@@ -67,7 +64,11 @@ export function saveSession(session: StoredSession) {
   window.localStorage.setItem(REFRESH_TOKEN_KEY, session.refreshToken)
   window.localStorage.setItem(
     USER_KEY,
-    JSON.stringify({ email: session.email, role: session.role }),
+    JSON.stringify({
+      id: session.userId,
+      email: session.email,
+      role: session.role,
+    }),
   )
 
   notifySessionChanged()

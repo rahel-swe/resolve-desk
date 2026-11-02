@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,23 +8,22 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { UserIdentity } from '#/components/workspace/user-identity'
+import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
+import { useProfileQuery } from '#/queries/profile-queries'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { Link } from '@tanstack/react-router'
 
 export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
-  const [busy, setBusy] = useState(false)
-  async function handleSignOut() {
-    setBusy(true)
-    try {
-      await signOut()
-    } catch {
-      /* The auth service clears the local session. */
-    } finally {
-      setBusy(false)
-      await navigate({ to: '/sign-in', replace: true })
-    }
-  }
+  const { user, signOut, isSigningOutPending } = useAuth()
+  const isAuthenticated = useRequireAuth()
+
+  const { isLoading: profileLoading, data: profileData } = useProfileQuery(
+    user?.id || null,
+  )
+
+  if (!isAuthenticated) return null
 
   return (
     <DropdownMenu>
@@ -40,7 +35,13 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
             : 'rounded-full focus-visible:ring-2 focus-visible:ring-ring'
         }
       >
-        <UserIdentity user={user} compact={!expanded} />
+        {!profileLoading && profileData ? (
+          <UserIdentity userProfile={profileData} compact={!expanded} />
+        ) : (
+          <span className="truncate text-sm text-muted-foreground">
+            {profileLoading ? 'Loading profile…' : user?.email}
+          </span>
+        )}
         {expanded && (
           <HugeiconsIcon
             icon={ArrowRight01Icon}
@@ -55,6 +56,11 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="truncate normal-case tracking-normal">
+            {!profileLoading && profileData && (
+              <h2 className="text-lg text-foreground">
+                {profileData.fullName}
+              </h2>
+            )}
             {user?.email}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -72,11 +78,12 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            disabled={busy}
-            onClick={() => void handleSignOut()}
+            disabled={isSigningOutPending}
+            variant="destructive"
+            onClick={async () => await signOut()}
             className="text-sm normal-case tracking-normal"
           >
-            {busy ? 'Signing out…' : 'Sign out'}
+            {isSigningOutPending ? 'Signing out…' : 'Sign out'}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

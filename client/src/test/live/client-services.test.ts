@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { apiRequest } from '#/lib/api-request'
 import {
-  getCurrentUserProfile,
+  getCurrentAuthenticatedUser,
   logoutFromApi,
   registerWithApi,
   signInWithApi,
@@ -39,7 +39,7 @@ async function login(name: string) {
   const session = await signInWithApi(`seed.${name}@example.test`, password)
   saveSession(session)
 
-  return getCurrentUserProfile()
+  return getCurrentAuthenticatedUser()
 }
 
 afterEach(async () => {
@@ -232,7 +232,7 @@ describe('client services against the local seeded backend', () => {
       role: profile.role,
     })
 
-    expect((await getCurrentUserProfile()).id).toBe(profile.id)
+    expect((await getCurrentAuthenticatedUser()).id).toBe(profile.id)
     expect(getRefreshToken()).not.toBe(refreshToken)
     expect(getAuthToken()).not.toBe('expired-smoke-access')
   })
@@ -246,7 +246,7 @@ describe('client services against the local seeded backend', () => {
 
     saveSession(session)
 
-    expect((await getCurrentUserProfile()).email).toBe(email)
+    expect((await getCurrentAuthenticatedUser()).email).toBe(email)
 
     await logoutFromApi()
 

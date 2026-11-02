@@ -6,9 +6,10 @@ import {
   getRefreshToken,
   saveSession,
 } from '#/services/auth-storage'
-import type { User } from '#/providers/auth-provider'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 export type AuthResponse = {
+  userId: number
   token: string
   email: string
   role: string
@@ -46,18 +47,18 @@ export async function signInWithApi(email: string, password: string) {
   })
 }
 
-export async function getCurrentUserProfile() {
+export async function getCurrentAuthenticatedUser() {
   const profile = await apiRequest<{
     userId: string
     email: string
-    role: User['role']
+    role: AuthenticatedUser['role']
   }>('/api/auth/me')
 
   return {
     id: Number(profile.userId),
     email: profile.email,
     role: profile.role,
-  } satisfies User
+  } satisfies AuthenticatedUser
 }
 
 export async function logoutFromApi() {

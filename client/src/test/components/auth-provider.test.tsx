@@ -1,11 +1,27 @@
 import { render, screen, waitFor, act } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { http, HttpResponse } from 'msw/http'
 import { API_BASE_URL } from '#/lib/http-client'
 import { AuthProvider, useAuth } from '#/providers/auth-provider'
-import { clearSession, saveSession } from '#/services/auth-storage'
+import { clearSession, saveSession, USER_KEY } from '#/services/auth-storage'
 import { server } from '#/test/mocks/server'
 import { envelope, session } from '#/test/fixtures'
+
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => async () => {},
+}))
+
+function renderIdentity() {
+  const queryClient = new QueryClient()
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Identity />
+      </AuthProvider>
+    </QueryClientProvider>,
+  )
+}
 
 function Identity() {
   const { user, isLoading } = useAuth()
@@ -32,11 +48,7 @@ describe('authenticated identity lifecycle', () => {
       ),
     )
 
-    render(
-      <AuthProvider>
-        <Identity />
-      </AuthProvider>,
-    )
+    renderIdentity()
     expect(await screen.findByText(`${session.email}: 42`)).toBeInTheDocument()
     act(() =>
       saveSession({
@@ -66,14 +78,29 @@ describe('authenticated identity lifecycle', () => {
         )
       }),
     )
-    render(
-      <AuthProvider>
-        <Identity />
-      </AuthProvider>,
-    )
+    renderIdentity()
     await waitFor(() => expect(requested).toBe(true))
     act(() => clearSession())
     releaseProfile()
     expect(await screen.findByText('Signed out')).toBeInTheDocument()
+  })
+
+  it('restores a valid token when the stored identity predates user IDs', async () => {
+    saveSession(session)
+    window.localStorage.setItem(
+      USER_KEY,
+      JSON.stringify({ email: session.email, role: session.role }),
+    )
+    server.use(
+      http.get(`${API_BASE_URL}/api/auth/me`, () =>
+        HttpResponse.json(
+          envelope({ userId: '42', email: session.email, role: session.role }),
+        ),
+      ),
+    )
+
+    renderIdentity()
+
+    expect(await screen.findByText(`${session.email}: 42`)).toBeInTheDocument()
   })
 })

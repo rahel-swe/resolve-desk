@@ -19,6 +19,7 @@ describe('session storage', () => {
       expect(getAuthToken()).toBe(session.token)
       expect(getRefreshToken()).toBe(session.refreshToken)
       expect(getStoredUserSnapshot()).toEqual({
+        id: session.userId,
         email: session.email,
         role: session.role,
       })
@@ -38,6 +39,8 @@ describe('session storage', () => {
     '{}',
     '{"email":false,"role":"Admin"}',
     '{"email":"user@example.test","role":"Owner"}',
+    '{"id":0,"email":"user@example.test","role":"Admin"}',
+    '{"id":"1","email":"user@example.test","role":"Admin"}',
   ])('recovers from malformed stored identity %s', (value) => {
     window.localStorage.setItem(USER_KEY, value)
     expect(getStoredUserSnapshot()).toBeNull()

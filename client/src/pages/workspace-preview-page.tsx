@@ -13,18 +13,24 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import {
   EmptyState,
   PreviewNotice,
+  ResourceError,
 } from '#/components/workspace/state-panel-components'
 import { UserIdentity } from '#/components/workspace/user-identity'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
 import { roleLabel } from '#/lib/user-utils'
+import { useProfileQuery } from '#/queries/profile-queries'
 
 export function TeamPage() {
-  const authenticated = useRequireAuth()
   const { user } = useAuth()
+  const isAuthenticated = useRequireAuth()
   const [query, setQuery] = useState('')
 
-  if (!authenticated) return null
+  const { isLoading: profileLoading, data: profileData } = useProfileQuery(
+    user?.id || null,
+  )
+
+  if (!isAuthenticated) return null
 
   const matches = user?.email.toLowerCase().includes(query.trim().toLowerCase())
 
@@ -61,7 +67,9 @@ export function TeamPage() {
           <TableBody>
             <TableRow>
               <TableCell>
-                <UserIdentity user={user} />
+                {!profileLoading && profileData && (
+                  <UserIdentity userProfile={profileData} />
+                )}
               </TableCell>
               <TableCell>{user?.email}</TableCell>
               <TableCell>{roleLabel(user?.role)}</TableCell>
