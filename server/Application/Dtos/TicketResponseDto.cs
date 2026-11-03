@@ -12,5 +12,7 @@ public class TicketResponseDto
     public TicketStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedByEmail { get; set; } = string.Empty;
+    public string CreatedByFullName { get; set; } = string.Empty;
     public string? AssignedStaffEmail { get; set; }
+    public string? AssignedStaffFullName { get; set; }
 }

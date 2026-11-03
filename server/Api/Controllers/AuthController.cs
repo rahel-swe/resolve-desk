@@ -44,12 +44,17 @@ public class AuthController(IAuthService authService, IUserService userService) 
 
     [Authorize]
     [HttpGet("me")]
-    public ActionResult<ServiceResult<object>> Me()
+    public ActionResult<ServiceResult<AuthMeResponseDto>> Me()
     {
         if (!User.TryGetCurrentUser(out var currentUser)) return Unauthorized();
 
-        return Ok(new ServiceResult<object>(
-            new { userId = currentUser.Id.ToString(), email = currentUser.Email, role = currentUser.Role.ToString() },
+        return Ok(new ServiceResult<AuthMeResponseDto>(
+            new AuthMeResponseDto
+            {
+                UserId = currentUser.Id,
+                Email = currentUser.Email,
+                Role = currentUser.Role.ToString()
+            },
             "Current user fetched successfully."));
     }
 

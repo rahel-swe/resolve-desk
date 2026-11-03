@@ -14,6 +14,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
     {
         _db.Tickets.Add(ticket);
         await _db.SaveChangesAsync();
+        await _db.Entry(ticket).Reference(t => t.User).LoadAsync();
 
         return ticket;
     }
@@ -52,7 +53,9 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Status = t.Status,
             CreatedAt = t.CreatedAt,
             CreatedByEmail = t.User.Email,
-            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null
+            CreatedByFullName = t.User.FullName,
+            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null,
+            AssignedStaffFullName = t.AssignedStaff != null ? t.AssignedStaff.FullName : null
         })
         .ToListAsync(cancellationToken);
 
@@ -105,7 +108,9 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Status = t.Status,
             CreatedAt = t.CreatedAt,
             CreatedByEmail = t.User.Email,
-            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null
+            CreatedByFullName = t.User.FullName,
+            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null,
+            AssignedStaffFullName = t.AssignedStaff != null ? t.AssignedStaff.FullName : null
         })
         .ToListAsync(cancellationToken);
 

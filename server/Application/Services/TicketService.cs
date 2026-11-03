@@ -41,7 +41,8 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Priority = createdTicket.Priority,
             Status = createdTicket.Status,
             CreatedAt = createdTicket.CreatedAt,
-            CreatedByEmail = string.Empty,
+            CreatedByEmail = createdTicket.User.Email,
+            CreatedByFullName = createdTicket.User.FullName,
             Id = createdTicket.Id
         };
 
@@ -86,7 +87,9 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedStaffEmail = ticket.AssignedStaff?.Email
+            CreatedByFullName = ticket.User?.FullName ?? string.Empty,
+            AssignedStaffEmail = ticket.AssignedStaff?.Email,
+            AssignedStaffFullName = ticket.AssignedStaff?.FullName
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
@@ -151,7 +154,9 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedStaffEmail = ticket.AssignedStaff?.Email
+            CreatedByFullName = ticket.User?.FullName ?? string.Empty,
+            AssignedStaffEmail = ticket.AssignedStaff?.Email,
+            AssignedStaffFullName = ticket.AssignedStaff?.FullName
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);

@@ -46,7 +46,9 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedStaffEmail = assignee.Email
+            CreatedByFullName = ticket.User?.FullName ?? string.Empty,
+            AssignedStaffEmail = assignee.Email,
+            AssignedStaffFullName = assignee.FullName
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
