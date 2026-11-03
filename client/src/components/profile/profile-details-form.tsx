@@ -30,10 +30,14 @@ function ProfileDetailsForm({ profile }: { profile: UserProfile }) {
 
   const onSubmit = (data: UpdateUserProfileInput) => {
     mutate(data, {
-      onSuccess() {
+      onSuccess(saved) {
+        reset({ fullName: saved.fullName, bio: saved.bio ?? '' })
+        toast.add({ description: 'Profile saved.', type: 'success' })
+      },
+      onError(error) {
         toast.add({
-          description: 'Profile data updated, successfully.',
-          type: 'success',
+          description: error.message || 'Could not save profile.',
+          type: 'error',
         })
       },
     })

@@ -43,13 +43,19 @@ describe('authenticated identity lifecycle', () => {
     server.use(
       http.get(`${API_BASE_URL}/api/auth/me`, () =>
         HttpResponse.json(
-          envelope({ userId: '42', email: session.email, role: session.role }),
+          envelope({
+            userId: session.userId,
+            email: session.email,
+            role: session.role,
+          }),
         ),
       ),
     )
 
     renderIdentity()
-    expect(await screen.findByText(`${session.email}: 42`)).toBeInTheDocument()
+    expect(
+      await screen.findByText(`${session.email}: ${session.userId}`),
+    ).toBeInTheDocument()
     act(() =>
       saveSession({
         ...session,
@@ -57,8 +63,12 @@ describe('authenticated identity lifecycle', () => {
         refreshToken: 'rotated-refresh',
       }),
     )
-    expect(screen.getByText(`${session.email}: 42`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${session.email}: ${session.userId}`),
+    ).toBeInTheDocument()
+
     act(() => clearSession())
+
     expect(screen.getByText('Signed out')).toBeInTheDocument()
   })
 

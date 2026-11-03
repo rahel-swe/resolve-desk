@@ -229,6 +229,7 @@ describe('client services against the local seeded backend', () => {
       refreshToken,
       email: profile.email,
       role: profile.role,
+      userId: profile.id,
     })
 
     expect((await getCurrentAuthenticatedUser()).id).toBe(profile.id)

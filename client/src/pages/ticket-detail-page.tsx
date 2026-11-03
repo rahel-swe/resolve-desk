@@ -13,10 +13,12 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useTicketWorkspace } from '#/hooks/use-ticket-workspace'
 import { toast } from '#/components/ui/toast'
+import { useProfileQuery } from '#/queries/profile-queries'
 
 export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
   const authenticated = useRequireAuth()
   const workspace = useTicketWorkspace(ticketId)
+  // const { data: profileData, isLoading } = useProfileQuery(null)
 
   const [message, setMessage] = useState('')
 
@@ -39,6 +41,10 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
   }, [errorMessage])
 
   if (!authenticated) return null
+
+  const user = workspace.user
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
 
   const backAction = (
     <Button
@@ -81,13 +87,16 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
             <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
               <TicketWorkflow workspace={workspace} />
 
-              <TicketAiAssist
-                workspace={workspace}
-                onUseDraft={(draft) => {
-                  setMessage(draft)
-                  document.getElementById('ticket-comment')?.focus()
-                }}
-              />
+              {isAdmin ||
+                (isStaff && (
+                  <TicketAiAssist
+                    workspace={workspace}
+                    onUseDraft={(draft) => {
+                      setMessage(draft)
+                      document.getElementById('ticket-comment')?.focus()
+                    }}
+                  />
+                ))}
             </aside>
           </div>
         )

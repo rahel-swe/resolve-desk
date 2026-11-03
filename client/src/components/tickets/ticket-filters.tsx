@@ -89,13 +89,17 @@ export function TicketFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All statuses</SelectItem>
-              {['Open', 'In progress', 'Waiting', 'Resolved', 'Closed'].map(
-                (label, index) => (
-                  <SelectItem key={label} value={String(index)}>
-                    {label}
-                  </SelectItem>
-                ),
-              )}
+              {[
+                'Open',
+                'InProgress',
+                'WaitingForCustomer',
+                'Resolved',
+                'Closed',
+              ].map((label) => (
+                <SelectItem key={label} value={label}>
+                  {formatTicketStatus(label as TicketStatus)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select
@@ -114,9 +118,9 @@ export function TicketFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All priorities</SelectItem>
-              {['Low', 'Medium', 'High', 'Critical'].map((label, index) => (
-                <SelectItem key={label} value={String(index)}>
-                  {label}
+              {['Low', 'Medium', 'High', 'Critical'].map((label) => (
+                <SelectItem key={label} value={label}>
+                  {formatTicketPriority(label as TicketPriority)}
                 </SelectItem>
               ))}
             </SelectContent>
