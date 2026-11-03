@@ -70,6 +70,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         return Ok(result);
     }
 
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("{id}/priority-suggestion")]
     public async Task<ActionResult<ServiceResult<TicketAISuggestionDto>>> SuggestPriority(int id, CancellationToken cancellationToken)
     {
@@ -89,6 +90,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         return Ok(result);
     }
 
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("{id}/response-suggestion")]
     public async Task<ActionResult<ServiceResult<TicketAIResponseSuggestionDto>>> SuggestResponse(int id, CancellationToken cancellationToken)
     {
