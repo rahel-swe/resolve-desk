@@ -2,7 +2,7 @@
 
 ASP.NET Core 10 API with EF Core, PostgreSQL, JWT authentication, and refresh tokens. Handles tickets, comments, assignments, status history, and knowledge articles.
 
-Commands below run from the repo root.
+Commands below run from the repo root unless a section says otherwise.
 
 ## Configuration
 
@@ -55,26 +55,37 @@ For Docker, follow the [root guide](../README.md#run-with-docker). Compose passe
 
 ## Development seed
 
-Apply migrations first. Add a private password to ignored root `.env`:
+Apply migrations first. For the root command, add a private password to the ignored root `.env`:
 
 ```dotenv
 DevelopmentSeed__Password=<your-private-seed-password>
 ```
 
-Use at least 8 characters and at most 72 UTF-8 bytes, then run:
+Use at least 8 characters and at most 72 UTF-8 bytes, then run from the repo root:
 
 ```bash
 bun run db:seed
 ```
 
-Creates 6 accounts, 72 tickets with comments/history, and 1 knowledge article in your configured development database. All seed accounts use the same password:
+To seed directly from the `server` directory in PowerShell, set the environment and password for that terminal session and run the server's seed mode:
+
+```powershell
+cd server
+$env:ASPNETCORE_ENVIRONMENT = 'Development'
+$env:DOTNET_ENVIRONMENT = 'Development'
+$env:DevelopmentSeed__Password = '<your-private-seed-password>'
+dotnet run --project ResolveDesk.csproj --no-launch-profile -- --seed-development
+```
+
+Direct `dotnet run` does not load the root `.env`; provide `DevelopmentSeed__Password` as shown or through .NET user secrets. The seed exits without starting the API. Apply migrations before either seed command.
+
+Creates 5 accounts, 72 tickets with comments/history, and 1 knowledge article in your configured development database. All seed accounts use the same password:
 
 - Admin: `seed.admin@example.test`
-- SupportAgent: `seed.agent@example.test`, `seed.agent-other@example.test`
+- Staff: `seed.staff@example.test`, `seed.staff-other@example.test`
 - Customer: `seed.customer@example.test`, `seed.customer-other@example.test`
-- User: `seed.user@example.test`
 
-Fresh seeds assign 40 tickets to the first customer, 24 to the second, and 8 to User. Reruns preserve existing accounts and ticket edits; reuse the same password. Conflicting accounts stop the seed.
+Fresh seeds assign 40 tickets to the first customer and 32 to the second. Reruns preserve existing accounts and ticket edits; reuse the same password. Conflicting accounts stop the seed.
 
 Use the same password for [live client checks](../client/README.md#live-client-service-checks).
 

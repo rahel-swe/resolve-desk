@@ -1,6 +1,6 @@
 # ResolveDesk
 
-A support desk that turns incoming requests into a clear queue: customers raise tickets, agents resolve them, and admins manage assignments and knowledge articles.
+A support desk that turns incoming requests into a clear queue: customers raise tickets, staff resolve them, and admins manage assignments and knowledge articles.
 
 Built with React, TanStack Start, ASP.NET Core 10, EF Core, and PostgreSQL.
 
