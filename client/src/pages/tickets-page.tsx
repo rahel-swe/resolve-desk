@@ -29,6 +29,8 @@ export default function TicketsPage() {
   const { queue } = useWorkspace()
   const { q, scope } = Route.useSearch()
   const navigate = useNavigate({ from: '/tickets/' })
+  const isCustomer = user?.role === 'Customer'
+  const effectiveScope = isCustomer ? 'all' : scope
 
   const [status, setStatus] = useState<TicketStatus | 'all'>('all')
   const [priority, setPriority] = useState<TicketPriority | 'all'>('all')
@@ -40,9 +42,10 @@ export default function TicketsPage() {
       queue.data
         .filter((ticket) => {
           const query = q.trim().toLowerCase()
+
           const matchesScope =
-            scope === 'all' ||
-            (scope === 'mine'
+            effectiveScope === 'all' ||
+            (effectiveScope === 'mine'
               ? ticket.assignedStaffEmail === user?.email
               : !ticket.assignedStaffEmail)
 
@@ -62,7 +65,7 @@ export default function TicketsPage() {
           )
         })
         .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
-    [queue.data, q, scope, status, priority, user?.email],
+    [queue.data, q, effectiveScope, status, priority, user?.email],
   )
 
   if (!authenticated) return null
@@ -77,12 +80,16 @@ export default function TicketsPage() {
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
-        title="Tickets"
-        description="A clear view of what needs your attention."
+        title={isCustomer ? 'My requests' : 'Tickets'}
+        description={
+          isCustomer
+            ? 'Track the requests you have sent to support.'
+            : 'A clear view of what needs your attention.'
+        }
         action={
           <Button nativeButton={false} render={<Link to="/tickets/new" />}>
             <HugeiconsIcon icon={PlusSignIcon} />
-            New ticket
+            {isCustomer ? 'New request' : 'New ticket'}
           </Button>
         }
       />
@@ -90,22 +97,30 @@ export default function TicketsPage() {
         tickets={queue.data}
         loading={queue.loading}
         unavailable={Boolean(queue.error)}
+        caption={isCustomer ? 'among your requests' : 'in your ticket queue'}
       />
       <TicketFilters
         query={q}
-        scope={scope}
+        scope={effectiveScope}
         status={status}
         priority={priority}
+        user={user}
         onQuery={(value) => {
           setPage(1)
-          void navigate({ search: { q: value, scope }, replace: true })
+          void navigate({
+            search: { q: value, scope: effectiveScope },
+            replace: true,
+          })
         }}
         onScope={(value) => {
           setPage(1)
           void navigate({
             search: {
               q,
-              scope: value === 'mine' || value === 'unassigned' ? value : 'all',
+              scope:
+                !isCustomer && (value === 'mine' || value === 'unassigned')
+                  ? value
+                  : 'all',
             },
             replace: true,
           })
@@ -127,14 +142,24 @@ export default function TicketsPage() {
       ) : queue.loading ? (
         <TicketLoadingList />
       ) : pageTickets.length ? (
-        <TicketTable tickets={pageTickets} />
+        <TicketTable tickets={pageTickets} user={user} />
       ) : (
         <EmptyState
-          title={queue.data.length ? 'No matching tickets' : 'A fresh start'}
+          title={
+            queue.data.length
+              ? isCustomer
+                ? 'No matching requests'
+                : 'No matching tickets'
+              : isCustomer
+                ? 'No requests yet'
+                : 'A fresh start'
+          }
           description={
             queue.data.length
               ? 'Try another search or clear the filters.'
-              : 'Create your first ticket to start the conversation.'
+              : isCustomer
+                ? 'Send your first request to get help from support.'
+                : 'Create your first ticket to start the conversation.'
           }
           action={
             queue.data.length ? (
@@ -154,7 +179,7 @@ export default function TicketsPage() {
               </Button>
             ) : (
               <Button nativeButton={false} render={<Link to="/tickets/new" />}>
-                New ticket
+                {isCustomer ? 'New request' : 'New ticket'}
               </Button>
             )
           }
@@ -165,7 +190,7 @@ export default function TicketsPage() {
           <p>
             Showing {(currentPage - 1) * pageSize + 1}–
             {Math.min(currentPage * pageSize, visible.length)} of{' '}
-            {visible.length} tickets
+            {visible.length} {isCustomer ? 'requests' : 'tickets'}
           </p>
           <div className="flex items-center gap-3">
             <Button

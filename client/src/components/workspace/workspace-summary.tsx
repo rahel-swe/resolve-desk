@@ -27,6 +27,7 @@ export function WorkspaceSummary() {
   const isAuthenticated = useRequireAuth()
   const { queue, library } = useWorkspace()
   const [query, setQuery] = useState('')
+
   const assigned = queue.data.filter(
     (ticket) =>
       ticket.assignedStaffEmail === user?.email &&
@@ -36,6 +37,10 @@ export function WorkspaceSummary() {
   const { isLoading: profileLoading, data: profileData } = useProfileQuery(
     user?.id || null,
   )
+
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
+  const isCustomer = user?.role === 'Customer'
 
   if (!isAuthenticated) return null
 
@@ -58,17 +63,33 @@ export function WorkspaceSummary() {
       </Link>
       <Link
         to="/tickets"
-        search={{ scope: 'mine', q: '' }}
+        search={{ scope: isCustomer ? 'all' : 'mine', q: '' }}
         className="mt-5 flex items-center justify-between border-y py-4 text-sm hover:text-primary"
       >
         <span>
-          <span className="block text-xs text-muted-foreground">
-            Assigned to me
-          </span>
-          <span className="mt-1 block">
-            {queue.loading || queue.error ? '—' : assigned.length} active
-            tickets
-          </span>
+          {isAdmin || isStaff ? (
+            <>
+              <span className="block text-xs text-muted-foreground">
+                Assigned to me
+              </span>
+              <span className="mt-1 block">
+                {queue.loading || queue.error
+                  ? '— active tickets'
+                  : `${assigned.length} active ${assigned.length === 1 ? 'ticket' : 'tickets'}`}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="block text-xs text-muted-foreground">
+                My requests
+              </span>
+              <span className="mt-1 block">
+                {queue.loading || queue.error
+                  ? '— requests'
+                  : `${queue.data.length} ${queue.data.length === 1 ? 'request' : 'requests'}`}
+              </span>
+            </>
+          )}
         </span>
         <HugeiconsIcon
           icon={ArrowRight01Icon}

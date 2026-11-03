@@ -22,10 +22,14 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
         if (!_ticketRules.CanAssignTicket(ticket, caller, request.AssignedStaffId))
             throw new ConflictException("User is not allowed to assign this ticket.");
 
-        var assignedStaff = await _userRepository.GetByIdAsync(request.AssignedStaffId, cancellationToken);
+        var assignee = await _userRepository.GetByIdAsync(request.AssignedStaffId, cancellationToken);
 
-        if (assignedStaff is null || assignedStaff.Role != UserRole.Staff)
-            throw new ConflictException("Assigned user must be a staff member.");
+        var adminAssigningSelf = caller.IsAdmin &&
+            assignee is { Role: UserRole.Admin } &&
+            assignee.Id == caller.Id;
+
+        if (assignee is null || (assignee.Role != UserRole.Staff && !adminAssigningSelf))
+            throw new ConflictException("Assigned user must be a staff member or the assigning administrator.");
 
         ticket.AssignedStaffId = request.AssignedStaffId;
         ticket.UpdatedAt = DateTime.UtcNow;
@@ -42,7 +46,7 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedStaffEmail = assignedStaff.Email
+            AssignedStaffEmail = assignee.Email
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);

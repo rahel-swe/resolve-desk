@@ -7,11 +7,14 @@ import { PreviewNotice } from '#/components/workspace/state-panel-components'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
 import { roleLabel } from '#/lib/user-utils'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 export default function SettingsPage() {
   const authenticated = useRequireAuth()
   const { user } = useAuth()
+
   if (!authenticated) return null
+
   return (
     <div className="mx-auto w-full max-w-5xl px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
@@ -43,7 +46,7 @@ export default function SettingsPage() {
             </Link>
           </div>
         </section>
-        <NotificationPreferences />
+        <NotificationPreferences user={user} />
         <section className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
           <div>
             <h2 className="font-heading text-3xl">Workspace</h2>
@@ -71,16 +74,20 @@ export default function SettingsPage() {
   )
 }
 
-function NotificationPreferences() {
+function NotificationPreferences({ user }: { user: AuthenticatedUser | null }) {
   const [assignments, setAssignments] = useState(true)
   const [replies, setReplies] = useState(true)
   const [notice, setNotice] = useState('')
+
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
+
   return (
     <section className="grid gap-5 border-b pb-8 md:grid-cols-[240px_minmax(0,1fr)]">
       <div>
         <h2 className="font-heading text-3xl">Notifications</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Keep up with work that needs you.
+          Stay up to date on your tickets.
         </p>
       </div>
       <div>
@@ -97,27 +104,29 @@ function NotificationPreferences() {
             )
           }}
         >
-          <div className="flex items-center justify-between gap-6">
-            <label htmlFor="assignment-notifications" className="text-sm">
-              <span className="block font-medium">Ticket assignments</span>
-              <span className="mt-1 block text-muted-foreground">
-                When a ticket is assigned to you.
-              </span>
-            </label>
-            <Switch
-              id="assignment-notifications"
-              checked={assignments}
-              onCheckedChange={(value) => {
-                setAssignments(value)
-                setNotice('')
-              }}
-            />
-          </div>
+          {(isAdmin || isStaff) && (
+            <div className="flex items-center justify-between gap-6">
+              <label htmlFor="assignment-notifications" className="text-sm">
+                <span className="block font-medium">Ticket assignments</span>
+                <span className="mt-1 block text-muted-foreground">
+                  When a ticket is assigned to you.
+                </span>
+              </label>
+              <Switch
+                id="assignment-notifications"
+                checked={assignments}
+                onCheckedChange={(value) => {
+                  setAssignments(value)
+                  setNotice('')
+                }}
+              />
+            </div>
+          )}
           <div className="flex items-center justify-between gap-6">
             <label htmlFor="reply-notifications" className="text-sm">
               <span className="block font-medium">New comments</span>
               <span className="mt-1 block text-muted-foreground">
-                When someone comments on your ticket.
+                  When a ticket receives a new comment.
               </span>
             </label>
             <Switch

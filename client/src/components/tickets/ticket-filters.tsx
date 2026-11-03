@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { formatTicketPriority, formatTicketStatus } from '#/lib/ticket-utils'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 export type TicketFilterStatus = TicketStatus | 'all'
 export type TicketFilterPriority = TicketPriority | 'all'
@@ -24,6 +25,7 @@ type TicketFiltersProps = {
   onScope: (value: string) => void
   onStatus: (value: TicketFilterStatus) => void
   onPriority: (value: TicketFilterPriority) => void
+  user: AuthenticatedUser | null
 }
 
 export function TicketFilters({
@@ -35,31 +37,37 @@ export function TicketFilters({
   onScope,
   onStatus,
   onPriority,
+  user,
 }: TicketFiltersProps) {
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
+
   return (
     <div className="mb-4 mt-7 space-y-5">
-      <Tabs value={scope} onValueChange={(value) => onScope(String(value))}>
-        <TabsList variant="line" className="max-w-full gap-1 overflow-x-auto">
-          <TabsTrigger
-            value="all"
-            className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
-          >
-            All tickets
-          </TabsTrigger>
-          <TabsTrigger
-            value="mine"
-            className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
-          >
-            Assigned to me
-          </TabsTrigger>
-          <TabsTrigger
-            value="unassigned"
-            className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
-          >
-            Unassigned
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {(isAdmin || isStaff) && (
+        <Tabs value={scope} onValueChange={(value) => onScope(String(value))}>
+          <TabsList variant="line" className="max-w-full gap-1 overflow-x-auto">
+            <TabsTrigger
+              value="all"
+              className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
+            >
+              All tickets
+            </TabsTrigger>
+            <TabsTrigger
+              value="mine"
+              className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
+            >
+              Assigned to me
+            </TabsTrigger>
+            <TabsTrigger
+              value="unassigned"
+              className="text-sm font-medium normal-case tracking-normal data-active:text-primary after:bg-primary"
+            >
+              Unassigned
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative min-w-0 flex-1">
           <HugeiconsIcon
@@ -67,10 +75,18 @@ export function TicketFilters({
             className="pointer-events-none absolute top-3 left-3 size-4 text-muted-foreground"
           />
           <Input
-            aria-label="Search ticket queue"
+            aria-label={
+              user?.role === 'Customer'
+                ? 'Search your requests'
+                : 'Search ticket queue'
+            }
             value={query}
             onChange={(event) => onQuery(event.target.value)}
-            placeholder="Search tickets, requesters, or categories…"
+            placeholder={
+              user?.role === 'Customer'
+                ? 'Search your requests…'
+                : 'Search tickets, requesters, or categories…'
+            }
             className="pl-9"
           />
         </div>

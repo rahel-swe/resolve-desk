@@ -50,7 +50,11 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
       ticket.assignedStaffEmail?.toLowerCase() === user.email.toLowerCase())
 
   const nextStatuses = statusTransitions[ticket.status]
-  const canAssignSelf = isStaff && !ticket.assignedStaffEmail && user.id > 0
+  const canAssignSelf =
+    user !== null &&
+    user.id > 0 &&
+    (isAdmin || (isStaff && !ticket.assignedStaffEmail)) &&
+    ticket.assignedStaffEmail?.toLowerCase() !== user.email.toLowerCase()
   const validStaffId =
     Number.isSafeInteger(Number(staffId)) && Number(staffId) > 0
 
@@ -203,7 +207,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
         </>
       ) : (
         <p className="border-t pt-5 text-xs leading-5 text-muted-foreground">
-          Your support team manages this ticket's assignment and status.
+          Our support team will update this request as it progresses.
         </p>
       )}
     </section>

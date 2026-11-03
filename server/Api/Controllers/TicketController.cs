@@ -110,6 +110,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         return Ok(result);
     }
 
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("{id}/categorize")]
     public async Task<ActionResult<ServiceResult<TicketCategorizationDto>>> CategorizeTicket(int id, CancellationToken cancellationToken)
     {

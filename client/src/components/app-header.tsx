@@ -20,7 +20,7 @@ const pageLabels: Record<string, string> = {
 }
 
 export function AppHeader() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
@@ -59,7 +59,9 @@ export function AppHeader() {
           <span className="hidden text-muted-foreground sm:inline">
             Workspace<span className="mx-4 text-muted-foreground/50">/</span>
           </span>
-          {pageLabels[segments[0]] || 'Workspace'}
+          {pageLabels[segments[0]] === 'Tickets' && user?.role === 'Customer'
+            ? 'Requests'
+            : pageLabels[segments[0]] || 'Workspace'}
           {segments.length > 1 && (
             <span className="ml-3 text-muted-foreground">
               / {segments[1] === 'new' ? 'New' : `#${segments[1]}`}

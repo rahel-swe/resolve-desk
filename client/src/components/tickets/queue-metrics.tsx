@@ -6,14 +6,16 @@ export function QueueMetrics({
   tickets,
   loading,
   unavailable = false,
+  caption = 'in your ticket queue',
 }: {
   tickets: ApiTicket[]
   loading: boolean
   unavailable?: boolean
+  caption?: string
 }) {
   return (
     <section
-      aria-label="Ticket queue summary"
+      aria-label="Ticket status summary"
       className="grid grid-cols-2 gap-y-6 border-y py-7 sm:grid-cols-4"
     >
       {ticketCounts(tickets).map((stat, index) => (
@@ -30,7 +32,7 @@ export function QueueMetrics({
             </p>
           )}
           <p className="mt-1 text-xs text-muted-foreground">
-            in your ticket queue
+            {caption}
           </p>
         </div>
       ))}

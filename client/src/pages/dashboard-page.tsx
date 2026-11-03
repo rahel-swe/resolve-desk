@@ -25,6 +25,7 @@ export default function DashboardPage() {
   if (!authenticated) return null
 
   const { greeting, currentDate } = greetingUtils()
+  const isCustomer = user?.role === 'Customer'
 
   const attention = queue.data
     .filter((ticket) => {
@@ -33,10 +34,13 @@ export default function DashboardPage() {
         ticket.status === 'InProgress' ||
         ticket.status === 'WaitingForCustomer'
 
-      return result && !ticket.assignedStaffEmail
+      return result && (isCustomer || !ticket.assignedStaffEmail)
     })
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 5)
+
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
 
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
@@ -56,7 +60,7 @@ export default function DashboardPage() {
         action={
           <Button nativeButton={false} render={<Link to="/tickets/new" />}>
             <HugeiconsIcon icon={PlusSignIcon} />
-            New ticket
+            {isCustomer ? 'New request' : 'New ticket'}
           </Button>
         }
       />
@@ -64,26 +68,28 @@ export default function DashboardPage() {
         tickets={queue.data}
         loading={queue.loading}
         unavailable={Boolean(queue.error)}
+        caption={isCustomer ? 'among your requests' : 'in your ticket queue'}
       />
       <div className="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_285px]">
         <section className="min-w-0">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-heading text-3xl sm:text-4xl">
-              Needs your attention
+              {isCustomer ? 'Your active requests' : 'Needs your attention'}
             </h2>
-            <Button variant={'secondary'}>
-              <Link
-                to="/tickets"
-                className="inline-flex items-center gap-2 hover:underline decoration-[0.5px]  underline-offset-4"
-              >
-                All tickets
-                <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
-              </Link>
+            <Button
+              variant="secondary"
+              nativeButton={false}
+              render={<Link to="/tickets" />}
+            >
+              {isCustomer ? 'My requests' : 'All tickets'}
+              <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
             </Button>
           </div>
-          <p className="mb-4 text-sm text-muted-foreground">
-            Unassigned requests
-          </p>
+          {(isAdmin || isStaff) && (
+            <p className="mb-4 text-sm text-muted-foreground">
+              Unassigned requests
+            </p>
+          )}
           {queue.error ? (
             <ResourceError
               message={queue.error}
@@ -92,18 +98,22 @@ export default function DashboardPage() {
           ) : queue.loading ? (
             <TicketLoadingList />
           ) : attention.length > 0 ? (
-            <TicketTable tickets={attention} compact />
+            <TicketTable tickets={attention} compact user={user} />
           ) : (
             <EmptyState
-              title="You're all caught up"
-              description="There are no unassigned active tickets. Open the queue to see the rest of your work."
+              title={isCustomer ? 'No active requests' : "You're all caught up"}
+              description={
+                isCustomer
+                  ? 'Your active requests will appear here. You can still view your past requests.'
+                  : 'There are no unassigned active tickets. Open the queue to see the rest of your work.'
+              }
               action={
                 <Button
                   variant="outline"
                   nativeButton={false}
                   render={<Link to="/tickets" />}
                 >
-                  View queue
+                  {isCustomer ? 'View requests' : 'View queue'}
                 </Button>
               }
             />

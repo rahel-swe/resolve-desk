@@ -13,12 +13,10 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useTicketWorkspace } from '#/hooks/use-ticket-workspace'
 import { toast } from '#/components/ui/toast'
-import { useProfileQuery } from '#/queries/profile-queries'
 
 export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
   const authenticated = useRequireAuth()
   const workspace = useTicketWorkspace(ticketId)
-  // const { data: profileData, isLoading } = useProfileQuery(null)
 
   const [message, setMessage] = useState('')
 
@@ -52,7 +50,7 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
       nativeButton={false}
       render={<Link to="/tickets" />}
     >
-      Back to queue
+      {user?.role === 'Customer' ? 'Back to requests' : 'Back to queue'}
     </Button>
   )
 
@@ -62,7 +60,7 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
         <>
           <PageHeading
             title={workspace.data.ticket.title}
-            eyebrow={`Ticket #${workspace.data.ticket.id}`}
+            eyebrow={`${user?.role === 'Customer' ? 'Request' : 'Ticket'} #${workspace.data.ticket.id}`}
             action={backAction}
           />
           <div className="-mt-3 mb-8 flex gap-3">
@@ -71,7 +69,10 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
           </div>
         </>
       ) : (
-        <PageHeading title="Ticket workspace" action={backAction} />
+        <PageHeading
+          title={user?.role === 'Customer' ? 'Request details' : 'Ticket workspace'}
+          action={backAction}
+        />
       )}
 
       {workspace.loading && !workspace.data ? (
@@ -87,16 +88,15 @@ export default function TicketDetailPage({ ticketId }: { ticketId: number }) {
             <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
               <TicketWorkflow workspace={workspace} />
 
-              {isAdmin ||
-                (isStaff && (
-                  <TicketAiAssist
-                    workspace={workspace}
-                    onUseDraft={(draft) => {
-                      setMessage(draft)
-                      document.getElementById('ticket-comment')?.focus()
-                    }}
-                  />
-                ))}
+              {(isAdmin || isStaff) && (
+                <TicketAiAssist
+                  workspace={workspace}
+                  onUseDraft={(draft) => {
+                    setMessage(draft)
+                    document.getElementById('ticket-comment')?.focus()
+                  }}
+                />
+              )}
             </aside>
           </div>
         )

@@ -14,14 +14,20 @@ import {
 import { formatDateTime, formatRelativeTime } from '#/lib/ticket-utils'
 import { displayName } from '#/lib/user-utils'
 import type { ApiTicket } from '#/services/ticket-service'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 export function TicketTable({
   tickets,
   compact = false,
+  user,
 }: {
   tickets: ApiTicket[]
   compact?: boolean
+  user: AuthenticatedUser | null
 }) {
+  const isAdmin = user?.role === 'Admin'
+  const isStaff = user?.role === 'Staff'
+
   return (
     <Table className="table-fixed min-w-[630px]">
       <TableHeader>
@@ -36,11 +42,13 @@ export function TicketTable({
                 : 'w-[32%] text-[10px] tracking-wider text-muted-foreground uppercase'
             }
           >
-            Ticket
+            {user?.role === 'Customer' ? 'Request' : 'Ticket'}
           </TableHead>
-          <TableHead className="text-[10px] tracking-wider text-muted-foreground uppercase">
-            Requester
-          </TableHead>
+          {(isAdmin || isStaff) && (
+            <TableHead className="text-[10px] tracking-wider text-muted-foreground uppercase">
+              Requester
+            </TableHead>
+          )}
           <TableHead className="w-28 text-[10px] tracking-wider text-muted-foreground uppercase">
             Status
           </TableHead>
@@ -74,17 +82,19 @@ export function TicketTable({
                 {ticket.description}
               </p>
             </TableCell>
-            <TableCell className="py-5">
-              <p className="truncate text-xs" title={ticket.createdByEmail}>
-                {displayName(ticket.createdByEmail)}
-              </p>
-              <p
-                className="mt-1 truncate text-[11px] text-muted-foreground"
-                title={ticket.createdByEmail}
-              >
-                {ticket.createdByEmail}
-              </p>
-            </TableCell>
+            {(isAdmin || isStaff) && (
+              <TableCell className="py-5">
+                <p className="truncate text-xs" title={ticket.createdByEmail}>
+                  {displayName(ticket.createdByEmail)}
+                </p>
+                <p
+                  className="mt-1 truncate text-[11px] text-muted-foreground"
+                  title={ticket.createdByEmail}
+                >
+                  {ticket.createdByEmail}
+                </p>
+              </TableCell>
+            )}
             <TableCell className="py-5">
               <TicketStatusBadge status={ticket.status} />
             </TableCell>
