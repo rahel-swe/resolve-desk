@@ -55,29 +55,25 @@ For Docker, follow the [root guide](../README.md#run-with-docker). Compose passe
 
 ## Development seed
 
-Apply migrations first. For the root command, add a private password to the ignored root `.env`:
+In the ignored `server/appsettings.json`, set a private seed password beside `ConnectionStrings`:
 
-```dotenv
-DevelopmentSeed__Password=<your-private-seed-password>
+```json
+"DevelopmentSeed": {
+  "Password": "<your-private-seed-password>"
+}
 ```
 
-Use at least 8 characters and at most 72 UTF-8 bytes, then run from the repo root:
-
-```bash
-bun run db:seed
-```
-
-To seed directly from the `server` directory in PowerShell, set the environment and password for that terminal session and run the server's seed mode:
+Use at least 8 characters and at most 72 UTF-8 bytes. Then update and seed from the `server` directory:
 
 ```powershell
 cd server
-$env:ASPNETCORE_ENVIRONMENT = 'Development'
-$env:DOTNET_ENVIRONMENT = 'Development'
-$env:DevelopmentSeed__Password = '<your-private-seed-password>'
-dotnet run --project ResolveDesk.csproj --no-launch-profile -- --seed-development
+dotnet ef database update
+dotnet run -c Release -- --seed-development
 ```
 
-Direct `dotnet run` does not load the root `.env`; provide `DevelopmentSeed__Password` as shown or through .NET user secrets. The seed exits without starting the API. Apply migrations before either seed command.
+The default `http` launch profile sets the Development environment; `-c Release` keeps the seed build separate from a running Debug server. The seed exits without starting the API. Environment variables and .NET user secrets can override the password in `appsettings.json`.
+
+To seed from the repo root instead, set `DevelopmentSeed__Password` in the ignored root `.env` and run `bun run db:seed`. Direct `dotnet run` does not load the root `.env`.
 
 Creates 5 accounts, 72 tickets with comments/history, and 1 knowledge article in your configured development database. All seed accounts use the same password:
 
