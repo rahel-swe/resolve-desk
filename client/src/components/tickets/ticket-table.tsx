@@ -91,10 +91,10 @@ export function TicketTable({
             {!compact && (
               <TableCell
                 className="truncate py-5 text-xs text-muted-foreground"
-                title={ticket.assignedAgentEmail || 'Unassigned'}
+                title={ticket.assignedStaffEmail || 'Unassigned'}
               >
-                {ticket.assignedAgentEmail
-                  ? displayName(ticket.assignedAgentEmail)
+                {ticket.assignedStaffEmail
+                  ? displayName(ticket.assignedStaffEmail)
                   : 'Unassigned'}
               </TableCell>
             )}

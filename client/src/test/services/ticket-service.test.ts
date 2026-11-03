@@ -84,7 +84,7 @@ describe('ticket service HTTP contracts', () => {
       name: 'assignment',
       method: 'patch',
       path: '/api/tickets/1/assignment',
-      body: { assignedAgentId: 2 },
+      body: { assignedStaffId: 2 },
       data: ticket(1),
       call: () => assignTicket(1, 2),
     },

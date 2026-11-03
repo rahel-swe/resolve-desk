@@ -21,8 +21,8 @@ export function initials(name: string) {
 }
 
 export function roleLabel(role?: AuthenticatedUser['role']) {
-  return role === 'SupportAgent'
-    ? 'Support agent'
+  return role === 'Staff'
+    ? 'Support Staff'
     : role === 'Admin'
       ? 'Administrator'
       : 'Customer'

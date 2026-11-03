@@ -43,8 +43,8 @@ export default function TicketsPage() {
           const matchesScope =
             scope === 'all' ||
             (scope === 'mine'
-              ? ticket.assignedAgentEmail === user?.email
-              : !ticket.assignedAgentEmail)
+              ? ticket.assignedStaffEmail === user?.email
+              : !ticket.assignedStaffEmail)
 
           return (
             matchesScope &&
@@ -56,7 +56,7 @@ export default function TicketsPage() {
                 ticket.description,
                 ticket.category,
                 ticket.createdByEmail,
-                ticket.assignedAgentEmail ?? '',
+                ticket.assignedStaffEmail ?? '',
                 String(ticket.id),
               ].some((value) => value.toLowerCase().includes(query)))
           )

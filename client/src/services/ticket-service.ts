@@ -11,7 +11,7 @@ export type ApiTicket = {
   status: TicketStatus
   createdAt: string
   createdByEmail: string
-  assignedAgentEmail?: string | null
+  assignedStaffEmail?: string | null
 }
 
 export type ApiTicketComment = {
@@ -96,10 +96,10 @@ export async function updateTicketStatus(
   })
 }
 
-export async function assignTicket(ticketId: number, assignedAgentId: number) {
+export async function assignTicket(ticketId: number, assignedStaffId: number) {
   return apiRequest<ApiTicket>(`/api/tickets/${ticketId}/assignment`, {
     method: 'PATCH',
-    data: { assignedAgentId },
+    data: { assignedStaffId },
   })
 }
 

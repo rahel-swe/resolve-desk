@@ -33,7 +33,7 @@ export default function DashboardPage() {
         ticket.status === 'InProgress' ||
         ticket.status === 'WaitingForCustomer'
 
-      return result && !ticket.assignedAgentEmail
+      return result && !ticket.assignedStaffEmail
     })
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 5)

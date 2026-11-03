@@ -47,7 +47,7 @@ export function getStoredUserSnapshot() {
       typeof user.email === 'string' &&
       'role' in user &&
       typeof user.role === 'string' &&
-      ['Admin', 'SupportAgent', 'Customer', 'User'].includes(user.role)
+      ['Admin', 'Staff', 'Customer'].includes(user.role)
     )
       return user as AuthenticatedUser
   } catch {

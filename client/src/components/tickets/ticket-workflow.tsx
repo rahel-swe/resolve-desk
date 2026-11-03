@@ -26,7 +26,7 @@ const statusTransitions: Record<TicketStatus, TicketStatus[]> = {
 }
 
 export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
-  const [agentId, setAgentId] = useState('')
+  const [staffId, setStaffId] = useState('')
 
   const [selectedStatus, setSelectedStatus] = useState<TicketStatus>(
     workspace.data?.ticket.status ?? 'Open',
@@ -42,17 +42,17 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
 
   const user = workspace.user
   const isAdmin = user?.role === 'Admin'
-  const isAgent = user?.role === 'SupportAgent'
+  const isStaff = user?.role === 'Staff'
 
   const canUpdateStatus =
     isAdmin ||
-    (isAgent &&
-      ticket.assignedAgentEmail?.toLowerCase() === user.email.toLowerCase())
+    (isStaff &&
+      ticket.assignedStaffEmail?.toLowerCase() === user.email.toLowerCase())
 
   const nextStatuses = statusTransitions[ticket.status]
-  const canAssignSelf = isAgent && !ticket.assignedAgentEmail && user.id > 0
-  const validAgentId =
-    Number.isSafeInteger(Number(agentId)) && Number(agentId) > 0
+  const canAssignSelf = isStaff && !ticket.assignedStaffEmail && user.id > 0
+  const validStaffId =
+    Number.isSafeInteger(Number(staffId)) && Number(staffId) > 0
 
   return (
     <section className="space-y-6">
@@ -75,7 +75,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
         <div>
           <dt className="text-muted-foreground">Assignee</dt>
           <dd className="mt-1 break-all">
-            {ticket.assignedAgentEmail || 'Unassigned'}
+            {ticket.assignedStaffEmail || 'Unassigned'}
           </dd>
         </div>
         <div>
@@ -83,7 +83,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
           <dd className="mt-1">{formatDateTime(ticket.createdAt)}</dd>
         </div>
       </dl>
-      {isAdmin || isAgent ? (
+      {isAdmin || isStaff ? (
         <>
           <form
             className="space-y-3 border-t pt-5"
@@ -141,7 +141,7 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
               </Button>
               {!canUpdateStatus && (
                 <p className="text-xs leading-5 text-muted-foreground">
-                  Only the assigned agent or an administrator can update this
+                  Only the assigned staff member or an administrator can update this
                   ticket.
                 </p>
               )}
@@ -152,25 +152,25 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
               className="space-y-3 border-t pt-5"
               onSubmit={(event) => {
                 event.preventDefault()
-                if (validAgentId)
-                  void workspace.assign(Number(agentId)).then((success) => {
-                    if (success) setAgentId('')
+                if (validStaffId)
+                  void workspace.assign(Number(staffId)).then((success) => {
+                    if (success) setStaffId('')
                   })
               }}
             >
-              <label htmlFor="agent-id" className="text-sm font-medium">
-                Assign to an agent
+              <label htmlFor="staff-id" className="text-sm font-medium">
+                Assign to a staff member
               </label>
               <div className="flex flex-col md:flex-row lg:flex-col gap-4">
                 <Input
-                  id="agent-id"
+                  id="staff-id"
                   type="number"
                   inputMode="numeric"
                   min={1}
                   step={1}
-                  value={agentId}
-                  onChange={(event) => setAgentId(event.target.value)}
-                  placeholder="Agent ID"
+                  value={staffId}
+                  onChange={(event) => setStaffId(event.target.value)}
+                  placeholder="Staff ID"
                   disabled={Boolean(workspace.busy)}
                 />
 
@@ -178,13 +178,13 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
                   type="submit"
                   variant="outline"
                   className=""
-                  disabled={Boolean(workspace.busy) || !validAgentId}
+                  disabled={Boolean(workspace.busy) || !validStaffId}
                 >
                   {workspace.busy === 'assign' ? 'Assigning…' : 'Assign ticket'}
                 </Button>
               </div>
               <p className="text-xs leading-5 text-muted-foreground">
-                An agent directory is coming soon. Use an existing agent's ID
+                A staff directory is coming soon. Use an existing staff member's ID
                 for now.
               </p>
             </form>

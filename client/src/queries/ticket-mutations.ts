@@ -80,8 +80,8 @@ export const useAssignTicketMutation = (
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (assignedAgentId: number) =>
-      assignTicket(ticketId, assignedAgentId),
+    mutationFn: (assignedStaffId: number) =>
+      assignTicket(ticketId, assignedStaffId),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ticketKeys.ticketDetails(sessionKey, ticketId),

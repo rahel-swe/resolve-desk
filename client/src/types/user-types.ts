@@ -4,7 +4,7 @@ import type { z } from 'zod'
 export type AuthenticatedUser = {
   id: number
   email: string
-  role: 'Admin' | 'SupportAgent' | 'Customer' | 'User'
+  role: 'Admin' | 'Staff' | 'Customer'
 }
 
 export interface UserProfile {
@@ -12,7 +12,6 @@ export interface UserProfile {
   fullName: string
   email: string
   role: AuthenticatedUser['role']
-  //   role: 'Admin' | 'Agent' | 'Customer'
   bio: string | null
 }
 

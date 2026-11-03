@@ -17,7 +17,7 @@ import { server } from '#/test/mocks/server'
 import { envelope, session } from '#/test/fixtures'
 
 describe('authentication service', () => {
-  it.each(['Admin', 'SupportAgent', 'Customer', 'User'])(
+  it.each(['Admin', 'Staff', 'Customer'])(
     'accepts the %s login contract without Mutationg storage',
     async (role) => {
       server.use(

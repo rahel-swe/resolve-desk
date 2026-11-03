@@ -85,9 +85,9 @@ export const useTicketActions = (ticketId: number) => {
           },
         })
       }),
-    assign: (agentId: number) =>
+    assign: (staffId: number) =>
       runAction('assign', async () => {
-        await assignTicket.mutateAsync(agentId, {
+        await assignTicket.mutateAsync(staffId, {
           onSuccess() {
             setNotice('Ticket assignment updated.')
           },

@@ -29,7 +29,7 @@ export function WorkspaceSummary() {
   const [query, setQuery] = useState('')
   const assigned = queue.data.filter(
     (ticket) =>
-      ticket.assignedAgentEmail === user?.email &&
+      ticket.assignedStaffEmail === user?.email &&
       activeStatuses.has(ticket.status),
   )
 

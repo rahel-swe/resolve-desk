@@ -37,7 +37,7 @@ function Identity() {
 }
 
 describe('authenticated identity lifecycle', () => {
-  it('preserves the resolved agent ID when a refresh rotates tokens for the same account', async () => {
+  it('preserves the resolved user ID when a refresh rotates tokens for the same account', async () => {
     saveSession(session)
 
     server.use(

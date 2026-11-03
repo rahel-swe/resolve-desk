@@ -160,7 +160,7 @@ describe('queue pagination and filtering through the client provider', () => {
     await waitFor(() =>
       expect(
         screen.getByText(
-          `Showing 1–10 of ${items.filter((item) => item.assignedAgentEmail === session.email).length} tickets`,
+          `Showing 1–10 of ${items.filter((item) => item.assignedStaffEmail === session.email).length} tickets`,
         ),
       ).toBeInTheDocument(),
     )

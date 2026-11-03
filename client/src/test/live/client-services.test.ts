@@ -50,8 +50,8 @@ describe('client services against the local seeded backend', () => {
   // These are seeded users
   it.each([
     ['admin', 'Admin'],
-    ['agent', 'SupportAgent'],
-    ['agent-other', 'SupportAgent'],
+    ['staff', 'Staff'],
+    ['staff-other', 'Staff'],
     ['customer', 'Customer'],
     ['customer-other', 'Customer'],
   ])('signs in %s and reads the matching profile', async (name, role) => {
@@ -84,23 +84,22 @@ describe('client services against the local seeded backend', () => {
   })
 
   it.each([
-    ['customer', [40]],
-    // Older seeds retain eight requests on the legacy account rather than moving them.
-    ['customer-other', [24, 32]],
-  ])('shows %s only its own tickets', async (name, expectedCounts) => {
+    ['customer', 40],
+    ['customer-other', 32],
+  ])('shows %s only its own tickets', async (name, expectedCount) => {
     const profile = await login(name)
     const tickets = await getTickets()
 
-    expect(expectedCounts).toContain(
-      tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)).length,
-    )
+    expect(
+      tickets.filter((ticket) => ticket.title.startsWith(seedPrefix)),
+    ).toHaveLength(expectedCount)
 
     expect(
       tickets.every((ticket) => ticket.createdByEmail === profile.email),
     ).toBe(true)
   })
 
-  it('creates a ticket, persists a comment, assigns an agent, records status history, and returns suggestions', async () => {
+  it('creates a ticket, persists a comment, assigns staff, records status history, and returns suggestions', async () => {
     await login('customer')
 
     const created = await createTicket({
@@ -139,12 +138,12 @@ describe('client services against the local seeded backend', () => {
       ),
     ).rejects.toThrow()
 
-    const agent = await login('agent')
+    const staff = await login('staff')
 
     await expect(updateTicketStatus(created.id, 'InProgress')).rejects.toThrow()
 
-    expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
-      agent.email,
+    expect((await assignTicket(created.id, staff.id)).assignedStaffEmail).toBe(
+      staff.email,
     )
     expect((await updateTicketStatus(created.id, 'InProgress')).status).toBe(
       'InProgress',
@@ -154,7 +153,7 @@ describe('client services against the local seeded backend', () => {
         expect.objectContaining({
           oldStatus: 'Open',
           newStatus: 'InProgress',
-          actorUserId: agent.id,
+          actorUserId: staff.id,
         }),
       ]),
     )
@@ -169,14 +168,14 @@ describe('client services against the local seeded backend', () => {
     expect(response.suggestedSteps.length).toBeGreaterThan(0)
     expect(response.escalationRecommendation.length).toBeGreaterThan(0)
 
-    await login('agent-other')
+    await login('staff-other')
     await expect(updateTicketStatus(created.id, 'Resolved')).rejects.toThrow()
-    await expect(assignTicket(created.id, agent.id)).rejects.toThrow()
+    await expect(assignTicket(created.id, staff.id)).rejects.toThrow()
 
     await login('admin')
 
-    expect((await assignTicket(created.id, agent.id)).assignedAgentEmail).toBe(
-      agent.email,
+    expect((await assignTicket(created.id, staff.id)).assignedStaffEmail).toBe(
+      staff.email,
     )
     expect((await updateTicketStatus(created.id, 'Resolved')).status).toBe(
       'Resolved',
@@ -190,7 +189,7 @@ describe('client services against the local seeded backend', () => {
     expect((await getTicketHistory(created.id)).length).toBe(2)
   })
 
-  it('creates and reads an administrator article and surfaces a forbidden agent write', async () => {
+  it('creates and reads an administrator article and surfaces a forbidden staff write', async () => {
     await login('admin')
 
     const payload = {
@@ -209,7 +208,7 @@ describe('client services against the local seeded backend', () => {
       ]),
     )
 
-    await login('agent')
+    await login('staff')
 
     const before = getAuthToken()
 
