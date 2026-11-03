@@ -6,7 +6,7 @@ using ResolveDesk.Application.Services;
 
 namespace ResolveDesk.Api.Controllers;
 
-[Authorize(Policy = "AdminOrUser")]
+[Authorize(Policy = "AuthenticatedUser")]
 [ApiController]
 [Route("api/knowledge")]
 public class KnowledgeArticleController(IKnowledgeArticleService knowledgeArticleService) : ControllerBase

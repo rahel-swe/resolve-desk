@@ -19,15 +19,15 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
         if (ticket is null || !_ticketRules.CanReadTicket(ticket, caller))
             throw new NotFoundException($"Ticket not found with id: {id}");
 
-        if (!_ticketRules.CanAssignTicket(ticket, caller, request.AssignedAgentId))
+        if (!_ticketRules.CanAssignTicket(ticket, caller, request.AssignedStaffId))
             throw new ConflictException("User is not allowed to assign this ticket.");
 
-        var assignedAgent = await _userRepository.GetByIdAsync(request.AssignedAgentId, cancellationToken);
+        var assignedStaff = await _userRepository.GetByIdAsync(request.AssignedStaffId, cancellationToken);
 
-        if (assignedAgent is null || assignedAgent.Role != UserRole.SupportAgent)
-            throw new ConflictException("Assigned user must be a support agent.");
+        if (assignedStaff is null || assignedStaff.Role != UserRole.Staff)
+            throw new ConflictException("Assigned user must be a staff member.");
 
-        ticket.AssignedAgentId = request.AssignedAgentId;
+        ticket.AssignedStaffId = request.AssignedStaffId;
         ticket.UpdatedAt = DateTime.UtcNow;
 
         await _ticketRepository.SaveChangesAsync(cancellationToken);
@@ -42,7 +42,7 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedAgentEmail = assignedAgent?.Email
+            AssignedStaffEmail = assignedStaff.Email
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);

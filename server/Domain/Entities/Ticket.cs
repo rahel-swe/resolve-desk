@@ -20,8 +20,8 @@ public class Ticket
     public int UserId { get; set; }
     public User User { get; set; } = null!;
 
-    public int? AssignedAgentId { get; set; }
-    public User? AssignedAgent { get; set; }
+    public int? AssignedStaffId { get; set; }
+    public User? AssignedStaff { get; set; }
 
     public ICollection<TicketComment> Comments { get; set; } =
     new List<TicketComment>();

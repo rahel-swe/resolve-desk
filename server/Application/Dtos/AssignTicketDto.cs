@@ -2,5 +2,5 @@ namespace ResolveDesk.Application.Dtos;
 
 public class AssignTicketDto
 {
-    public int AssignedAgentId { get; set; }
+    public int AssignedStaffId { get; set; }
 }

@@ -8,7 +8,7 @@ public class TicketRules
 {
     public bool CanReadTicket(Ticket ticket, CurrentUser caller)
     {
-        if (caller.IsAdmin || caller.IsSupportAgent)
+        if (caller.IsAdmin || caller.IsStaff)
             return true;
 
         return caller.IsCustomer && ticket.UserId == caller.Id;
@@ -19,8 +19,8 @@ public class TicketRules
         if (caller.IsAdmin)
             return true;
 
-        return caller.IsSupportAgent &&
-               ticket.AssignedAgentId == caller.Id;
+        return caller.IsStaff &&
+               ticket.AssignedStaffId == caller.Id;
     }
 
     public bool IsValidStatusTransition(TicketStatus current, TicketStatus next)
@@ -36,10 +36,10 @@ public class TicketRules
         };
     }
 
-    public bool CanAssignTicket(Ticket ticket, CurrentUser caller, int agentId)
+    public bool CanAssignTicket(Ticket ticket, CurrentUser caller, int staffId)
     {
         if (caller.IsAdmin) return true;
 
-        return caller.IsSupportAgent && ticket.AssignedAgentId is null && agentId == caller.Id;
+        return caller.IsStaff && ticket.AssignedStaffId is null && staffId == caller.Id;
     }
 }

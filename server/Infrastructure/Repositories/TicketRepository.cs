@@ -52,7 +52,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Status = t.Status,
             CreatedAt = t.CreatedAt,
             CreatedByEmail = t.User.Email,
-            AssignedAgentEmail = t.AssignedAgent != null ? t.AssignedAgent.Email : null
+            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null
         })
         .ToListAsync(cancellationToken);
 
@@ -63,7 +63,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
     {
         return await _db.Tickets
         .Include(t => t.User)
-        .Include(t => t.AssignedAgent)
+        .Include(t => t.AssignedStaff)
         .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
@@ -91,7 +91,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
 
         var items = await ticketsQuery
         .Include(t => t.User)
-        .Include(t => t.AssignedAgent)
+        .Include(t => t.AssignedStaff)
         .OrderByDescending(t => t.CreatedAt)
         .Skip((query.Page - 1) * query.PageSize)
         .Take(query.PageSize)
@@ -105,7 +105,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Status = t.Status,
             CreatedAt = t.CreatedAt,
             CreatedByEmail = t.User.Email,
-            AssignedAgentEmail = t.AssignedAgent != null ? t.AssignedAgent.Email : null
+            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null
         })
         .ToListAsync(cancellationToken);
 

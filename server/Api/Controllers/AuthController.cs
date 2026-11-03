@@ -1,7 +1,6 @@
 using ResolveDesk.Application.Dtos;
 using ResolveDesk.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using ResolveDesk.Api.Common;
 
@@ -47,11 +46,11 @@ public class AuthController(IAuthService authService, IUserService userService) 
     [HttpGet("me")]
     public ActionResult<ServiceResult<object>> Me()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        if (!User.TryGetCurrentUser(out var currentUser)) return Unauthorized();
 
-        return Ok(new ServiceResult<object>(new { userId, email, role }, "Current user fetched successfully."));
+        return Ok(new ServiceResult<object>(
+            new { userId = currentUser.Id.ToString(), email = currentUser.Email, role = currentUser.Role.ToString() },
+            "Current user fetched successfully."));
     }
 
     [HttpPost("logout")]

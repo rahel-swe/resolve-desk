@@ -90,13 +90,13 @@ public class TicketRulesTests
     }
 
     [Fact]
-    public void CanUpdateStatus_WhenUserIsSupportAgentAndNotAssignedTicket_ReturnsFalse()
+    public void CanUpdateStatus_WhenUserIsStaffAndNotAssignedTicket_ReturnsFalse()
     {
         var rules = new TicketRules();
 
-        _ticket.AssignedAgentId = 19;
+        _ticket.AssignedStaffId = 19;
 
-        _currentUser = _currentUser with { Id = 5, Role = UserRole.SupportAgent };
+        _currentUser = _currentUser with { Id = 5, Role = UserRole.Staff };
 
         var result = rules.CanUpdateStatus(_ticket, _currentUser);
 
@@ -104,13 +104,13 @@ public class TicketRulesTests
     }
 
     [Fact]
-    public void CanUpdateStatus_WhenUserIsSupportAgentAndAssignedTicket_ReturnsTrue()
+    public void CanUpdateStatus_WhenUserIsStaffAndAssignedTicket_ReturnsTrue()
     {
         var rules = new TicketRules();
 
-        _ticket.AssignedAgentId = 19;
+        _ticket.AssignedStaffId = 19;
 
-        _currentUser = _currentUser with { Id = 19, Role = UserRole.SupportAgent };
+        _currentUser = _currentUser with { Id = 19, Role = UserRole.Staff };
 
         var result = rules.CanUpdateStatus(_ticket, _currentUser);
 
@@ -138,23 +138,23 @@ public class TicketRulesTests
     {
         var rules = new TicketRules();
 
-        _ticket.AssignedAgentId = 23;
+        _ticket.AssignedStaffId = 23;
 
         _currentUser = _currentUser with { Id = 1, Role = UserRole.Admin, Email = "admin@example.com" };
 
-        var result = rules.CanAssignTicket(_ticket, _currentUser, agentId: 3);
+        var result = rules.CanAssignTicket(_ticket, _currentUser, staffId: 3);
 
         Assert.True(result);
     }
 
     [Fact]
-    public void CanAssignTicket_WhenSupportAgentClaimsUnassignedTicketForSelf_ReturnsTrue()
+    public void CanAssignTicket_WhenStaffClaimsUnassignedTicketForSelf_ReturnsTrue()
     {
         var rules = new TicketRules();
 
-        _ticket.AssignedAgent = null;
+        _ticket.AssignedStaff = null;
 
-        _currentUser = _currentUser with { Role = UserRole.SupportAgent, Id = 17, Email = "agent@example.com" };
+        _currentUser = _currentUser with { Role = UserRole.Staff, Id = 17, Email = "staff@example.com" };
 
         var result = rules.CanAssignTicket(_ticket, _currentUser, 17);
 
@@ -162,13 +162,13 @@ public class TicketRulesTests
     }
 
     [Fact]
-    public void CanAssignTicket_WhenSupportAgentAssignsTicketToAnotherAgent_ReturnsFalse()
+    public void CanAssignTicket_WhenStaffAssignsTicketToAnotherStaffMember_ReturnsFalse()
     {
         var rules = new TicketRules();
 
-        _ticket.AssignedAgentId = null;
+        _ticket.AssignedStaffId = null;
 
-        _currentUser = _currentUser with { Id = 20, Email = "agent@example.com", Role = UserRole.SupportAgent };
+        _currentUser = _currentUser with { Id = 20, Email = "staff@example.com", Role = UserRole.Staff };
 
         var result = rules.CanAssignTicket(_ticket, _currentUser, 21);
 

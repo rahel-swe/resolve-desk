@@ -14,10 +14,10 @@ public static class ClaimsPrincipalExtentions
         var email = principal.FindFirstValue(ClaimTypes.Email);
         var roleValue = principal.FindFirstValue(ClaimTypes.Role);
 
-        if (!int.TryParse(idValue, out var id) || string.IsNullOrWhiteSpace(roleValue))
+        if (!int.TryParse(idValue, out var id) || id <= 0 || string.IsNullOrWhiteSpace(roleValue))
             return false;
 
-        if (string.IsNullOrWhiteSpace(roleValue) || !Enum.TryParse<UserRole>(roleValue, out var role))
+        if (!Enum.TryParse<UserRole>(roleValue, out var role) || !Enum.IsDefined(role))
         {
             currentUser = default!;
             return false;

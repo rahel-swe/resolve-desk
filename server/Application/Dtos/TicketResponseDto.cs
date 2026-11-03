@@ -12,5 +12,5 @@ public class TicketResponseDto
     public TicketStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedByEmail { get; set; } = string.Empty;
-    public string? AssignedAgentEmail { get; set; }
+    public string? AssignedStaffEmail { get; set; }
 }

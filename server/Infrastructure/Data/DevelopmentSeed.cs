@@ -11,11 +11,10 @@ public static class DevelopmentSeed
     private static readonly (string Name, string Email, UserRole Role)[] Accounts =
     [
         ("Seed Admin", "seed.admin@example.test", UserRole.Admin),
-        ("Seed Agent", "seed.agent@example.test", UserRole.SupportAgent),
-        ("Second Seed Agent", "seed.agent-other@example.test", UserRole.SupportAgent),
+        ("Seed Staff", "seed.staff@example.test", UserRole.Staff),
+        ("Second Seed Staff", "seed.staff-other@example.test", UserRole.Staff),
         ("Seed Customer", "seed.customer@example.test", UserRole.Customer),
-        ("Second Seed Customer", "seed.customer-other@example.test", UserRole.Customer),
-        ("Seed User", "seed.user@example.test", UserRole.User)
+        ("Second Seed Customer", "seed.customer-other@example.test", UserRole.Customer)
     ];
 
     public static async Task RunAsync(AppDbContext db, IConfiguration configuration, ILogger logger,
@@ -91,7 +90,7 @@ public static class DevelopmentSeed
             var title = $"{Prefix} Request {index:D3}: {(index % 2 == 0 ? "Login assistance" : "Invoice question")}";
             if (titles.Contains(title)) continue;
             var requester = index <= 40 ? users["seed.customer@example.test"]
-                : index <= 64 ? users["seed.customer-other@example.test"] : users["seed.user@example.test"];
+                : users["seed.customer-other@example.test"];
             var status = (TicketStatus)((index - 1) % 5);
             var createdAt = anchor.AddMinutes(index);
             var ticket = new Ticket
@@ -104,7 +103,7 @@ public static class DevelopmentSeed
                 User = requester,
                 CreatedAt = createdAt,
                 UpdatedAt = createdAt,
-                AssignedAgent = index % 3 == 0 ? null : users[index % 3 == 1 ? "seed.agent@example.test" : "seed.agent-other@example.test"]
+                AssignedStaff = index % 3 == 0 ? null : users[index % 3 == 1 ? "seed.staff@example.test" : "seed.staff-other@example.test"]
             };
             ticket.Comments.Add(new TicketComment
             {

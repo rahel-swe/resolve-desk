@@ -27,7 +27,7 @@ public class TicketCommentService(ITicketCommentRepository ticketCommentReposito
     {
         var ticket = await CheckTicketExistence(ticketId, cancellationToken);
 
-        if (caller.IsAdmin || caller.IsSupportAgent)
+        if (caller.IsAdmin || caller.IsStaff)
             return true;
 
         return caller.IsCustomer && ticket!.UserId == caller.Id;

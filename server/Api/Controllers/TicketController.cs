@@ -7,7 +7,7 @@ using ResolveDesk.Application.Services;
 
 namespace ResolveDesk.Api.Controllers;
 
-[Authorize(Policy = "AdminOrUser")]
+[Authorize(Policy = "AuthenticatedUser")]
 [ApiController]
 [Route("api/tickets")]
 public class TicketController(ITicketService ticketService, ITicketAIService ticketAIService, AssignTicketHandler assignTicketHandler) : ControllerBase

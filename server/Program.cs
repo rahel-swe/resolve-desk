@@ -79,7 +79,7 @@ builder.Services.AddAuthorizationBuilder()
     {
         policy.RequireRole(UserRole.Admin.ToString());
     })
-    .AddPolicy("AdminOrUser", policy =>
+    .AddPolicy("AuthenticatedUser", policy =>
     {
         policy.RequireAuthenticatedUser();
     });

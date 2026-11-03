@@ -102,7 +102,7 @@ namespace ResolveDesk.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssignedAgentId")
+                    b.Property<int?>("AssignedStaffId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Category")
@@ -134,7 +134,7 @@ namespace ResolveDesk.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedAgentId");
+                    b.HasIndex("AssignedStaffId");
 
                     b.HasIndex("UserId");
 
@@ -212,7 +212,6 @@ namespace ResolveDesk.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -227,9 +226,8 @@ namespace ResolveDesk.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -260,9 +258,9 @@ namespace ResolveDesk.Migrations
 
             modelBuilder.Entity("ResolveDesk.Domain.Entities.Ticket", b =>
                 {
-                    b.HasOne("ResolveDesk.Domain.Entities.User", "AssignedAgent")
+                    b.HasOne("ResolveDesk.Domain.Entities.User", "AssignedStaff")
                         .WithMany()
-                        .HasForeignKey("AssignedAgentId");
+                        .HasForeignKey("AssignedStaffId");
 
                     b.HasOne("ResolveDesk.Domain.Entities.User", "User")
                         .WithMany()
@@ -270,7 +268,7 @@ namespace ResolveDesk.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AssignedAgent");
+                    b.Navigation("AssignedStaff");
 
                     b.Navigation("User");
                 });

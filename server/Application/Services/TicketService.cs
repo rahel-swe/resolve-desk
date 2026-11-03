@@ -53,7 +53,7 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
         query.Page = Math.Max(query.Page, 1);
         query.PageSize = Math.Clamp(query.PageSize, 1, 50);
 
-        var (Items, totalCount) = caller.IsAdmin || caller.IsSupportAgent
+        var (Items, totalCount) = caller.IsAdmin || caller.IsStaff
         ? await _ticketRepository.GetAllAsync(query, cancellationToken)
         : await _ticketRepository.GetByUserIdAsync(query, caller.Id, cancellationToken);
 
@@ -86,7 +86,7 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedAgentEmail = ticket.AssignedAgent?.Email
+            AssignedStaffEmail = ticket.AssignedStaff?.Email
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
@@ -151,7 +151,7 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
             CreatedByEmail = ticket.User?.Email ?? string.Empty,
-            AssignedAgentEmail = ticket.AssignedAgent?.Email
+            AssignedStaffEmail = ticket.AssignedStaff?.Email
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
