@@ -3,7 +3,6 @@ import { Textarea } from '#/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 import { UserAvatar } from '#/components/workspace/user-identity'
 import { formatDateTime, formatTicketStatus } from '#/lib/ticket-utils'
-import { displayName } from '#/lib/user-utils'
 import type { TicketWorkspace } from '#/hooks/use-ticket-workspace'
 
 type TicketConversationProps = {
@@ -43,11 +42,11 @@ export function TicketConversation({
         </TabsList>
         <TabsContent value="conversation" className="space-y-6">
           <div className="flex gap-3">
-            <UserAvatar name={displayName(ticket.createdByEmail)} />
+            <UserAvatar name={ticket.createdByFullName} />
             <div className="min-w-0 flex-1">
               <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <p className="text-sm font-medium">
-                  {displayName(ticket.createdByEmail)}
+                  {ticket.createdByFullName}
                 </p>
                 <time
                   dateTime={ticket.createdAt}
@@ -66,7 +65,7 @@ export function TicketConversation({
             .map((comment) => {
               const author =
                 comment.userId === workspace.user?.id
-                  ? displayName(workspace.user.email)
+                  ? 'You'
                   : `Member #${comment.userId}`
               return (
                 <div key={comment.id} className="flex gap-3">

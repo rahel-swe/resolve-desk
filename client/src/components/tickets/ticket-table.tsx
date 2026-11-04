@@ -12,7 +12,6 @@ import {
   TicketStatusBadge,
 } from '#/components/tickets/ticket-badges'
 import { formatDateTime, formatRelativeTime } from '#/lib/ticket-utils'
-import { displayName } from '#/lib/user-utils'
 import type { ApiTicket } from '#/services/ticket-service'
 import type { AuthenticatedUser } from '#/types/user-types'
 
@@ -84,8 +83,8 @@ export function TicketTable({
             </TableCell>
             {(isAdmin || isStaff) && (
               <TableCell className="py-5">
-                <p className="truncate text-xs" title={ticket.createdByEmail}>
-                  {displayName(ticket.createdByEmail)}
+                <p className="truncate text-xs" title={ticket.createdByFullName}>
+                  {ticket.createdByFullName}
                 </p>
                 <p
                   className="mt-1 truncate text-[11px] text-muted-foreground"
@@ -101,11 +100,9 @@ export function TicketTable({
             {!compact && (
               <TableCell
                 className="truncate py-5 text-xs text-muted-foreground"
-                title={ticket.assignedStaffEmail || 'Unassigned'}
+                title={ticket.assignedStaffFullName || 'Unassigned'}
               >
-                {ticket.assignedStaffEmail
-                  ? displayName(ticket.assignedStaffEmail)
-                  : 'Unassigned'}
+                {ticket.assignedStaffFullName || 'Unassigned'}
               </TableCell>
             )}
             <TableCell className="py-5 pr-0 text-right text-xs text-muted-foreground">

@@ -74,12 +74,12 @@ export function TicketWorkflow({ workspace }: { workspace: TicketWorkspace }) {
         </div>
         <div>
           <dt className="text-muted-foreground">Requester</dt>
-          <dd className="mt-1 break-all">{ticket.createdByEmail}</dd>
+          <dd className="mt-1 break-all">{ticket.createdByFullName}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">Assignee</dt>
           <dd className="mt-1 break-all">
-            {ticket.assignedStaffEmail || 'Unassigned'}
+            {ticket.assignedStaffFullName || 'Unassigned'}
           </dd>
         </div>
         <div>

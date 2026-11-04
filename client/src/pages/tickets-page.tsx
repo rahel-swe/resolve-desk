@@ -59,7 +59,9 @@ export default function TicketsPage() {
                 ticket.description,
                 ticket.category,
                 ticket.createdByEmail,
+                ticket.createdByFullName,
                 ticket.assignedStaffEmail ?? '',
+                ticket.assignedStaffFullName ?? '',
                 String(ticket.id),
               ].some((value) => value.toLowerCase().includes(query)))
           )

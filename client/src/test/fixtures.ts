@@ -22,7 +22,9 @@ export function ticket(
     status: 'Open',
     createdAt: new Date(Date.UTC(2026, 9, 1, 12, id)).toISOString(),
     createdByEmail: 'seed.customer@example.test',
+    createdByFullName: 'Seed Customer',
     assignedStaffEmail: id % 3 === 0 ? null : session.email,
+    assignedStaffFullName: id % 3 === 0 ? null : 'Seed Admin',
     ...overrides,
   }
 }

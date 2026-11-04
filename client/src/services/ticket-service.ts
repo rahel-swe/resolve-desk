@@ -11,7 +11,9 @@ export type ApiTicket = {
   status: TicketStatus
   createdAt: string
   createdByEmail: string
+  createdByFullName: string
   assignedStaffEmail?: string | null
+  assignedStaffFullName?: string | null
 }
 
 export type ApiTicketComment = {
