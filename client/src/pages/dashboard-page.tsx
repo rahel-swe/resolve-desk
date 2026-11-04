@@ -12,7 +12,6 @@ import {
 } from '#/components/workspace/state-panel-components'
 import { WorkspaceSummary } from '#/components/workspace/workspace-summary'
 import { useRequireAuth } from '#/hooks/use-require-auth'
-import { displayName } from '#/lib/user-utils'
 import { useAuth } from '#/providers/auth-provider'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { greetingUtils } from '#/lib/greeting-utils'
@@ -45,7 +44,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
-        title={`${greeting}, ${displayName(user?.email).split(' ')[0]}.`}
+        title={`${greeting}.`}
         description={
           <span className="font-heading text-2xl">
             Let's make support feel a little simpler.

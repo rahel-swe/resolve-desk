@@ -23,7 +23,7 @@ export function UserIdentity({
   userProfile: profile,
   compact = false,
 }: {
-  userProfile: UserProfile
+  userProfile: Pick<UserProfile, 'fullName' | 'role'>
   compact?: boolean
 }) {
   return (

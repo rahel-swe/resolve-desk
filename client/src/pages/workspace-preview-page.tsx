@@ -13,7 +13,6 @@ import { PageHeading } from '#/components/workspace/page-heading'
 import {
   EmptyState,
   PreviewNotice,
-  ResourceError,
 } from '#/components/workspace/state-panel-components'
 import { UserIdentity } from '#/components/workspace/user-identity'
 import { useRequireAuth } from '#/hooks/use-require-auth'

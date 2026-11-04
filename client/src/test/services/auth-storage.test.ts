@@ -48,4 +48,25 @@ describe('session storage', () => {
     expect(getStoredUserSnapshot()).toBeNull()
     expect(window.localStorage.getItem(USER_KEY)).toBeNull()
   })
+
+  it('drops a previously stored full name from the identity snapshot', () => {
+    window.localStorage.setItem(
+      USER_KEY,
+      JSON.stringify({
+        id: session.userId,
+        email: session.email,
+        role: session.role,
+        fullName: 'Old profile name',
+      }),
+    )
+
+    expect(getStoredUserSnapshot()).toEqual({
+      id: session.userId,
+      email: session.email,
+      role: session.role,
+    })
+    expect(
+      JSON.parse(window.localStorage.getItem(USER_KEY)!),
+    ).not.toHaveProperty('fullName')
+  })
 })

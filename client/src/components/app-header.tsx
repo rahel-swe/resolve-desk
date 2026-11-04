@@ -4,9 +4,9 @@ import { AccountMenu } from '#/components/workspace/account-menu'
 import { useAuth } from '#/providers/auth-provider'
 import { Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { useLocation, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import AppTitle from './app-title'
+import UnAuthenticatedHeader from './auth/un-authenticated-header'
 import NotificationsDropdownMenu from './notifications-dropdown-menu'
 
 const pageLabels: Record<string, string> = {
@@ -25,31 +25,9 @@ export function AppHeader() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
 
-  if (!isAuthenticated)
-    return (
-      <header className="flex h-20 items-center justify-between px-5 sm:px-9">
-        <AppTitle isAuthenticated={false} />
-        <nav
-          aria-label="Account navigation"
-          className="flex items-center gap-4 text-sm"
-        >
-          <Link
-            to="/sign-in"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            Sign in
-          </Link>
-          <Link
-            to="/sign-up"
-            className="rounded-md border border-border px-4 py-2 hover:bg-muted"
-          >
-            Create account
-          </Link>
-        </nav>
-      </header>
-    )
-
   const segments = pathname.split('/').filter(Boolean)
+
+  if (!isAuthenticated) return <UnAuthenticatedHeader segment={segments[0]} />
 
   return (
     <header className="flex min-h-17 items-center justify-between z-20 border border-t-0 sticky bg-muted/45 backdrop-blur-sm top-0 rounded-b-xl md:rounded-b-2xl gap-4 px-5 sm:px-8 mx-2 ">

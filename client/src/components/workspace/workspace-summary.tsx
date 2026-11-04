@@ -8,11 +8,11 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Input } from '#/components/ui/input'
-import { UserIdentity } from '#/components/workspace/user-identity'
+import { UserAvatar } from '#/components/workspace/user-identity'
 import { useAuth } from '#/providers/auth-provider'
+import { roleLabel } from '#/lib/user-utils'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { formatRelativeTime } from '#/lib/ticket-utils'
-import { useProfileQuery } from '#/queries/profile-queries'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import type { TicketStatus } from '#/types/ticket-enums'
 
@@ -34,10 +34,6 @@ export function WorkspaceSummary() {
       activeStatuses.has(ticket.status),
   )
 
-  const { isLoading: profileLoading, data: profileData } = useProfileQuery(
-    user?.id || null,
-  )
-
   const isAdmin = user?.role === 'Admin'
   const isStaff = user?.role === 'Staff'
   const isCustomer = user?.role === 'Customer'
@@ -57,8 +53,18 @@ export function WorkspaceSummary() {
     <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
       <h2 className="mb-5 font-heading text-3xl">My workspace</h2>
       <Link to="/profile" className="block rounded-md hover:bg-muted/30">
-        {!profileLoading && profileData && (
-          <UserIdentity userProfile={profileData} />
+        {user && (
+          <span className="flex min-w-0 items-center gap-3 text-left">
+            <UserAvatar name={user.email} />
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium text-foreground">
+                {user.email}
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                {roleLabel(user.role)}
+              </span>
+            </span>
+          </span>
         )}
       </Link>
       <Link

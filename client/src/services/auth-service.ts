@@ -49,13 +49,13 @@ export async function signInWithApi(email: string, password: string) {
 
 export async function getCurrentAuthenticatedUser() {
   const profile = await apiRequest<{
-    userId: string
+    userId: number
     email: string
     role: AuthenticatedUser['role']
   }>('/api/auth/me')
 
   return {
-    id: Number(profile.userId),
+    id: profile.userId,
     email: profile.email,
     role: profile.role,
   } satisfies AuthenticatedUser

@@ -7,10 +7,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
-import { UserIdentity } from '#/components/workspace/user-identity'
+import { UserAvatar } from '#/components/workspace/user-identity'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import { useAuth } from '#/providers/auth-provider'
-import { useProfileQuery } from '#/queries/profile-queries'
+import { roleLabel } from '#/lib/user-utils'
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Link } from '@tanstack/react-router'
@@ -18,10 +18,6 @@ import { Link } from '@tanstack/react-router'
 export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
   const { user, signOut, isSigningOutPending } = useAuth()
   const isAuthenticated = useRequireAuth()
-
-  const { isLoading: profileLoading, data: profileData } = useProfileQuery(
-    user?.id || null,
-  )
 
   if (!isAuthenticated) return null
 
@@ -35,11 +31,23 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
             : 'rounded-full focus-visible:ring-2 focus-visible:ring-ring'
         }
       >
-        {!profileLoading && profileData ? (
-          <UserIdentity userProfile={profileData} compact={!expanded} />
+        {user ? (
+          <span className="flex min-w-0 items-center gap-3 text-left">
+            <UserAvatar name={user.email} />
+            {expanded && (
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium text-foreground">
+                  {user.email}
+                </span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  {roleLabel(user.role)}
+                </span>
+              </span>
+            )}
+          </span>
         ) : (
           <span className="truncate text-sm text-muted-foreground">
-            {profileLoading ? 'Loading profile…' : user?.email}
+            Loading account…
           </span>
         )}
         {expanded && (
@@ -56,11 +64,7 @@ export function AccountMenu({ expanded = false }: { expanded?: boolean }) {
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="truncate normal-case tracking-normal">
-            {!profileLoading && profileData && (
-              <h2 className="text-lg text-foreground">
-                {profileData.fullName}
-              </h2>
-            )}
+            <h2 className="text-lg text-foreground">Your account</h2>
             {user?.email}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

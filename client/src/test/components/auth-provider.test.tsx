@@ -72,24 +72,32 @@ describe('authenticated identity lifecycle', () => {
     expect(screen.getByText('Signed out')).toBeInTheDocument()
   })
 
-  it('does not restore a delayed profile after sign-out', async () => {
+  it('does not restore a delayed identity after sign-out', async () => {
     saveSession(session)
     let releaseProfile!: () => void
     const gate = new Promise<void>((resolve) => {
       releaseProfile = resolve
     })
+
     let requested = false
+
     server.use(
       http.get(`${API_BASE_URL}/api/auth/me`, async () => {
         requested = true
         await gate
         return HttpResponse.json(
-          envelope({ userId: '42', email: session.email, role: session.role }),
+          envelope({
+            userId: session.userId,
+            email: session.email,
+            role: session.role,
+          }),
         )
       }),
     )
     renderIdentity()
+
     await waitFor(() => expect(requested).toBe(true))
+
     act(() => clearSession())
     releaseProfile()
     expect(await screen.findByText('Signed out')).toBeInTheDocument()
@@ -97,20 +105,28 @@ describe('authenticated identity lifecycle', () => {
 
   it('restores a valid token when the stored identity predates user IDs', async () => {
     saveSession(session)
+
     window.localStorage.setItem(
       USER_KEY,
       JSON.stringify({ email: session.email, role: session.role }),
     )
+
     server.use(
       http.get(`${API_BASE_URL}/api/auth/me`, () =>
         HttpResponse.json(
-          envelope({ userId: '42', email: session.email, role: session.role }),
+          envelope({
+            userId: session.userId,
+            email: session.email,
+            role: session.role,
+          }),
         ),
       ),
     )
 
     renderIdentity()
 
-    expect(await screen.findByText(`${session.email}: 42`)).toBeInTheDocument()
+    expect(
+      await screen.findByText(`${session.email}: ${session.userId}`),
+    ).toBeInTheDocument()
   })
 })

@@ -48,8 +48,16 @@ export function getStoredUserSnapshot() {
       'role' in user &&
       typeof user.role === 'string' &&
       ['Admin', 'Staff', 'Customer'].includes(user.role)
-    )
-      return user as AuthenticatedUser
+    ) {
+      const snapshot: AuthenticatedUser = {
+        id: user.id,
+        email: user.email,
+        role: user.role as AuthenticatedUser['role'],
+      }
+      if ('fullName' in user)
+        window.localStorage.setItem(USER_KEY, JSON.stringify(snapshot))
+      return snapshot
+    }
   } catch {
     // Invalid or stale browser storage must not crash session restoration.
   }

@@ -65,7 +65,7 @@ describe('authentication service', () => {
     expect(registered.refreshToken).not.toBe('')
   })
 
-  it('maps the current-user string ID and sends the saved bearer token', async () => {
+  it('maps the current-user identity and sends the saved bearer token', async () => {
     saveSession(session)
     server.use(
       http.get(`${API_BASE_URL}/api/auth/me`, ({ request }) => {
@@ -73,12 +73,17 @@ describe('authentication service', () => {
           `Bearer ${session.token}`,
         )
         return HttpResponse.json(
-          envelope({ userId: '42', email: session.email, role: session.role }),
+          envelope({
+            userId: session.userId,
+            email: session.email,
+            role: session.role,
+          }),
         )
       }),
     )
+
     expect(await getCurrentAuthenticatedUser()).toEqual({
-      id: 42,
+      id: session.userId,
       email: session.email,
       role: session.role,
     })
@@ -99,8 +104,10 @@ describe('authentication service', () => {
           )
         }),
       )
+
       if (status === 200) await logoutFromApi()
       else await expect(logoutFromApi()).rejects.toThrow('Unavailable')
+
       expect(getAuthToken()).toBeNull()
       expect(getRefreshToken()).toBeNull()
       expect(getStoredUserSnapshot()).toBeNull()
