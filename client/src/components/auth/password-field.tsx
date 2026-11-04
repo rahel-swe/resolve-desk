@@ -1,6 +1,6 @@
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
-import { useShowPassword } from '#/hooks/use-show-password'
+import { useEffect, useState } from 'react'
 import { EyeOffIcon, EyeIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
@@ -9,6 +9,7 @@ type PasswordFieldProps = {
   onChange: (value: string) => void
   autoComplete: 'current-password' | 'new-password'
   disabled?: boolean
+  submitCount?: number
 }
 
 function PasswordField({
@@ -16,8 +17,13 @@ function PasswordField({
   onChange,
   autoComplete,
   disabled = false,
+  submitCount = 0,
 }: PasswordFieldProps) {
-  const { isShowPassword, onClickShowPassword } = useShowPassword()
+  const [isShowPassword, setIsShowPassword] = useState(false)
+
+  useEffect(() => {
+    setIsShowPassword(false)
+  }, [submitCount])
 
   return (
     <div className="space-y-2">
@@ -46,7 +52,7 @@ function PasswordField({
           variant="ghost"
           size="icon-sm"
           className="absolute top-0.5 right-1 text-muted-foreground hover:text-foreground"
-          onClick={onClickShowPassword}
+          onClick={() => setIsShowPassword((visible) => !visible)}
           disabled={disabled}
           aria-label={isShowPassword ? 'Hide password' : 'Show password'}
         >

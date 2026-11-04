@@ -15,6 +15,7 @@ export function SignUpPage() {
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [submitCount, setSubmitCount] = useState(0)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -55,6 +56,7 @@ export function SignUpPage() {
       description="Create your ResolveDesk account and start managing support from one focused workspace."
       onSubmit={(event) => {
         event.preventDefault()
+        setSubmitCount((count) => count + 1)
         void handleSubmit()
       }}
     >
@@ -106,6 +108,7 @@ export function SignUpPage() {
         onChange={setPassword}
         autoComplete="new-password"
         disabled={isSubmitting}
+        submitCount={submitCount}
       />
 
       {error && (

@@ -14,6 +14,7 @@ export function SignInPage() {
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [submitCount, setSubmitCount] = useState(0)
 
   useEffect(() => {
     if (isAuthenticated) navigate({ to: '/dashboard' })
@@ -52,6 +53,7 @@ export function SignInPage() {
       description="Sign in to continue managing customer conversations, knowledge, and support workflows."
       onSubmit={(event) => {
         event.preventDefault()
+        setSubmitCount((count) => count + 1)
         void handleSubmit()
       }}
     >
@@ -82,6 +84,7 @@ export function SignInPage() {
         onChange={setPassword}
         autoComplete="current-password"
         disabled={isSubmitting}
+        submitCount={submitCount}
       />
 
       {error && (
