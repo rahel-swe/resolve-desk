@@ -14,6 +14,7 @@ import {
 import { formatDateTime, formatRelativeTime } from '#/lib/ticket-utils'
 import type { ApiTicket } from '#/services/ticket-service'
 import type { AuthenticatedUser } from '#/types/user-types'
+import { cn } from '#/lib/utils'
 
 export function TicketTable({
   tickets,
@@ -83,7 +84,10 @@ export function TicketTable({
             </TableCell>
             {(isAdmin || isStaff) && (
               <TableCell className="py-5">
-                <p className="truncate text-xs" title={ticket.createdByFullName}>
+                <p
+                  className="truncate text-xs"
+                  title={ticket.createdByFullName}
+                >
                   {ticket.createdByFullName}
                 </p>
                 <p
@@ -102,7 +106,14 @@ export function TicketTable({
                 className="truncate py-5 text-xs text-muted-foreground"
                 title={ticket.assignedStaffFullName || 'Unassigned'}
               >
-                {ticket.assignedStaffFullName || 'Unassigned'}
+                <span
+                  className={cn(
+                    !ticket.assignedStaffFullName &&
+                      'inline-flex rounded-md border border-dashed border-input px-2.5 py-1.5',
+                  )}
+                >
+                  {ticket.assignedStaffFullName || 'Unassigned'}
+                </span>
               </TableCell>
             )}
             <TableCell className="py-5 pr-0 text-right text-xs text-muted-foreground">

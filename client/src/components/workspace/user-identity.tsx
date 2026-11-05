@@ -3,6 +3,14 @@ import { initials, roleLabel } from '#/lib/user-utils'
 import { cn } from '#/lib/utils'
 import type { UserProfile } from '#/types/user-types'
 
+const avatarColors = [
+  'bg-primary/30',
+  'bg-chart-1/30',
+  'bg-chart-2/30',
+  'bg-chart-3/30',
+  'bg-chart-4/30',
+]
+
 export function UserAvatar({
   name,
   className,
@@ -10,9 +18,20 @@ export function UserAvatar({
   name: string
   className?: string
 }) {
+  const colorIndex = Array.from(name.trim().toLowerCase()).reduce(
+    (hash, character) =>
+      (hash * 31 + character.charCodeAt(0)) % avatarColors.length,
+    0,
+  )
+
   return (
     <Avatar aria-hidden="true" className={cn('size-11', className)}>
-      <AvatarFallback className="bg-popover text-sm font-medium text-foreground">
+      <AvatarFallback
+        className={cn(
+          'text-sm font-medium text-foreground',
+          avatarColors[colorIndex],
+        )}
+      >
         {initials(name)}
       </AvatarFallback>
     </Avatar>

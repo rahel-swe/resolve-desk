@@ -3,7 +3,12 @@ import { formatTicketPriority, formatTicketStatus } from '#/lib/ticket-utils'
 import { cn } from '#/lib/utils'
 import type { ApiTicket } from '#/services/ticket-service'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
-import { CircleIcon } from '@hugeicons/core-free-icons'
+import {
+  Alert02Icon,
+  ArrowDown02Icon,
+  ArrowUp02Icon,
+  EqualSignIcon,
+} from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
 const statusClasses: Record<TicketStatus, string> = {
@@ -15,10 +20,33 @@ const statusClasses: Record<TicketStatus, string> = {
 }
 
 const priorityClasses: Record<TicketPriority, string> = {
-  Low: 'text-chart-3',
-  Medium: 'text-chart-1',
-  High: 'text-chart-2',
-  Critical: 'text-primary',
+  Low: 'text-chart-3!',
+  Medium: 'text-chart-1!',
+  High: 'text-chart-2!',
+  Critical: 'text-destructive!',
+}
+
+const priorityIcons = {
+  Low: ArrowDown02Icon,
+  Medium: EqualSignIcon,
+  High: ArrowUp02Icon,
+  Critical: Alert02Icon,
+} satisfies Record<TicketPriority, typeof ArrowDown02Icon>
+
+export function TicketPriorityIcon({
+  priority,
+  className,
+}: {
+  priority: TicketPriority
+  className?: string
+}) {
+  return (
+    <HugeiconsIcon
+      icon={priorityIcons[priority]}
+      aria-hidden="true"
+      className={cn('size-4.5 shrink-0', priorityClasses[priority], className)}
+    />
+  )
 }
 
 export function TicketStatusBadge({
@@ -51,16 +79,12 @@ export function TicketPriorityBadge({
   return (
     <Badge
       className={cn(
-        'gap-2 text-[11px] font-medium normal-case tracking-normal',
+        'gap-2 text-[12px] font-medium normal-case tracking-normal',
         priorityClasses[priority],
         className,
       )}
     >
-      <HugeiconsIcon
-        icon={CircleIcon}
-        fill="currentColor"
-        className="size-2!"
-      />
+      <TicketPriorityIcon priority={priority} className="size-4" />
       {formatTicketPriority(priority)}
     </Badge>
   )
