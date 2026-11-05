@@ -63,13 +63,11 @@ export function TicketQueue({
           <h2 className="text-base font-semibold">
             {isCustomer ? 'My requests' : 'My queue'}
           </h2>
-          <Link
-            to="/tickets"
-            className="text-xs text-muted-foreground hover:text-foreground"
-            onClick={onSelect}
-          >
-            View all
-          </Link>
+          <Button size={'xs'} variant={'secondary'}>
+            <Link to="/tickets" className="text-xs " onClick={onSelect}>
+              View all
+            </Link>
+          </Button>
         </div>
         <div className="relative">
           <label htmlFor={searchId} className="sr-only">

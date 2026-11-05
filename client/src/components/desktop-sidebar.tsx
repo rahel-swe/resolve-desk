@@ -24,10 +24,10 @@ export default function DesktopSidebar() {
   if (!isAuthenticated) return null
 
   return (
-    <Sidebar className="h-[98%] my-auto rounded-e-2xl overflow-hidden border border-s-0">
+    <Sidebar className="h-[97%] my-auto rounded-e-2xl overflow-hidden border-e">
       <SidebarContent className="px-4">
         <div>
-          <SidebarHeader className="gap-8 px-6 pt-7 pb-5">
+          <SidebarHeader className="gap-4 px-6 pt-7 pb-5">
             <AppTitle isAuthenticated />
             <p className="text-xs text-muted-foreground">Support workspace</p>
           </SidebarHeader>
