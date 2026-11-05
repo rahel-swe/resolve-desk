@@ -115,6 +115,9 @@ describe('ticket conversation with client services', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Comment added')
     await waitFor(() => expect(input).toHaveValue(''))
     expect(posts()).toBe(1)
+    await user.click(input)
+    await user.keyboard('{Control>}z{/Control}')
+    expect(input).toHaveValue('')
   })
 
   it('preserves the draft and shows the API error after a failed comment', async () => {
@@ -190,5 +193,126 @@ describe('ticket conversation with client services', () => {
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByLabelText('Add a comment')).toHaveValue('')
     expect(posts()).toBe(1)
+  })
+
+  it.each([
+    ['- Check your email', '- Check your email\n- '],
+    ['9. Check your email', '9. Check your email\n10. '],
+    ['- [x] Check your email', '- [x] Check your email\n- [ ] '],
+    ['> Previous reply', '> Previous reply\n> '],
+  ])(
+    'continues %j with Enter and exits an empty item',
+    async (initial, continued) => {
+      const { user, posts } = setupConversation()
+      const input = await screen.findByLabelText('Add a comment')
+      await user.click(input)
+      await user.paste(initial)
+      await user.keyboard('{Enter}')
+      expect(input).toHaveValue(continued)
+      await user.keyboard('{Enter}')
+      expect(input).toHaveValue(initial + '\n')
+      expect(posts()).toBe(0)
+    },
+  )
+
+  it('indents lists, allows a plain newline, and offers an escape from Tab indentation', async () => {
+    const { user } = setupConversation()
+    const input = await screen.findByLabelText('Add a comment')
+    await user.click(input)
+    await user.paste('- First item')
+    await user.keyboard('{Tab}')
+    expect(input).toHaveValue('    - First item')
+    await user.keyboard('{Shift>}{Tab}{/Shift}')
+    expect(input).toHaveValue('- First item')
+    await user.keyboard('{Shift>}{Enter}{/Shift}')
+    expect(input).toHaveValue('- First item\n')
+    await user.keyboard('{Backspace}{Escape}{Tab}')
+    expect(screen.getByRole('button', { name: 'Bold' })).toHaveFocus()
+    expect(input).toHaveValue('- First item')
+  })
+
+  it('supports formatting shortcuts, toggling, undo, and redo with the original selection', async () => {
+    const { user } = setupConversation()
+    const input =
+      await screen.findByLabelText<HTMLTextAreaElement>('Add a comment')
+    await user.click(input)
+    await user.paste('Retry signing in')
+    input.setSelectionRange(0, 5)
+    await user.keyboard('{Control>}b{/Control}')
+    expect(input).toHaveValue('**Retry** signing in')
+    expect(input.value.slice(input.selectionStart, input.selectionEnd)).toBe(
+      'Retry',
+    )
+    await user.keyboard('{Control>}z{/Control}')
+    expect(input).toHaveValue('Retry signing in')
+    await user.keyboard('{Control>}{Shift>}z{/Shift}{/Control}')
+    expect(input).toHaveValue('**Retry** signing in')
+    await user.keyboard('{Control>}b{/Control}')
+    expect(input).toHaveValue('Retry signing in')
+    await user.keyboard('{Meta>}i{/Meta}')
+    expect(input).toHaveValue('_Retry_ signing in')
+  })
+
+  it('applies checklist formatting from the menu and keeps editing at the textarea', async () => {
+    const { user } = setupConversation()
+    const input =
+      await screen.findByLabelText<HTMLTextAreaElement>('Add a comment')
+    await user.click(input)
+    await user.paste('Check email\nReset password')
+    input.setSelectionRange(0, input.value.length)
+    await user.click(screen.getByRole('button', { name: 'More formatting' }))
+    await user.click(await screen.findByRole('menuitem', { name: 'Checklist' }))
+    expect(input).toHaveValue('- [ ] Check email\n- [ ] Reset password')
+    await waitFor(() => expect(input).toHaveFocus())
+    await user.click(screen.getByRole('button', { name: 'Preview' }))
+    expect(screen.getAllByRole('checkbox')).toHaveLength(2)
+    expect(screen.getAllByRole('checkbox')[0]).toBeDisabled()
+  })
+
+  it('keeps the bold shortcut from reaching the app sidebar shortcut', async () => {
+    const { user } = setupConversation()
+    const input = await screen.findByLabelText('Add a comment')
+    await user.type(input, 'Retry signing in')
+    const globalShortcut = vi.fn<(event: KeyboardEvent) => void>()
+    document.addEventListener('keydown', globalShortcut)
+    try {
+      await user.keyboard('{Control>}b{/Control}')
+      expect(input).toHaveValue('Retry signing in**text**')
+      expect(
+        globalShortcut.mock.calls.some(([event]) => event.key === 'b'),
+      ).toBe(false)
+    } finally {
+      document.removeEventListener('keydown', globalShortcut)
+    }
+  })
+
+  it('rejects formatting beyond the reply limit without losing the draft', async () => {
+    const { user } = setupConversation()
+    const input =
+      await screen.findByLabelText<HTMLTextAreaElement>('Add a comment')
+    await user.click(input)
+    await user.paste('a'.repeat(1000))
+    input.setSelectionRange(0, 5)
+    await user.keyboard('{Control>}b{/Control}')
+    expect(input).toHaveValue('a'.repeat(1000))
+    expect(
+      screen.getByText(/would exceed the 1,000-character reply limit/),
+    ).toBeInTheDocument()
+  })
+
+  it('undoes typing and automatic list continuation separately, including after switching to preview', async () => {
+    const { user } = setupConversation()
+    const input = await screen.findByLabelText('Add a comment')
+    await user.type(input, '- First')
+    await user.keyboard('{Enter}')
+    expect(input).toHaveValue('- First\n- ')
+    await user.click(screen.getByRole('button', { name: 'Preview' }))
+    await user.click(screen.getByRole('button', { name: 'Write' }))
+    const restored = screen.getByLabelText('Add a comment')
+    expect(restored).toHaveFocus()
+    await user.keyboard('{Control>}z{/Control}')
+    expect(restored).toHaveValue('- First')
+    await user.keyboard('{Control>}z{/Control}')
+    expect(restored).toHaveValue('')
   })
 })
