@@ -6,5 +6,5 @@ export const Route = createFileRoute('/tickets/$ticketId')({
 })
 function TicketRoute() {
   const { ticketId } = Route.useParams()
-  return <TicketDetailPage key={ticketId} ticketId={Number(ticketId)} />
+  return <TicketDetailPage ticketId={Number(ticketId)} />
 }
