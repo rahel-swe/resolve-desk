@@ -105,9 +105,9 @@ describe('ticket conversation with client services', () => {
   it('posts one trimmed comment, refreshes the conversation, and clears the draft only after success', async () => {
     const { user, posts } = setupConversation()
     const input = await screen.findByLabelText('Add a comment')
-    expect(screen.getByRole('button', { name: 'Add comment' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
     await user.type(input, '  Investigating the login issue now.  ')
-    await user.click(screen.getByRole('button', { name: 'Add comment' }))
+    await user.click(screen.getByRole('button', { name: 'Send reply' }))
 
     expect(
       await screen.findByText('Investigating the login issue now.'),
@@ -121,22 +121,74 @@ describe('ticket conversation with client services', () => {
     const { user, posts } = setupConversation(503)
     const input = await screen.findByLabelText('Add a comment')
     await user.type(input, 'Please investigate the login issue.')
-    await user.click(screen.getByRole('button', { name: 'Add comment' }))
+    await user.click(screen.getByRole('button', { name: 'Send reply' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Comment was not saved',
     )
     expect(input).toHaveValue('Please investigate the login issue.')
     expect(posts()).toBe(1)
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add comment' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Send reply' })).toBeEnabled()
   })
 
   it('keeps whitespace-only and short comments disabled and applies the server length limit', async () => {
     const { user, posts } = setupConversation()
     const input = await screen.findByLabelText('Add a comment')
     await user.type(input, '    ok    ')
-    expect(screen.getByRole('button', { name: 'Add comment' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
     expect(input).toHaveAttribute('maxlength', '1000')
     expect(posts()).toBe(0)
+  })
+
+  it('formats selected text and previews it without losing the draft', async () => {
+    const { user, posts } = setupConversation()
+    const input =
+      await screen.findByLabelText<HTMLTextAreaElement>('Add a comment')
+    await user.type(input, 'We can help with this.')
+    input.setSelectionRange(0, 2)
+    await user.click(screen.getByRole('button', { name: 'Bold' }))
+    expect(input).toHaveValue('**We** can help with this.')
+
+    await user.click(screen.getByRole('button', { name: 'Preview' }))
+    expect(screen.getByText('We', { selector: 'strong' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Write' }))
+    expect(screen.getByLabelText('Add a comment')).toHaveValue(
+      '**We** can help with this.',
+    )
+    expect(posts()).toBe(0)
+  })
+
+  it('renders Markdown in both the preview and the saved reply', async () => {
+    const { user, posts } = setupConversation()
+    const input = await screen.findByLabelText('Add a comment')
+    const markdown =
+      '## Troubleshooting\n\n- **Check** your email\n- Try _again_\n\n[Help guide](https://example.com/help)\n\n> Keep your password private.\n\nUse `private mode`. ~~Old advice~~\n\n| Step | Result |\n| --- | --- |\n| Sign in | Done |'
+    await user.click(input)
+    await user.paste(markdown)
+    await user.click(screen.getByRole('button', { name: 'Preview' }))
+    expect(
+      screen.getByRole('heading', { name: 'Troubleshooting', level: 2 }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Check', { selector: 'strong' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('again', { selector: 'em' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Help guide' })).toHaveAttribute(
+      'href',
+      'https://example.com/help',
+    )
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(
+      screen.getByText('Old advice', { selector: 'del' }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Send reply' }))
+    await screen.findByRole('status')
+    expect(
+      screen.getByRole('heading', { name: 'Troubleshooting', level: 2 }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('table')).toBeInTheDocument()
+    expect(screen.getByLabelText('Add a comment')).toHaveValue('')
+    expect(posts()).toBe(1)
   })
 })

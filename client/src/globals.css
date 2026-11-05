@@ -4,6 +4,8 @@
 @import '@fontsource-variable/inter';
 @import '@fontsource-variable/eb-garamond';
 
+@plugin '@tailwindcss/typography';
+
 @custom-variant dark (&:is(.dark *));
 
 * {
@@ -157,6 +159,29 @@ body {
 
 button {
   font: inherit;
+}
+
+.ticket-markdown {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--input);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--background);
+  --tw-prose-th-borders: var(--input);
+  --tw-prose-td-borders: var(--border);
+}
+
+.ticket-markdown :where(input[type='checkbox']) {
+  accent-color: var(--primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
