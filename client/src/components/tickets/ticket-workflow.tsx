@@ -63,18 +63,22 @@ export function TicketWorkflow({
   const assignee =
     previewAssignee ?? ticket.assignedStaffFullName ?? 'Unassigned'
   const category = previewCategory ?? ticket.category
+
   const user = workspace.user
   const isTeam = user?.role === 'Admin' || user?.role === 'Staff'
   const isAdmin = user?.role === 'Admin'
+
   const canUpdateStatus =
     isAdmin ||
     (user?.role === 'Staff' &&
       ticket.assignedStaffEmail?.toLowerCase() === user.email.toLowerCase())
+
   const canAssignSelf =
     user !== null &&
     user.id > 0 &&
     (isAdmin || (user.role === 'Staff' && !ticket.assignedStaffEmail)) &&
     ticket.assignedStaffEmail?.toLowerCase() !== user.email.toLowerCase()
+
   const categories = [
     ...new Set([
       ticket.category,
@@ -94,7 +98,7 @@ export function TicketWorkflow({
 
   return (
     <section
-      className="flex min-h-0 flex-col lg:h-full"
+      className="flex h-full min-h-0 flex-1 flex-col"
       aria-labelledby="ticket-details-heading"
     >
       <h2
@@ -107,7 +111,7 @@ export function TicketWorkflow({
         role="region"
         aria-label="Ticket details controls"
         tabIndex={0}
-        className="min-h-0 flex-1 space-y-7 px-5 pt-6 pb-8 [scrollbar-color:var(--input)_transparent] scrollbar-thin focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 focus-visible:ring-inset sm:px-7 lg:overflow-y-auto lg:overscroll-y-contain lg:scrollbar-gutter-stable lg:px-5 2xl:px-7"
+        className="min-h-0 flex-1 space-y-7 overflow-y-auto overscroll-y-contain px-5 pt-6 pb-8 [scrollbar-color:var(--input)_transparent] scrollbar-thin scrollbar-gutter-stable focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 focus-visible:ring-inset sm:px-7 lg:px-5 2xl:px-7"
       >
         <div className="space-y-5">
           <div className="space-y-2.5">
