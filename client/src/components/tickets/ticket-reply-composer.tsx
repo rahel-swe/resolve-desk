@@ -37,6 +37,7 @@ export function TicketReplyComposer({
   onMessage: (value: string) => void
 }) {
   const editor = useMarkdownEditor(message, onMessage)
+
   const [preview, setPreview] = useState(false)
   const busy = Boolean(workspace.busy)
   const requester = workspace.data?.ticket.createdByFullName || 'the requester'
@@ -52,44 +53,13 @@ export function TicketReplyComposer({
           }
         })
       }}
+      className="sticky bottom-4"
     >
-      <div className="overflow-hidden rounded-lg border border-input bg-muted/55 transition-colors focus-within:border-ring/60">
+      <div className="overflow-hidden rounded-lg rounded-ee-none rounded-es-none border bg-input/75 transition-colors focus-within:border-input backdrop-blur-sm">
         <label htmlFor="ticket-comment" className="sr-only">
           Add a comment
         </label>
-        {preview ? (
-          <div
-            id="ticket-reply-preview"
-            tabIndex={0}
-            role="region"
-            aria-label="Reply preview"
-            className="max-h-80 min-h-32 overflow-y-scroll overscroll-y-contain px-5 py-4 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin]"
-          >
-            {message.trim() ? (
-              <MarkdownContent>{message}</MarkdownContent>
-            ) : (
-              <p className="text-muted-foreground">
-                Your reply preview will appear here.
-              </p>
-            )}
-          </div>
-        ) : (
-          <Textarea
-            ref={editor.inputRef}
-            id="ticket-comment"
-            value={message}
-            {...editor.inputProps}
-            aria-describedby="ticket-reply-help ticket-reply-limit"
-            placeholder="Write a reply…"
-            rows={4}
-            required
-            minLength={5}
-            maxLength={editor.maxLength}
-            disabled={busy}
-            className="max-h-80 min-h-32 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-4 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin] md:text-sm"
-          />
-        )}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-3 sm:px-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-0.5 text-muted-foreground">
             <Button
               type="button"
@@ -200,75 +170,115 @@ export function TicketReplyComposer({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="ml-auto flex items-center gap-3">
-            <button
-              type="button"
-              className="text-[11px] text-muted-foreground hover:text-foreground"
-              aria-pressed={preview}
-              aria-controls={
-                preview ? 'ticket-reply-preview' : 'ticket-comment'
-              }
-              onClick={() => {
-                if (preview) editor.restoreSelection()
-                setPreview((value) => !value)
-              }}
-            >
-              {preview ? 'Write' : 'Preview'}
-            </button>
-            <Button
-              type="submit"
-              disabled={
-                busy || message.trim().length < 5 || message.length > 1000
-              }
-              className="gap-2 px-4"
-            >
-              <HugeiconsIcon icon={SentIcon} className="size-4" />
-              {workspace.busy === 'comment' ? 'Sending…' : 'Send reply'}
-            </Button>
+          <Button
+            type="button"
+            className="self-start"
+            aria-pressed={preview}
+            size={'xs'}
+            variant={preview ? 'default' : 'secondary'}
+            aria-controls={preview ? 'ticket-reply-preview' : 'ticket-comment'}
+            onClick={() => {
+              if (preview) editor.restoreSelection()
+              setPreview((value) => !value)
+            }}
+          >
+            {preview ? 'Write' : 'Preview'}
+          </Button>
+        </div>
+        {preview ? (
+          <div
+            id="ticket-reply-preview"
+            tabIndex={0}
+            role="region"
+            aria-label="Reply preview"
+            className="max-h-80 min-h-16 overflow-y-scroll overscroll-y-contain px-5 py-4 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin]"
+          >
+            {message.trim() ? (
+              <MarkdownContent className="">{message}</MarkdownContent>
+            ) : (
+              <p className="text-muted-foreground">
+                Your reply preview will appear here.
+              </p>
+            )}
           </div>
+        ) : (
+          <Textarea
+            ref={editor.inputRef}
+            id="ticket-comment"
+            value={message}
+            {...editor.inputProps}
+            aria-describedby="ticket-reply-help ticket-reply-limit"
+            placeholder="Write a reply…"
+            rows={4}
+            required
+            minLength={5}
+            maxLength={editor.maxLength}
+            disabled={busy}
+            className="max-h-80 min-h-16 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-4 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin] md:text-sm"
+          />
+        )}
+        <div className="flex items-center justify-between gap-3 px-3 pb-3 sm:px-4">
+          <details
+            id="ticket-reply-help"
+            className=" text-[11px] leading-5 text-muted-foreground self-end"
+          >
+            <summary className="w-fit cursor-pointer rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring text-sm">
+              Markdown tips
+            </summary>
+            <p className="mt-1">
+              Enter continues a list or quote. Enter on an empty item ends it.
+              Shift+Enter inserts a plain new line. Tab / Shift+Tab indents
+              lists; Esc then Tab moves focus.
+            </p>
+            <p>
+              Ctrl / ⌘ + B for bold, I for italic, K for a link, E for inline
+              code. Ctrl / ⌘ + Z undoes; Shift+Z redoes. Preview your reply
+              before sending.
+            </p>
+          </details>
+          <Button
+            type="submit"
+            disabled={
+              preview ||
+              busy ||
+              message.trim().length < 5 ||
+              message.length > 1000
+            }
+            variant={preview ? 'secondary' : 'default'}
+            className="gap-2 self-end"
+            size={'sm'}
+          >
+            <HugeiconsIcon icon={SentIcon} className="size-4" />
+            {workspace.busy === 'comment' ? 'Sending…' : 'Send reply'}
+          </Button>
         </div>
       </div>
-      <div className="mt-3 flex items-start justify-between gap-3 text-[11px] leading-5 text-muted-foreground">
-        <p className="flex items-center gap-2">
-          <HugeiconsIcon
-            icon={InformationCircleIcon}
-            className="size-3.5 shrink-0"
-          />
-          {workspace.user?.role === 'Customer'
-            ? 'Replies are visible to the support team.'
-            : `Reply visible to ${requester}.`}
+      <div className="backdrop-blur-sm bg-input/75 px-2 py-2 rounded-md rounded-ss-none rounded-se-none border border-border border-t-0">
+        <div className=" flex items-start justify-between gap-3 text-[11px] leading-5 text-muted-foreground">
+          <p className="flex items-center gap-2">
+            <HugeiconsIcon
+              icon={InformationCircleIcon}
+              className="size-3.5 shrink-0"
+            />
+            {workspace.user?.role === 'Customer'
+              ? 'Replies are visible to the support team.'
+              : `Reply visible to ${requester}.`}
+          </p>
+          {message.length > 800 && (
+            <span className="shrink-0">{message.length}/1,000</span>
+          )}
+        </div>
+
+        <p
+          id="ticket-reply-limit"
+          aria-live="polite"
+          className="text-[11px] leading-5 text-destructive"
+        >
+          {editor.limitReached
+            ? 'This formatting would exceed the 1,000-character reply limit.'
+            : ''}
         </p>
-        {message.length > 800 && (
-          <span className="shrink-0">{message.length}/1,000</span>
-        )}
       </div>
-      <details
-        id="ticket-reply-help"
-        className="mt-2 text-[11px] leading-5 text-muted-foreground"
-      >
-        <summary className="w-fit cursor-pointer rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-          Markdown tips
-        </summary>
-        <p className="mt-1">
-          Enter continues a list or quote. Enter on an empty item ends it.
-          Shift+Enter inserts a plain new line. Tab / Shift+Tab indents lists;
-          Esc then Tab moves focus.
-        </p>
-        <p>
-          Ctrl / ⌘ + B for bold, I for italic, K for a link, E for inline code.
-          Ctrl / ⌘ + Z undoes; Shift+Z redoes. Preview your reply before
-          sending.
-        </p>
-      </details>
-      <p
-        id="ticket-reply-limit"
-        aria-live="polite"
-        className="text-[11px] leading-5 text-destructive"
-      >
-        {editor.limitReached
-          ? 'This formatting would exceed the 1,000-character reply limit.'
-          : ''}
-      </p>
     </form>
   )
 }

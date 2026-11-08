@@ -47,6 +47,7 @@ function setupConversation(status = 200) {
     userId: number
   }[] = []
   let posts = 0
+
   server.use(
     http.get(`${API_BASE_URL}/api/tickets`, () =>
       HttpResponse.json(
@@ -62,6 +63,7 @@ function setupConversation(status = 200) {
     http.get(`${API_BASE_URL}/api/knowledge`, () =>
       HttpResponse.json(envelope([])),
     ),
+
     http.get(`${API_BASE_URL}/api/tickets/1`, () =>
       HttpResponse.json(
         envelope(ticket(1, { priority: 'High', status: 'Resolved' })),
@@ -185,6 +187,8 @@ describe('ticket conversation with client services', () => {
       screen.getByText('Old advice', { selector: 'del' }),
     ).toBeInTheDocument()
 
+    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Write' }))
     await user.click(screen.getByRole('button', { name: 'Send reply' }))
     await screen.findByRole('status')
     expect(
@@ -227,7 +231,9 @@ describe('ticket conversation with client services', () => {
     await user.keyboard('{Shift>}{Enter}{/Shift}')
     expect(input).toHaveValue('- First item\n')
     await user.keyboard('{Backspace}{Escape}{Tab}')
-    expect(screen.getByRole('button', { name: 'Bold' })).toHaveFocus()
+    expect(
+      screen.getByText('Markdown tips', { selector: 'summary' }),
+    ).toHaveFocus()
     expect(input).toHaveValue('- First item')
   })
 
