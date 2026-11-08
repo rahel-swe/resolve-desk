@@ -1,54 +1,15 @@
-import type { ReactNode } from 'react'
 import { TicketReplyComposer } from '#/components/tickets/ticket-reply-composer'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { UserAvatar } from '#/components/workspace/user-identity'
-import { MarkdownContent } from '#/components/markdown-content'
-import { formatDateTime, formatTicketStatus } from '#/lib/ticket-utils'
-import { cn } from '#/lib/utils'
 import type { TicketWorkspace } from '#/hooks/use-ticket-workspace'
+import { formatDateTime, formatTicketStatus } from '#/lib/ticket-utils'
+import type { ReactNode } from 'react'
+import ConversationMessage from './conversation-message'
 
 type TicketConversationProps = {
   workspace: TicketWorkspace
   message: string
   onMessage: (value: string) => void
   beforeComposer?: ReactNode
-}
-
-function ConversationMessage({
-  name,
-  message,
-  createdAt,
-  own = false,
-}: {
-  name: string
-  message: string
-  createdAt: string
-  own?: boolean
-}) {
-  return (
-    <article className="flex gap-3 sm:gap-4">
-      <UserAvatar name={name} className="size-10 shrink-0 sm:size-11" />
-      <div className="min-w-0 flex-1">
-        <div className="mb-2.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <p className="text-xs font-semibold sm:text-sm">{name}</p>
-          <time
-            dateTime={createdAt}
-            className="text-[11px] text-muted-foreground"
-          >
-            {formatDateTime(createdAt)}
-          </time>
-        </div>
-        <div
-          className={cn(
-            'rounded-lg border border-border/40 px-4 py-3.5 sm:px-5',
-            own ? 'bg-primary/8' : 'bg-muted',
-          )}
-        >
-          <MarkdownContent>{message}</MarkdownContent>
-        </div>
-      </div>
-    </article>
-  )
 }
 
 export function TicketConversation({
@@ -62,7 +23,7 @@ export function TicketConversation({
 
   return (
     <section className="min-w-0">
-      <Tabs defaultValue="conversation">
+      <Tabs defaultValue="conversation" className={''}>
         <TabsList
           variant="line"
           className="mb-6 h-12! w-full justify-start gap-2 border-b p-0 sm:gap-6"
