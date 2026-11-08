@@ -4,7 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '#/components/ui/button'
 import { QueueMetrics } from '#/components/tickets/queue-metrics'
 import { TicketTable } from '#/components/tickets/ticket-table'
-import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
+import { TicketListSkeleton } from '#/components/skeletons/ticket-list-skeleton'
 import { PageHeading } from '#/components/workspace/page-heading'
 import {
   EmptyState,
@@ -95,7 +95,7 @@ export default function DashboardPage() {
               onRetry={() => void queue.refresh()}
             />
           ) : queue.loading ? (
-            <TicketLoadingList />
+            <TicketListSkeleton />
           ) : attention.length > 0 ? (
             <TicketTable tickets={attention} compact user={user} />
           ) : (

@@ -1,6 +1,6 @@
 import { Skeleton } from '#/components/ui/skeleton'
 
-export function TicketLoadingList() {
+export function TicketListSkeleton() {
   return (
     <div role="status" aria-label="Loading tickets" className="divide-y">
       <span className="sr-only">Loading tickets…</span>

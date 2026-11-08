@@ -10,7 +10,7 @@ import { Button } from '#/components/ui/button'
 import { TicketTable } from '#/components/tickets/ticket-table'
 import { TicketFilters } from '#/components/tickets/ticket-filters'
 import { QueueMetrics } from '#/components/tickets/queue-metrics'
-import { TicketLoadingList } from '#/components/tickets/ticket-loading-list'
+import { TicketListSkeleton } from '#/components/skeletons/ticket-list-skeleton'
 import {
   EmptyState,
   ResourceError,
@@ -142,7 +142,7 @@ export default function TicketsPage() {
           onRetry={() => void queue.refresh()}
         />
       ) : queue.loading ? (
-        <TicketLoadingList />
+        <TicketListSkeleton />
       ) : pageTickets.length ? (
         <TicketTable tickets={pageTickets} user={user} />
       ) : (

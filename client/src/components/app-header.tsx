@@ -30,7 +30,7 @@ export function AppHeader() {
   if (!isAuthenticated) return <UnAuthenticatedHeader segment={segments[0]} />
 
   return (
-    <header className="flex min-h-17 items-center justify-between z-20 border-b sticky bg-muted/45 backdrop-blur-sm top-0 rounded-b-xl md:rounded-b-2xl gap-4 px-5 sm:px-8 mx-2 ">
+    <header className="sticky top-0 z-20 mx-2 flex h-(--app-header-height) shrink-0 items-center justify-between gap-4 rounded-b-xl border-b bg-muted/45 px-5 backdrop-blur-sm sm:px-8 md:rounded-b-2xl">
       <div className="flex min-w-0 items-center gap-3">
         <SidebarTrigger className="md:hidden" />
         <p className="truncate text-sm">

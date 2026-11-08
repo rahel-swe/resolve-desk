@@ -23,6 +23,7 @@ body {
 }
 
 :root {
+  --app-header-height: 4.25rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.147 0.004 49.3);
   --card: oklch(98.712% 0.00341 38.008);
@@ -73,8 +74,8 @@ body {
   --accent: #35312e;
   --accent-foreground: var(--foreground);
   --destructive: oklch(64.491% 0.20551 24.133);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 16%);
+  --border: rgba(121, 117, 117, 0.16);
+  --input: #3f3e3d;
   --ring: var(--primary);
   --chart-1: oklch(0.74 0.09 255);
   --chart-2: oklch(0.8 0.14 85);
@@ -92,6 +93,7 @@ body {
 }
 
 @theme inline {
+  --app-header-height: var(--app-header-height);
   --font-sans: 'Inter Variable', sans-serif;
   --font-heading: 'EB Garamond Variable', serif;
   --color-sidebar-ring: var(--sidebar-ring);
