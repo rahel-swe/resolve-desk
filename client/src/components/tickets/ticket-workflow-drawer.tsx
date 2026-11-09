@@ -37,7 +37,7 @@ const TicketWorkflowDrawer = ({
       </DrawerTrigger>
       <DrawerContent
         id="ticket-workflow-drawer"
-        className="h-[calc(100dvh-var(--app-header-height)-1rem)] max-h-[calc(100dvh-var(--app-header-height)-1rem)] rounded-2xl"
+        className="h-[calc(100dvh-var(--app-header-height)-1rem)] max-h-[calc(100dvh-var(--app-header-height)-1rem)] max-w-lg mx-auto"
       >
         <DrawerHeader className="sr-only">
           <DrawerTitle>

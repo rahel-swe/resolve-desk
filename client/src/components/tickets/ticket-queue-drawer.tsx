@@ -31,7 +31,7 @@ const TicketQueueDrawer = ({
       <DrawerContent
         id="ticket-queue-drawer"
         className={cn(
-          'h-[calc(100dvh-var(--app-header-height)-1rem)] max-h-[calc(100dvh-var(--app-header-height)-1rem)] rounded-2xl',
+          'h-[calc(100dvh-var(--app-header-height)-1rem)] max-h-[calc(100dvh-var(--app-header-height)-1rem)] max-w-lg mx-auto',
           className,
         )}
       >

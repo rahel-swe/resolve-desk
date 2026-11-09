@@ -41,6 +41,7 @@ export function TicketQueue({
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState('newest')
   const normalizedQuery = query.trim().toLowerCase()
+
   const visibleTickets = tickets
     .filter((ticket) =>
       [ticket.title, ticket.createdByFullName, String(ticket.id)].some(
@@ -52,6 +53,7 @@ export function TicketQueue({
         ? Date.parse(a.createdAt) - Date.parse(b.createdAt)
         : Date.parse(b.createdAt) - Date.parse(a.createdAt),
     )
+
   const activeCount = tickets.filter(
     (ticket) => ticket.status !== 'Resolved' && ticket.status !== 'Closed',
   ).length
@@ -112,7 +114,7 @@ export function TicketQueue({
 
       <nav
         aria-label="Ticket queue"
-        className="min-h-0 flex-1 overflow-y-auto px-2 pb-6 [scrollbar-color:var(--input)_transparent] [scrollbar-width:thin]"
+        className="min-h-0 flex-1 overflow-y-auto px-2 pb-6 [scrollbar-color:var(--input)_transparent] scrollbar-thin"
       >
         {loading && tickets.length === 0 ? (
           <div className="space-y-3 px-3" aria-label="Loading tickets">
