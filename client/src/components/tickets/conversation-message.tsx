@@ -29,8 +29,7 @@ function ConversationMessage({
         </div>
         <div
           className={cn(
-            'rounded-lg border border-border/40 px-4 py-3.5 sm:px-5',
-            own ? 'bg-primary/8' : 'bg-muted',
+            'rounded-lg border border-border/40 px-4 py-3.5 sm:px-5 bg-muted',
           )}
         >
           <MarkdownContent>{message}</MarkdownContent>

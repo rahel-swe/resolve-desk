@@ -137,7 +137,7 @@ export function TicketReplyComposer({
               <DropdownMenuContent
                 align="start"
                 side="top"
-                className="w-52 [&_[data-slot=dropdown-menu-item]]:normal-case [&_[data-slot=dropdown-menu-item]]:tracking-normal"
+                className="w-50"
                 finalFocus={editor.inputRef}
               >
                 <DropdownMenuItem onClick={() => editor.format('orderedList')}>
@@ -214,7 +214,7 @@ export function TicketReplyComposer({
             minLength={5}
             maxLength={editor.maxLength}
             disabled={busy}
-            className="max-h-80 min-h-16 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-4 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin] md:text-sm"
+            className="max-h-80 min-h-16 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-4 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] scrollbar-thin md:text-sm"
           />
         )}
         <div className="flex items-center justify-between gap-3 px-3 pb-3 sm:px-4">
@@ -245,8 +245,7 @@ export function TicketReplyComposer({
               message.length > 1000
             }
             variant={preview ? 'secondary' : 'default'}
-            className="gap-2 self-end"
-            size={'sm'}
+            className="gap-2 self-end px-3"
           >
             <HugeiconsIcon icon={SentIcon} className="size-4" />
             {workspace.busy === 'comment' ? 'Sending…' : 'Send reply'}
