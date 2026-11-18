@@ -38,8 +38,25 @@ public class TicketRules
 
     public bool CanAssignTicket(Ticket ticket, CurrentUser caller, int staffId)
     {
+        var isActive = ticket.Status is TicketStatus.Open or TicketStatus.InProgress or TicketStatus.WaitingForCustomer;
+
+        if (!isActive) return false;
+
         if (caller.IsAdmin) return true;
 
         return caller.IsStaff && ticket.AssignedStaffId is null && staffId == caller.Id;
+    }
+
+    public bool CanAssignSelf(Ticket ticket, CurrentUser caller)
+    {
+        return ticket.AssignedStaffId != caller.Id && CanAssignTicket(ticket, caller, caller.Id);
+    }
+
+    public TicketStatus[] GetAllowedStatuses(Ticket ticket, CurrentUser caller)
+    {
+        if (!CanReadTicket(ticket, caller) || !CanUpdateStatus(ticket, caller)) return [];
+
+        return Enum.GetValues<TicketStatus>().Where(next => IsValidStatusTransition(ticket.Status, next)).ToArray();
+
     }
 }

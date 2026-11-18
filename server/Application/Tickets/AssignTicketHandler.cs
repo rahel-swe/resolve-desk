@@ -45,10 +45,13 @@ public class AssignTicketHandler(ITicketRepository ticketRepository, IUserReposi
             Priority = ticket.Priority,
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
-            CreatedByEmail = ticket.User?.Email ?? string.Empty,
+            UpdatedAt = ticket.UpdatedAt,
+            CreatedByUserId = ticket.User.Id,
             CreatedByFullName = ticket.User?.FullName ?? string.Empty,
-            AssignedStaffEmail = assignee.Email,
-            AssignedStaffFullName = assignee.FullName
+            AssignedStaffId = assignee.Id,
+            AssignedStaffFullName = assignee.FullName,
+            AllowedActions = new(_ticketRules.CanAssignSelf(ticket, caller), _ticketRules.CanUpdateStatus(ticket, caller), _ticketRules.GetAllowedStatuses(ticket, caller)),
+
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);

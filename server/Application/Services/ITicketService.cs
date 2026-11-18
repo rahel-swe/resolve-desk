@@ -6,7 +6,7 @@ namespace ResolveDesk.Application.Services;
 
 public interface ITicketService
 {
-    Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId);
+    Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, CurrentUser caller);
     Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetAllTicketsAsync(TicketListQueryDto query, CurrentUser caller, CancellationToken cancellationToken);
     Task<ServiceResult<PageResultDto<TicketResponseDto>>> GetUserTicketsAsync(TicketListQueryDto query, int userId, CurrentUser caller, CancellationToken cancellationToken);
     Task<ServiceResult<TicketResponseDto?>> GetTicketByIdAsync(int id, CurrentUser caller, CancellationToken cancellationToken);

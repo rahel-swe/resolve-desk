@@ -17,7 +17,7 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
     private readonly TicketRules _ticketRules = ticketRules;
 
 
-    public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, int userId)
+    public async Task<ServiceResult<TicketResponseDto>> CreateTicketAsync(CreateTicketDto request, CurrentUser caller)
     {
         var ticket = new Ticket
         {
@@ -28,7 +28,7 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Status = TicketStatus.Open,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            UserId = userId,
+            UserId = caller.Id,
         };
 
         var createdTicket = await _ticketRepository.CreateAsync(ticket);
@@ -41,9 +41,11 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Priority = createdTicket.Priority,
             Status = createdTicket.Status,
             CreatedAt = createdTicket.CreatedAt,
-            CreatedByEmail = createdTicket.User.Email,
+            CreatedByUserId = createdTicket.User.Id,
             CreatedByFullName = createdTicket.User.FullName,
-            Id = createdTicket.Id
+            Id = createdTicket.Id,
+            UpdatedAt = ticket.UpdatedAt,
+            AllowedActions = new(_ticketRules.CanAssignSelf(ticket, caller), _ticketRules.CanUpdateStatus(ticket, caller), _ticketRules.GetAllowedStatuses(ticket, caller)),
         };
 
         return new ServiceResult<TicketResponseDto>(ticketResponseDto);
@@ -86,10 +88,12 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Priority = ticket.Priority,
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
-            CreatedByEmail = ticket.User?.Email ?? string.Empty,
+            CreatedByUserId = ticket.User.Id,
+            UpdatedAt = ticket.UpdatedAt,
             CreatedByFullName = ticket.User?.FullName ?? string.Empty,
-            AssignedStaffEmail = ticket.AssignedStaff?.Email,
-            AssignedStaffFullName = ticket.AssignedStaff?.FullName
+            AssignedStaffId = ticket.AssignedStaff?.Id,
+            AssignedStaffFullName = ticket.AssignedStaff?.FullName,
+            AllowedActions = new(_ticketRules.CanAssignSelf(ticket, caller), _ticketRules.CanUpdateStatus(ticket, caller), _ticketRules.GetAllowedStatuses(ticket, caller)),
         };
 
         return new ServiceResult<TicketResponseDto?>(ticketResponseDto);
@@ -153,9 +157,11 @@ public class TicketService(ITicketRepository ticketRepository, TicketRules ticke
             Priority = ticket.Priority,
             Status = ticket.Status,
             CreatedAt = ticket.CreatedAt,
-            CreatedByEmail = ticket.User?.Email ?? string.Empty,
+            UpdatedAt = ticket.UpdatedAt,
+            AllowedActions = new(_ticketRules.CanAssignSelf(ticket, caller), _ticketRules.CanUpdateStatus(ticket, caller), _ticketRules.GetAllowedStatuses(ticket, caller)),
+            CreatedByUserId = ticket.User.Id,
             CreatedByFullName = ticket.User?.FullName ?? string.Empty,
-            AssignedStaffEmail = ticket.AssignedStaff?.Email,
+            AssignedStaffId = ticket.AssignedStaff?.Id,
             AssignedStaffFullName = ticket.AssignedStaff?.FullName
         };
 

@@ -51,7 +51,7 @@ public class TicketController(ITicketService ticketService, ITicketAIService tic
         if (!User.TryGetCurrentUser(out var caller))
             return Unauthorized();
 
-        var result = await _ticketService.CreateTicketAsync(request, caller.Id);
+        var result = await _ticketService.CreateTicketAsync(request, caller);
 
         return Ok(result);
     }

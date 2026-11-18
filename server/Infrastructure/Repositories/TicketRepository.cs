@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ResolveDesk.Infrastructure.Data;
 using ResolveDesk.Application.Dtos;
-using ResolveDesk.Domain.Enums;
 using ResolveDesk.Domain.Entities;
 
 namespace ResolveDesk.Application.Abstractions;
@@ -52,9 +51,10 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Priority = t.Priority,
             Status = t.Status,
             CreatedAt = t.CreatedAt,
-            CreatedByEmail = t.User.Email,
+            UpdatedAt = t.UpdatedAt,
+            CreatedByUserId = t.User.Id,
             CreatedByFullName = t.User.FullName,
-            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null,
+            AssignedStaffId = t.AssignedStaff != null ? t.AssignedStaffId : null,
             AssignedStaffFullName = t.AssignedStaff != null ? t.AssignedStaff.FullName : null
         })
         .ToListAsync(cancellationToken);
@@ -106,10 +106,11 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             Category = t.Category,
             Priority = t.Priority,
             Status = t.Status,
+            UpdatedAt = t.UpdatedAt,
             CreatedAt = t.CreatedAt,
-            CreatedByEmail = t.User.Email,
+            CreatedByUserId = t.UserId,
             CreatedByFullName = t.User.FullName,
-            AssignedStaffEmail = t.AssignedStaff != null ? t.AssignedStaff.Email : null,
+            AssignedStaffId = t.AssignedStaff != null ? t.AssignedStaffId : null,
             AssignedStaffFullName = t.AssignedStaff != null ? t.AssignedStaff.FullName : null
         })
         .ToListAsync(cancellationToken);
@@ -136,7 +137,6 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
     }
 
     public async Task<List<TicketHistoryResponseDto>> GetHistoryByTicketIdAsync(int ticketId, CancellationToken cancellationToken)
-#pragma warning restore CS8613 // Nullability of reference types in return type doesn't match implicitly implemented member.
     {
         return await _db.TicketHistories
         .Where(history => history.TicketId == ticketId)
@@ -149,7 +149,7 @@ public class TicketRepository(AppDbContext db) : ITicketRepository
             NewStatus = history.NewStatus,
             OldStatus = history.OldStatus,
             ActorUserId = history.ActorUserId,
-            ActorEmail = history.ActorUser.Email ?? string.Empty,
+            ActorFullName = history.ActorUser.FullName ?? string.Empty,
             CreatedAt = history.CreatedAt
         })
         .ToListAsync(cancellationToken);
