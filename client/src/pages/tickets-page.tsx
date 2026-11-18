@@ -23,6 +23,7 @@ import { Route } from '#/routes/tickets/index'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 
 const pageSize = 10
+
 export default function TicketsPage() {
   const authenticated = useRequireAuth()
   const { user } = useAuth()
@@ -46,8 +47,8 @@ export default function TicketsPage() {
           const matchesScope =
             effectiveScope === 'all' ||
             (effectiveScope === 'mine'
-              ? ticket.assignedStaffEmail === user?.email
-              : !ticket.assignedStaffEmail)
+              ? ticket.assignedStaffId === user?.id
+              : !ticket.assignedStaffId)
 
           return (
             matchesScope &&
@@ -58,16 +59,14 @@ export default function TicketsPage() {
                 ticket.title,
                 ticket.description,
                 ticket.category,
-                ticket.createdByEmail,
                 ticket.createdByFullName,
-                ticket.assignedStaffEmail ?? '',
                 ticket.assignedStaffFullName ?? '',
                 String(ticket.id),
               ].some((value) => value.toLowerCase().includes(query)))
           )
         })
         .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
-    [queue.data, q, effectiveScope, status, priority, user?.email],
+    [queue.data, q, effectiveScope, status, priority, user?.id],
   )
 
   if (!authenticated) return null
@@ -80,7 +79,7 @@ export default function TicketsPage() {
   )
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
+    <div className="mx-auto w-full max-w-360 px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
         title={isCustomer ? 'My requests' : 'Tickets'}
         description={

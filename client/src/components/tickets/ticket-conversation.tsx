@@ -60,7 +60,6 @@ export function TicketConversation({
                   name={own ? 'You' : `Member #${comment.userId}`}
                   message={comment.message}
                   createdAt={comment.createdAt}
-                  own={own}
                 />
               )
             })}
@@ -95,7 +94,8 @@ export function TicketConversation({
                     <p className="mt-2 text-xs text-muted-foreground">
                       {workspace.user?.role === 'Customer'
                         ? 'Support team'
-                        : item.actorEmail || `Member #${item.actorUserId}`}{' '}
+                        : item.actorFullName ||
+                          `Member #${item.actorUserId}`}{' '}
                       · {formatDateTime(item.createdAt)}
                     </p>
                   </li>

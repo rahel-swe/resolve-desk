@@ -24,14 +24,6 @@ import type { TicketWorkspace } from '#/hooks/use-ticket-workspace'
 import type { ApiKnowledgeArticle } from '#/services/ticket-service'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 
-const statusTransitions: Record<TicketStatus, TicketStatus[]> = {
-  Open: ['InProgress'],
-  InProgress: ['WaitingForCustomer', 'Resolved'],
-  WaitingForCustomer: ['InProgress'],
-  Resolved: ['Closed', 'InProgress'],
-  Closed: [],
-}
-
 // Preview choices have no server IDs and never call the assignment endpoint.
 const previewStaff = ['Noah Ellis', 'Jordan Lee', 'Sam Rivera']
 const priorities: TicketPriority[] = ['Low', 'Medium', 'High', 'Critical']
@@ -66,18 +58,9 @@ export function TicketWorkflow({
 
   const user = workspace.user
   const isTeam = user?.role === 'Admin' || user?.role === 'Staff'
-  const isAdmin = user?.role === 'Admin'
 
-  const canUpdateStatus =
-    isAdmin ||
-    (user?.role === 'Staff' &&
-      ticket.assignedStaffEmail?.toLowerCase() === user.email.toLowerCase())
-
-  const canAssignSelf =
-    user !== null &&
-    user.id > 0 &&
-    (isAdmin || (user.role === 'Staff' && !ticket.assignedStaffEmail)) &&
-    ticket.assignedStaffEmail?.toLowerCase() !== user.email.toLowerCase()
+  const { canUpdateStatus, canAssignSelf, allowedStatuses } =
+    ticket.allowedActions
 
   const categories = [
     ...new Set([
@@ -88,6 +71,7 @@ export function TicketWorkflow({
       'General inquiry',
     ]),
   ]
+
   const assignees = [
     ...new Set([
       ticket.assignedStaffFullName || 'Unassigned',
@@ -124,7 +108,7 @@ export function TicketWorkflow({
                 if (
                   status &&
                   canUpdateStatus &&
-                  statusTransitions[ticket.status].includes(status)
+                  allowedStatuses.includes(status)
                 )
                   void workspace.updateStatus(status)
               }}
@@ -135,7 +119,7 @@ export function TicketWorkflow({
                 disabled={
                   !canUpdateStatus ||
                   Boolean(workspace.busy) ||
-                  statusTransitions[ticket.status].length === 0
+                  allowedStatuses.length === 0
                 }
               >
                 <SelectValue>
@@ -146,13 +130,11 @@ export function TicketWorkflow({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {[ticket.status, ...statusTransitions[ticket.status]].map(
-                  (status) => (
-                    <SelectItem key={status} value={status}>
-                      {formatTicketStatus(status)}
-                    </SelectItem>
-                  ),
-                )}
+                {[ticket.status, ...allowedStatuses].map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {formatTicketStatus(status)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {isTeam && !canUpdateStatus && (
@@ -282,7 +264,7 @@ export function TicketWorkflow({
                 Priority and assignee previews are not saved.
               </p>
             )}
-            {canAssignSelf && (
+            {canAssignSelf && user && (
               <Button
                 variant="outline"
                 size="sm"
@@ -307,12 +289,6 @@ export function TicketWorkflow({
               <div className="min-w-0">
                 <p className="text-sm font-medium">
                   {ticket.createdByFullName}
-                </p>
-                <p
-                  className="mt-1 truncate text-xs text-muted-foreground"
-                  title={ticket.createdByEmail}
-                >
-                  {ticket.createdByEmail}
                 </p>
               </div>
             </div>

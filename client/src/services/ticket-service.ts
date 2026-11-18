@@ -2,6 +2,12 @@ import { apiRequest } from '#/lib/api-request'
 import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 import type { TicketPayload } from '#/types/ticket-service-types'
 
+type AllowedActions = {
+  allowedStatuses: TicketStatus[]
+  canUpdateStatus: boolean
+  canAssignSelf: boolean
+}
+
 export type ApiTicket = {
   id: number
   title: string
@@ -10,9 +16,11 @@ export type ApiTicket = {
   priority: TicketPriority
   status: TicketStatus
   createdAt: string
-  createdByEmail: string
+  updatedAt: string | null
+  createdByUserId: number
+  allowedActions: AllowedActions
   createdByFullName: string
-  assignedStaffEmail?: string | null
+  assignedStaffId: number | null
   assignedStaffFullName?: string | null
 }
 
@@ -28,7 +36,7 @@ export type ApiTicketHistory = {
   id: number
   ticketId: number
   actorUserId: number
-  actorEmail: string
+  actorFullName: string
   oldStatus: TicketStatus
   newStatus: TicketStatus
   createdAt: string

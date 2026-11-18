@@ -9,12 +9,13 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Input } from '#/components/ui/input'
 import { UserAvatar } from '#/components/workspace/user-identity'
-import { useAuth } from '#/providers/auth-provider'
 import { roleLabel } from '#/lib/user-utils'
 import { useWorkspace } from '#/providers/workspace-provider'
 import { formatRelativeTime } from '#/lib/ticket-utils'
 import { useRequireAuth } from '#/hooks/use-require-auth'
 import type { TicketStatus } from '#/types/ticket-enums'
+import { useProfileQuery } from '#/queries/profile-queries'
+import type { AuthenticatedUser } from '#/types/user-types'
 
 const activeStatuses = new Set<TicketStatus>([
   'Open',
@@ -22,27 +23,27 @@ const activeStatuses = new Set<TicketStatus>([
   'WaitingForCustomer',
 ])
 
-export function WorkspaceSummary() {
-  const { user } = useAuth()
+export function WorkspaceSummary({ user }: { user: AuthenticatedUser | null }) {
   const isAuthenticated = useRequireAuth()
   const { queue, library } = useWorkspace()
   const [query, setQuery] = useState('')
+  const { data: profileData, isLoading } = useProfileQuery(user?.id || null)
+
+  if (!isAuthenticated) return null
 
   const assigned = queue.data.filter(
     (ticket) =>
-      ticket.assignedStaffEmail === user?.email &&
-      activeStatuses.has(ticket.status),
+      ticket.assignedStaffId === user?.id && activeStatuses.has(ticket.status),
   )
 
   const isAdmin = user?.role === 'Admin'
   const isStaff = user?.role === 'Staff'
   const isCustomer = user?.role === 'Customer'
 
-  if (!isAuthenticated) return null
-
   const recent = [...queue.data]
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 3)
+
   const articles = library.data
     .filter((article) =>
       article.title.toLowerCase().includes(query.toLowerCase()),
@@ -52,16 +53,19 @@ export function WorkspaceSummary() {
   return (
     <aside className="min-w-0 border-t pt-7 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-7">
       <h2 className="mb-5 font-heading text-3xl">My workspace</h2>
-      <Link to="/profile" className="block rounded-md hover:bg-muted/30">
-        {user && (
-          <span className="flex min-w-0 items-center gap-3 text-left">
-            <UserAvatar name={user.email} />
+      <Link
+        to="/profile"
+        className="block rounded-md hover:bg-muted/30 w-fit p-2"
+      >
+        {!isLoading && profileData && (
+          <span className="flex min-w-0 items-center gap-3">
+            <UserAvatar name={profileData.fullName} />
             <span className="min-w-0">
               <span className="block truncate text-sm font-medium text-foreground">
-                {user.email}
+                {profileData.fullName}
               </span>
               <span className="mt-0.5 block text-xs text-muted-foreground">
-                {roleLabel(user.role)}
+                {roleLabel(profileData.role)}
               </span>
             </span>
           </span>

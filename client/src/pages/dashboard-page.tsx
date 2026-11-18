@@ -33,7 +33,7 @@ export default function DashboardPage() {
         ticket.status === 'InProgress' ||
         ticket.status === 'WaitingForCustomer'
 
-      return result && (isCustomer || !ticket.assignedStaffEmail)
+      return result && (isCustomer || !ticket.assignedStaffId)
     })
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 5)
@@ -42,7 +42,7 @@ export default function DashboardPage() {
   const isStaff = user?.role === 'Staff'
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-5 py-9 sm:px-8 lg:px-10">
+    <div className="mx-auto w-full max-w-360 px-5 py-9 sm:px-8 lg:px-10">
       <PageHeading
         title={`${greeting}.`}
         description={
@@ -118,7 +118,7 @@ export default function DashboardPage() {
             />
           )}
         </section>
-        <WorkspaceSummary />
+        <WorkspaceSummary user={user} />
       </div>
     </div>
   )

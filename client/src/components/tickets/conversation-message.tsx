@@ -7,12 +7,10 @@ function ConversationMessage({
   name,
   message,
   createdAt,
-  own = false,
 }: {
   name: string
   message: string
   createdAt: string
-  own?: boolean
 }) {
   return (
     <article className="flex gap-3 sm:gap-4">

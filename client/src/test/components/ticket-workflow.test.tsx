@@ -9,7 +9,11 @@ vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: React.ReactNode }) => <a>{children}</a>,
 }))
 
-function workspace(role: 'Admin' | 'Customer' = 'Admin'): TicketWorkspace {
+function workspace(
+  role: 'Admin' | 'Staff' | 'Customer' = 'Admin',
+): TicketWorkspace & {
+  data: NonNullable<TicketWorkspace['data']>
+} {
   return {
     user: { id: 1, email: 'seed.admin@example.test', role },
     data: { ticket: ticket(1), comments: [], history: [] },
@@ -61,12 +65,66 @@ describe('ticket details controls', () => {
   it('continues to save an allowed status transition', async () => {
     const user = userEvent.setup()
     const actions = workspace()
+
+    actions.data.ticket.allowedActions = {
+      canAssignSelf: false,
+      canUpdateStatus: true,
+      allowedStatuses: ['InProgress'],
+    }
+
     render(<TicketWorkflow workspace={actions} />)
 
     await user.click(screen.getByRole('combobox', { name: 'Status' }))
+
     await user.click(await screen.findByRole('option', { name: 'In Progress' }))
 
     expect(actions.updateStatus).toHaveBeenCalledExactlyOnceWith('InProgress')
+  })
+
+  it('honors denied server capabilities even for an administrator', () => {
+    render(<TicketWorkflow workspace={workspace()} />)
+
+    expect(screen.getByRole('combobox', { name: 'Status' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Assign to me' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('keeps terminal status controls disabled when no transitions are allowed', () => {
+    const actions = workspace()
+    actions.data.ticket.status = 'Closed'
+    actions.data.ticket.allowedActions = {
+      canAssignSelf: false,
+      canUpdateStatus: true,
+      allowedStatuses: [],
+    }
+
+    render(<TicketWorkflow workspace={actions} />)
+
+    expect(screen.getByRole('combobox', { name: 'Status' })).toBeDisabled()
+    expect(actions.updateStatus).not.toHaveBeenCalled()
+  })
+
+  it('claims with the signed-in ID only when self-assignment is permitted', async () => {
+    const user = userEvent.setup()
+    const actions = workspace('Staff')
+    actions.data.ticket.assignedStaffId = null
+    actions.data.ticket.assignedStaffFullName = null
+
+    const { rerender } = render(<TicketWorkflow workspace={actions} />)
+    expect(
+      screen.queryByRole('button', { name: 'Assign to me' }),
+    ).not.toBeInTheDocument()
+
+    actions.data.ticket.allowedActions.canAssignSelf = true
+    rerender(<TicketWorkflow workspace={actions} />)
+    await user.click(screen.getByRole('button', { name: 'Assign to me' }))
+    expect(actions.assign).toHaveBeenCalledExactlyOnceWith(1)
+
+    rerender(<TicketWorkflow workspace={{ ...actions, user: null }} />)
+    expect(
+      screen.queryByRole('button', { name: 'Assign to me' }),
+    ).not.toBeInTheDocument()
   })
 
   it('keeps customer controls read only and hides staff actions', () => {
@@ -74,6 +132,7 @@ describe('ticket details controls', () => {
 
     for (const label of ['Status', 'Priority', 'Assignee', 'Category'])
       expect(screen.getByRole('combobox', { name: label })).toBeDisabled()
+
     expect(
       screen.queryByRole('button', { name: 'Assign to me' }),
     ).not.toBeInTheDocument()

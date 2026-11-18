@@ -90,12 +90,6 @@ export function TicketTable({
                 >
                   {ticket.createdByFullName}
                 </p>
-                <p
-                  className="mt-1 truncate text-[11px] text-muted-foreground"
-                  title={ticket.createdByEmail}
-                >
-                  {ticket.createdByEmail}
-                </p>
               </TableCell>
             )}
             <TableCell className="py-5">

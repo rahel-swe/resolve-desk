@@ -20,10 +20,16 @@ export function ticket(
     category: 'IT Support',
     priority: 'Medium',
     status: 'Open',
+    allowedActions: {
+      allowedStatuses: [],
+      canAssignSelf: false,
+      canUpdateStatus: false,
+    },
     createdAt: new Date(Date.UTC(2026, 9, 1, 12, id)).toISOString(),
-    createdByEmail: 'seed.customer@example.test',
+    updatedAt: null,
+    createdByUserId: 2,
     createdByFullName: 'Seed Customer',
-    assignedStaffEmail: id % 3 === 0 ? null : session.email,
+    assignedStaffId: id % 3 === 0 ? null : session.userId,
     assignedStaffFullName: id % 3 === 0 ? null : 'Seed Admin',
     ...overrides,
   }

@@ -95,12 +95,12 @@ describe('client services against the local seeded backend', () => {
     ).toHaveLength(expectedCount)
 
     expect(
-      tickets.every((ticket) => ticket.createdByEmail === profile.email),
+      tickets.every((ticket) => ticket.createdByUserId === profile.id),
     ).toBe(true)
   })
 
   it('creates a ticket, persists a comment, assigns staff, records status history, and returns suggestions', async () => {
-    await login('customer')
+    const customer = await login('customer')
 
     const created = await createTicket({
       title: `[ResolveDesk smoke ${runId}] Cannot login`,
@@ -112,8 +112,8 @@ describe('client services against the local seeded backend', () => {
 
     expect(created.id).toBeGreaterThan(0)
 
-    expect((await getTicketByIdApi(created.id)).createdByEmail).toBe(
-      'seed.customer@example.test',
+    expect((await getTicketByIdApi(created.id)).createdByUserId).toBe(
+      customer.id,
     )
 
     const message = `Client comment persistence check ${runId}.`
@@ -142,8 +142,8 @@ describe('client services against the local seeded backend', () => {
 
     await expect(updateTicketStatus(created.id, 'InProgress')).rejects.toThrow()
 
-    expect((await assignTicket(created.id, staff.id)).assignedStaffEmail).toBe(
-      staff.email,
+    expect((await assignTicket(created.id, staff.id)).assignedStaffId).toBe(
+      staff.id,
     )
     expect((await updateTicketStatus(created.id, 'InProgress')).status).toBe(
       'InProgress',
@@ -174,8 +174,8 @@ describe('client services against the local seeded backend', () => {
 
     await login('admin')
 
-    expect((await assignTicket(created.id, staff.id)).assignedStaffEmail).toBe(
-      staff.email,
+    expect((await assignTicket(created.id, staff.id)).assignedStaffId).toBe(
+      staff.id,
     )
     expect((await updateTicketStatus(created.id, 'Resolved')).status).toBe(
       'Resolved',

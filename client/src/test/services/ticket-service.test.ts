@@ -41,7 +41,7 @@ describe('ticket service HTTP contracts', () => {
     id: 1,
     ticketId: 1,
     actorUserId: 2,
-    actorEmail: session.email,
+    actorFullName: 'Seed Staff',
     oldStatus: 'Open',
     newStatus: 'InProgress',
     createdAt: comment.createdAt,

@@ -58,17 +58,21 @@ export const useUpdateTicketStatusMutation = (
 
   return useMutation({
     mutationFn: (status: TicketStatus) => updateTicketStatus(ticketId, status),
-    onSuccess: () => {
-      ;(queryClient.invalidateQueries({
-        queryKey: ticketKeys.ticketDetails(sessionKey, ticketId),
-      }),
+    onSuccess: async (updatedTicket) => {
+      queryClient.setQueryData(
+        ticketKeys.ticketDetails(sessionKey, ticketId),
+        updatedTicket,
+      )
+
+      await Promise.all([
         queryClient.invalidateQueries({
           queryKey: ticketKeys.list(sessionKey),
-        }))
+        }),
 
-      queryClient.invalidateQueries({
-        queryKey: ticketKeys.history(sessionKey, ticketId),
-      })
+        queryClient.invalidateQueries({
+          queryKey: ticketKeys.history(sessionKey, ticketId),
+        }),
+      ])
     },
   })
 }
@@ -82,10 +86,17 @@ export const useAssignTicketMutation = (
   return useMutation({
     mutationFn: (assignedStaffId: number) =>
       assignTicket(ticketId, assignedStaffId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: ticketKeys.ticketDetails(sessionKey, ticketId),
-      }),
+
+    onSuccess: async (updatedTicket) => {
+      queryClient.setQueryData(
+        ticketKeys.ticketDetails(sessionKey, ticketId),
+        updatedTicket,
+      )
+
+      await queryClient.invalidateQueries({
+        queryKey: ticketKeys.list(sessionKey),
+      })
+    },
   })
 }
 
