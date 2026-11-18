@@ -195,7 +195,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden max-h-dvh h-[97%] my-auto"
+          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden max-h-dvh h-[97%] my-auto data-[swipe-direction=left]:rounded-s-none"
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,

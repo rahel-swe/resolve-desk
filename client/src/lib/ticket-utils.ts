@@ -3,9 +3,7 @@ import type { TicketPriority, TicketStatus } from '#/types/ticket-enums'
 export function formatDateTime(value: string) {
   const date = new Date(value)
 
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
+  if (Number.isNaN(date.getTime())) return value
 
   return new Intl.DateTimeFormat('en', {
     month: 'short',

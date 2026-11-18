@@ -61,7 +61,7 @@ function TicketDetailWorkspace({
             role="region"
             aria-label="Ticket conversation"
             tabIndex={0}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pt-7 pb-10 md:pb-4 [scrollbar-color:var(--input)_transparent] scrollbar-thin scrollbar-gutter-stable focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 focus-visible:ring-inset sm:px-7 2xl:px-9"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pt-7 md:pb-4 [scrollbar-color:var(--input)_transparent] scrollbar-thin scrollbar-gutter-stable focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 focus-visible:ring-inset sm:px-7 2xl:px-9"
           >
             <header className="mb-7 sm:mb-9">
               <div className="mb-5 flex items-center justify-between gap-3">

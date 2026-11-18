@@ -13,6 +13,8 @@ import {
   QuoteUpIcon,
   SourceCodeIcon,
   TextStrikethroughIcon,
+  Edit01Icon,
+  AddToListIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Button } from '#/components/ui/button'
@@ -60,7 +62,7 @@ export function TicketReplyComposer({
           Add a comment
         </label>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-0.5 text-muted-foreground">
+          <div className="flex items-center gap-0.5 text-muted-foreground bg-secondary/70 rounded-md">
             <Button
               type="button"
               variant="ghost"
@@ -183,6 +185,19 @@ export function TicketReplyComposer({
             }}
           >
             {preview ? 'Write' : 'Preview'}
+            {preview ? (
+              <HugeiconsIcon
+                icon={Edit01Icon}
+                className="size-4.5"
+                strokeWidth={1.8}
+              />
+            ) : (
+              <HugeiconsIcon
+                icon={AddToListIcon}
+                className="size-4.5"
+                strokeWidth={1.8}
+              />
+            )}
           </Button>
         </div>
         {preview ? (
@@ -191,7 +206,7 @@ export function TicketReplyComposer({
             tabIndex={0}
             role="region"
             aria-label="Reply preview"
-            className="max-h-80 min-h-16 overflow-y-scroll overscroll-y-contain px-5 py-4 [scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin]"
+            className="max-h-80 min-h-10 overflow-y-scroll overscroll-y-contain px-5 py-2 [scrollbar-color:var(--muted-foreground)_transparent] scrollbar-thin"
           >
             {message.trim() ? (
               <MarkdownContent className="">{message}</MarkdownContent>
@@ -214,10 +229,10 @@ export function TicketReplyComposer({
             minLength={5}
             maxLength={editor.maxLength}
             disabled={busy}
-            className="max-h-80 min-h-16 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-4 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] scrollbar-thin md:text-sm"
+            className="max-h-80 min-h-10 resize-none overflow-y-scroll overscroll-y-contain rounded-none border-0 bg-transparent px-5 py-2 shadow-none focus-visible:ring-0 [scrollbar-color:var(--muted-foreground)_transparent] scrollbar-thin md:text-sm"
           />
         )}
-        <div className="flex items-center justify-between gap-3 px-3 pb-3 sm:px-4">
+        <div className="flex items-center justify-between gap-3 px-3 pb-2 sm:px-4">
           <details
             id="ticket-reply-help"
             className=" text-[11px] leading-5 text-muted-foreground self-end"
@@ -244,11 +259,17 @@ export function TicketReplyComposer({
               message.trim().length < 5 ||
               message.length > 1000
             }
-            variant={preview ? 'secondary' : 'default'}
-            className="gap-2 self-end px-3"
+            variant={
+              preview || message.trim().length < 5 ? 'secondary' : 'default'
+            }
+            className="self-end px-3 rounded-xl"
           >
-            <HugeiconsIcon icon={SentIcon} className="size-4" />
-            {workspace.busy === 'comment' ? 'Sending…' : 'Send reply'}
+            {workspace.busy === 'comment' ? 'Sending…' : 'Send'}
+            <HugeiconsIcon
+              icon={SentIcon}
+              className="size-5 md:block"
+              strokeWidth={2}
+            />
           </Button>
         </div>
       </div>

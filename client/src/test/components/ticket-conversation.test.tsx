@@ -106,19 +106,27 @@ function setupConversation(status = 200) {
 describe('ticket conversation with client services', () => {
   it('posts one trimmed comment, refreshes the conversation, and clears the draft only after success', async () => {
     const { user, posts } = setupConversation()
+
     const input = await screen.findByLabelText('Add a comment')
-    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
+
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled()
+
     await user.type(input, '  Investigating the login issue now.  ')
-    await user.click(screen.getByRole('button', { name: 'Send reply' }))
+    await user.click(screen.getByRole('button', { name: 'Send' }))
 
     expect(
       await screen.findByText('Investigating the login issue now.'),
     ).toBeInTheDocument()
+
     expect(await screen.findByRole('status')).toHaveTextContent('Comment added')
+
     await waitFor(() => expect(input).toHaveValue(''))
+
     expect(posts()).toBe(1)
+
     await user.click(input)
     await user.keyboard('{Control>}z{/Control}')
+
     expect(input).toHaveValue('')
   })
 
@@ -126,21 +134,21 @@ describe('ticket conversation with client services', () => {
     const { user, posts } = setupConversation(503)
     const input = await screen.findByLabelText('Add a comment')
     await user.type(input, 'Please investigate the login issue.')
-    await user.click(screen.getByRole('button', { name: 'Send reply' }))
+    await user.click(screen.getByRole('button', { name: 'Send' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Comment was not saved',
     )
     expect(input).toHaveValue('Please investigate the login issue.')
     expect(posts()).toBe(1)
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Send reply' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Send' })).toBeEnabled()
   })
 
   it('keeps whitespace-only and short comments disabled and applies the server length limit', async () => {
     const { user, posts } = setupConversation()
     const input = await screen.findByLabelText('Add a comment')
     await user.type(input, '    ok    ')
-    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled()
     expect(input).toHaveAttribute('maxlength', '1000')
     expect(posts()).toBe(0)
   })
@@ -187,9 +195,9 @@ describe('ticket conversation with client services', () => {
       screen.getByText('Old advice', { selector: 'del' }),
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: 'Send reply' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'Write' }))
-    await user.click(screen.getByRole('button', { name: 'Send reply' }))
+    await user.click(screen.getByRole('button', { name: 'Send' }))
     await screen.findByRole('status')
     expect(
       screen.getByRole('heading', { name: 'Troubleshooting', level: 2 }),
